@@ -13,7 +13,7 @@ const Hero = () => {
   };
   
   return (
-    <section className="relative bg-slate-900 overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40">
+    <section className="relative bg-slate-900 overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-28">
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/20 to-transparent"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
