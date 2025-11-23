@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "Futuristic robotic arm assembling a circuit board in a clean lab with holographic AI interface.",
+      "imageUrl": "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxyb2JvdGljJTIwYXJtfGVufDB8fHx8MTc2Mzg0MjM3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robotic arm"
+    },
+    {
+      "id": "smart-parking",
+      "description": "Model of smart parking lot with miniature cars, IR sensors, and LCD display showing empty slots.",
+      "imageUrl": "https://images.unsplash.com/photo-1590938076771-dfe17af4d484?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwYXJraW5nJTIwbG90fGVufDB8fHx8MTc2Mzg0MTM3MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "parking lot"
+    },
+    {
+      "id": "piezo-generator",
+      "description": "Piezoelectric tiles generating electricity from pressure, connected to LEDs and a multimeter on a lab bench.",
+      "imageUrl": "https://images.unsplash.com/photo-1568301804576-1dfc1f033bad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGllem9lbGVjdHJpYyUyMHRpbGVzfGVufDB8fHx8MTc2Mzg4MTc5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "piezoelectric tiles"
+    },
+    {
+      "id": "face-recognition",
+      "description": "Software interface detecting student faces in a classroom with bounding boxes and an attendance list.",
+      "imageUrl": "https://images.unsplash.com/photo-1687360440741-f5df549b352d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYWNlJTIwcmVjb2duaXRpb258ZW58MHx8fHwxNzYzODUyOTY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "face recognition"
+    },
+    {
+      "id": "stock-prediction",
+      "description": "Computer screen displaying stock market graphs and prediction lines, AI concept.",
+      "imageUrl": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzdG9jayUyMG1hcmtldHxlbnwwfHx8fDE3NjM4NzgzNjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stock market"
+    },
+    {
+      "id": "home-automation",
+      "description": "Home automation circuit with relay module controlling light bulbs and a smart speaker icon.",
+      "imageUrl": "https://images.unsplash.com/photo-1608377205619-03a0b4c4e270?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxob21lJTIwYXV0b21hdGlvbnxlbnwwfHx8fDE3NjM4ODE3OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "home automation"
+    },
+    {
+      "id": "plant-watering",
+      "description": "Arduino connected to a soil moisture sensor in a potted plant and water pump tubing.",
+      "imageUrl": "https://images.unsplash.com/photo-1673279581775-cb9e7e73f3d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhcmR1aW5vJTIwcGxhbnR8ZW58MHx8fHwxNzYzODgxNzkwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "arduino plant"
+    }
+  ]
 }

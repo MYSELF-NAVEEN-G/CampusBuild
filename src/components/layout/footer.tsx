@@ -1,0 +1,42 @@
+'use client';
+import { FlaskConical } from 'lucide-react';
+
+const Footer = () => {
+  const scrollToSection = (id: string) => {
+    if (typeof window !== 'undefined') {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+  };
+
+  return (
+    <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div className="flex items-center mb-4 text-white">
+            <FlaskConical className="text-primary text-2xl mr-2" />
+            <span className="font-bold text-xl font-headline">NAFON</span>
+          </div>
+          <p className="text-sm">Bridging the gap between theory and application. We provide high-quality engineering solutions.</p>
+        </div>
+        <div>
+          <h4 className="text-white font-bold mb-4 font-headline">Quick Links</h4>
+          <ul className="space-y-2 text-sm">
+            <li><a className="hover:text-primary cursor-pointer" onClick={() => scrollToSection('howItWorks')}>Process</a></li>
+            <li><a className="hover:text-primary cursor-pointer" onClick={() => scrollToSection('customOrder')}>Custom Orders</a></li>
+            <li><a className="hover:text-primary cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-white font-bold mb-4 font-headline">Contact</h4>
+          <p className="text-sm mb-2">support@nafonhub.com</p>
+          <p className="text-xs text-slate-500">© 2025 NAFON Project Hub.</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
