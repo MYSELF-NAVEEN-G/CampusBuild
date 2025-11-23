@@ -10,7 +10,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
 
 const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    if (typeof window !== 'undefined') {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
 };
 
 function SubmitButton() {
