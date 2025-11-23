@@ -21,7 +21,7 @@ const Hero = () => {
           <div className="fade-in-up" style={{ animationDelay: '0.1s' }}>
             <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent text-xs font-code mb-6">
               <span className="flex w-2 h-2 bg-accent rounded-full mr-2 animate-pulse"></span>
-              BY NAFON STUDIOS
+              POWERED BY NAFON STUDIOS
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6 font-headline">
               Your Innovation Partner. <br />
