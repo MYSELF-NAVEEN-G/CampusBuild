@@ -1,6 +1,6 @@
 'use client';
 
-import { Globe, Users, CodeXml, ArrowRight, Send } from 'lucide-react';
+import { Globe, Users, CodeXml, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { useFormState, useFormStatus } from 'react-dom';
@@ -38,15 +38,15 @@ const ContactForm = () => {
         <form action={dispatch} className="space-y-4 mt-4">
              <div>
                 <label className="text-xs font-medium text-slate-500" htmlFor="fullName">Full Name</label>
-                <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" onClick={(e) => e.stopPropagation()} />
+                <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" />
             </div>
              <div>
                 <label className="text-xs font-medium text-slate-500" htmlFor="email">Email</label>
-                <Input id="email" name="email" placeholder="email@university.edu" required type="email" onClick={(e) => e.stopPropagation()} />
+                <Input id="email" name="email" placeholder="email@university.edu" required type="email" />
             </div>
             <div>
                 <label className="text-xs font-medium text-slate-500" htmlFor="preferredTime">Preferred Google Meet Time</label>
-                <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" onClick={(e) => e.stopPropagation()} />
+                <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" />
             </div>
             <SubmitButton />
         </form>
@@ -83,9 +83,9 @@ const HowItWorks = () => {
                     <h2 className="text-3xl font-bold text-slate-900 mt-2 font-headline">How to Order</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-                    {steps.map((step, index) => (
-                        <Link key={index} href={step.href} className="block h-full group">
-                            <Card className="h-full bg-slate-50 border-slate-100 group-hover:border-primary/30 group-hover:bg-white group-hover:shadow-xl transition-all flex flex-col">
+                    {steps.map((step, index) => {
+                        const cardContent = (
+                            <Card className="h-full bg-slate-50 border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-xl transition-all flex flex-col group">
                                 <CardHeader className="relative">
                                     <div className="absolute -top-8 -right-4 w-12 h-12 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg font-headline">{index + 1}</div>
                                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
@@ -99,11 +99,25 @@ const HowItWorks = () => {
                                 </CardHeader>
                                 <CardContent className="flex flex-col flex-1">
                                     <p className="text-slate-600 text-sm leading-relaxed">{step.description}</p>
-                                    {index === 1 && <div onClick={(e) => e.preventDefault()}><ContactForm /></div>}
+                                    {index === 1 && <ContactForm />}
                                 </CardContent>
                             </Card>
-                        </Link>
-                    ))}
+                        );
+
+                        if (index === 1) {
+                            return (
+                                <div key={index}>
+                                    {cardContent}
+                                </div>
+                            )
+                        }
+
+                        return (
+                            <Link key={index} href={step.href} className="block h-full">
+                                {cardContent}
+                            </Link>
+                        )
+                    })}
                 </div>
             </div>
         </section>
