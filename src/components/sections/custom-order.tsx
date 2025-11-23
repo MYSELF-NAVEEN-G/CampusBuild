@@ -1,8 +1,8 @@
 
 'use client';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { submitCustomOrder, CustomOrderFormState } from '@/app/actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,7 @@ function SubmitButton() {
 
 const CustomOrder = () => {
     const initialState: CustomOrderFormState = { message: "", success: false };
-    const [state, dispatch] = useFormState(submitCustomOrder, initialState);
+    const [state, dispatch] = useActionState(submitCustomOrder, initialState);
     const { toast } = useToast();
     const { openAiChat } = useAppContext();
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { submitContactForm, type ContactFormState } from '@/app/actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ function SubmitButton() {
 
 export default function ScheduleMeetingPage() {
     const initialState: ContactFormState = { message: "", success: false };
-    const [state, dispatch] = useFormState(submitContactForm, initialState);
+    const [state, dispatch] = useActionState(submitContactForm, initialState);
     const { toast } = useToast();
 
     useEffect(() => {
