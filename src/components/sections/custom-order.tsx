@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from '@/components/ui/textarea';
 import { Lightbulb } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
-import { useFirebase } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -16,18 +16,27 @@ import { FirestorePermissionError } from '@/firebase/errors';
 const CustomOrder = () => {
     const { toast } = useToast();
     const { openAiChat } = useAppContext();
-    const { firestore, user } = useFirebase();
+    const { firestore } = useFirebase();
+    const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const getMinDate = () => {
+        const today = new Date();
+        today.setDate(today.getDate() + 10);
+        return today.toISOString().split('T')[0];
+    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         
         if (!firestore || !user) {
             toast({
-                title: "Error",
-                description: "You must be signed in to submit an order.",
+                title: "Authentication Required",
+                description: "You must be signed in to submit a custom order. We've initiated a secure, anonymous session for you. Please try submitting again.",
                 variant: "destructive",
             });
+            // The FirebaseProvider automatically handles anonymous sign-in,
+            // so the user just needs to retry.
             return;
         }
 
@@ -45,28 +54,30 @@ const CustomOrder = () => {
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             assigned: 'Not Assigned',
-            customerPhone: '', // Not in this form
+            customerPhone: '', // Not in this form, can be added if needed
         };
 
         try {
-            const ordersCollection = collection(firestore, 'orders');
-            await addDoc(ordersCollection, customOrderData);
+            // Use the user's UID to create a user-specific subcollection path
+            const ordersCollectionRef = collection(firestore, 'orders');
+            await addDoc(ordersCollectionRef, customOrderData);
             
             toast({
-                title: "Success",
-                description: "Request Submitted! An expert will contact you.",
+                title: "Custom Order Submitted!",
+                description: "Your request has been received. An expert will contact you shortly to follow up.",
             });
             (event.target as HTMLFormElement).reset();
         } catch (error) {
             console.error("Error submitting custom order:", error);
+            // This will emit a detailed error for the developer overlay
             errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: 'orders',
+                path: `users/${user.uid}/customOrders`,
                 operation: 'create',
                 requestResourceData: customOrderData,
             }));
             toast({
-                title: "Error",
-                description: "There was a server error submitting your request. Please try again later.",
+                title: "Submission Error",
+                description: "Could not save your request. Please ensure you have the correct permissions or try again later.",
                 variant: "destructive",
             });
         } finally {
@@ -135,7 +146,7 @@ const CustomOrder = () => {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="deadline">Deadline</label>
-                                <Input id="deadline" name="deadline" type="date" />
+                                <Input id="deadline" name="deadline" type="date" min={getMinDate()} />
                             </div>
                         </div>
                         <div className="mb-6">
