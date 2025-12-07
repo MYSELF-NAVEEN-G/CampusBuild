@@ -1,8 +1,6 @@
 
 'use client';
-import { useActionState, useEffect } from 'react';
-import { useFormStatus } from 'react-dom';
-import { submitCustomOrder, CustomOrderFormState } from '@/app/actions';
+import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,32 +8,72 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from '@/components/ui/textarea';
 import { Lightbulb } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-800 transition-all">
-      {pending ? 'Submitting...' : 'Submit Custom Order'}
-    </Button>
-  );
-}
+import { useFirebase } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const CustomOrder = () => {
-    const initialState: CustomOrderFormState = { message: "", success: false };
-    const [state, dispatch] = useActionState(submitCustomOrder, initialState);
     const { toast } = useToast();
     const { openAiChat } = useAppContext();
+    const { firestore, user } = useFirebase();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-    useEffect(() => {
-        if (state.message) {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        
+        if (!firestore || !user) {
             toast({
-                title: state.success ? "Success" : "Error",
-                description: state.message,
-                variant: state.success ? "default" : "destructive",
+                title: "Error",
+                description: "You must be signed in to submit an order.",
+                variant: "destructive",
             });
+            return;
         }
-    }, [state, toast]);
+
+        setIsSubmitting(true);
+
+        const formData = new FormData(event.currentTarget);
+        const customOrderData = {
+            customerName: formData.get("fullName") as string,
+            customerEmail: formData.get("email") as string,
+            projectTitle: formData.get("projectTitle") as string,
+            domain: formData.get("domain") as string,
+            deadline: formData.get("deadline") as string || '',
+            detailedRequirements: formData.get("requirements") as string,
+            isCustomOrder: true,
+            createdAt: serverTimestamp(),
+            status: 'Not Completed',
+            assigned: 'Not Assigned',
+            customerPhone: '', // Not in this form
+        };
+
+        try {
+            const ordersCollection = collection(firestore, 'orders');
+            await addDoc(ordersCollection, customOrderData);
+            
+            toast({
+                title: "Success",
+                description: "Request Submitted! An expert will contact you.",
+            });
+            (event.target as HTMLFormElement).reset();
+        } catch (error) {
+            console.error("Error submitting custom order:", error);
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: 'orders',
+                operation: 'create',
+                requestResourceData: customOrderData,
+            }));
+            toast({
+                title: "Error",
+                description: "There was a server error submitting your request. Please try again later.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
 
     return (
         <section className="py-20 bg-background border-b border-border relative overflow-hidden" id="customOrder">
@@ -64,7 +102,7 @@ const CustomOrder = () => {
                             </Button>
                         </div>
                     </div>
-                    <form action={dispatch} className="md:w-2/3 p-8">
+                    <form onSubmit={handleSubmit} className="md:w-2/3 p-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="fullName">Full Name</label>
@@ -105,7 +143,9 @@ const CustomOrder = () => {
                             <Textarea id="requirements" name="requirements" placeholder="Describe the features, specific sensors (e.g. Piezo, Ultrasonic), and any software preferences..." className="h-24 resize-none" />
                         </div>
                         <div className="flex justify-end">
-                            <SubmitButton />
+                             <Button type="submit" disabled={isSubmitting} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-800 transition-all">
+                                {isSubmitting ? 'Submitting...' : 'Submit Custom Order'}
+                            </Button>
                         </div>
                     </form>
                 </div>

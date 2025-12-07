@@ -14,8 +14,8 @@ export default function Home() {
       <main id="mainContent">
         <Hero />
         <HowItWorks />
-        <CustomOrder />
         <ProjectCatalog />
+        <CustomOrder />
       </main>
       <Footer />
       <AiAssistant />
