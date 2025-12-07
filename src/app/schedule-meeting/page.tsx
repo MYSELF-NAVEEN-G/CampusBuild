@@ -27,6 +27,7 @@ export default function ScheduleMeetingPage() {
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
+    const [projectTopic, setProjectTopic] = useState('');
     const [password, setPassword] = useState('');
     const [preferredTime, setPreferredTime] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -95,6 +96,7 @@ export default function ScheduleMeetingPage() {
         const consultationData = {
             customerName: fullName,
             customerEmail: email,
+            projectTopic: projectTopic,
             preferredTime,
             assignedTo: 'Not Assigned',
             createdAt: serverTimestamp(),
@@ -112,6 +114,7 @@ export default function ScheduleMeetingPage() {
             // Reset form
             setFullName('');
             setEmail('');
+            setProjectTopic('');
             setPreferredTime('');
 
         } catch (error) {
@@ -192,17 +195,22 @@ export default function ScheduleMeetingPage() {
                                 <label className="text-xs font-medium text-slate-600" htmlFor="email">Email</label>
                                 <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
                             </div>
-                             {isAdminField && (
+                             {isAdminField ? (
                               <div>
                                 <label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</label>
                                 <Input id="password" name="password" required type="password" placeholder="Enter admin password" className="mt-1" value={password} onChange={e => setPassword(e.target.value)} />
                               </div>
-                            )}
-                            {!isAdminField && (
-                                <div>
-                                    <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
-                                    <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
-                                </div>
+                            ) : (
+                                <>
+                                    <div>
+                                        <label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</label>
+                                        <Input id="projectTopic" name="projectTopic" placeholder="e.g., IoT, AI in healthcare" required type="text" className="mt-1" value={projectTopic} onChange={e => setProjectTopic(e.target.value)} />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
+                                        <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
+                                    </div>
+                                </>
                             )}
                             <Button type="submit" disabled={isSubmitting} className="w-full">
                                 {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Submit Request'}

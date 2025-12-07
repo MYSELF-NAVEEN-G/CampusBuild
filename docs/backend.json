@@ -148,6 +148,10 @@
           "description": "Email address of the user.",
           "format": "email"
         },
+        "projectTopic": {
+          "type": "string",
+          "description": "The topic or idea the user wants to discuss."
+        },
         "preferredTime": {
           "type": "string",
           "description": "The user's preferred time for the meeting."
@@ -166,6 +170,7 @@
         "id",
         "customerName",
         "customerEmail",
+        "projectTopic",
         "preferredTime",
         "createdAt"
       ]

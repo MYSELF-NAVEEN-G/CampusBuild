@@ -49,6 +49,7 @@ interface Consultation {
   id: string;
   customerName: string;
   customerEmail: string;
+  projectTopic: string;
   preferredTime: string;
   assignedTo: string;
   createdAt: Timestamp;
@@ -122,6 +123,7 @@ export default function ConsultationManagementPage() {
             <TableRow>
               <TableHead>Customer</TableHead>
               <TableHead>Contact</TableHead>
+              <TableHead>Project Topic</TableHead>
               <TableHead>Preferred Time</TableHead>
               <TableHead>Assigned To</TableHead>
               <TableHead>Actions</TableHead>
@@ -132,6 +134,7 @@ export default function ConsultationManagementPage() {
               <TableRow key={consultation.id}>
                 <TableCell className="font-medium">{consultation.customerName}</TableCell>
                 <TableCell>{consultation.customerEmail}</TableCell>
+                <TableCell>{consultation.projectTopic}</TableCell>
                 <TableCell>{consultation.preferredTime}</TableCell>
                 <TableCell>
                   {isSuperAdmin ? (
