@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, doc, updateDoc, Timestamp, deleteDoc } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -43,9 +43,12 @@ interface Order {
 
 export default function AdminOrderPage() {
   const { firestore } = useFirebase();
+  const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  const isSuperAdmin = user?.email === 'naveen.contactme1@gmail.com';
 
   useEffect(() => {
     if (!firestore) {
@@ -176,12 +179,16 @@ export default function AdminOrderPage() {
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    type="text"
-                    defaultValue={order.assigned}
-                    onBlur={(e) => handleUpdateOrder(order.id, { assigned: e.target.value })}
-                    placeholder="Assign to..."
-                  />
+                  {isSuperAdmin ? (
+                    <Input
+                      type="text"
+                      defaultValue={order.assigned}
+                      onBlur={(e) => handleUpdateOrder(order.id, { assigned: e.target.value })}
+                      placeholder="Assign to..."
+                    />
+                  ) : (
+                    <span>{order.assigned || 'Not Assigned'}</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   {formatDate(order.deadline)}
@@ -233,7 +240,7 @@ export default function AdminOrderPage() {
                       <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
                           <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                  <Button variant="destructive">
+                                  <Button variant="destructive" disabled={!isSuperAdmin}>
                                       <Trash2 className="mr-2 h-4 w-4" />
                                       Delete Order
                                   </Button>
@@ -269,3 +276,5 @@ export default function AdminOrderPage() {
     </>
   );
 }
+
+    
