@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -32,6 +31,7 @@ interface Order {
   deliveryCharge?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
+  deliveryStatus: 'Delivered' | 'Not Delivered';
   assigned: string;
   deadline: string;
   // Fields for custom orders
@@ -49,6 +49,7 @@ export default function AdminOrderPage() {
   const { toast } = useToast();
 
   const isSuperAdmin = user?.email === 'naveen.contactme1@gmail.com';
+  const isPrivilegedAdmin = user?.email === 'naveen.contactme1@gmail.com' || user?.email === 'john.04@nafon.in';
 
   useEffect(() => {
     if (!firestore) {
@@ -146,6 +147,7 @@ export default function AdminOrderPage() {
               <TableHead>Order Type</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Delivery</TableHead>
               <TableHead>Assigned To</TableHead>
               <TableHead>Deadline</TableHead>
               <TableHead>Details</TableHead>
@@ -177,6 +179,21 @@ export default function AdminOrderPage() {
                       <SelectItem value="Not Completed">Not Completed</SelectItem>
                     </SelectContent>
                   </Select>
+                </TableCell>
+                 <TableCell>
+                  {isPrivilegedAdmin ? (
+                    <Select value={order.deliveryStatus} onValueChange={(value: 'Delivered' | 'Not Delivered') => handleUpdateOrder(order.id, { deliveryStatus: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Delivered">Delivered</SelectItem>
+                        <SelectItem value="Not Delivered">Not Delivered</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span>{order.deliveryStatus || 'Not Delivered'}</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   {isSuperAdmin ? (
@@ -226,13 +243,13 @@ export default function AdminOrderPage() {
                                 {order.items?.map(item => (
                                     <div key={item.id} className="flex justify-between items-center p-2 bg-slate-50 border rounded-md">
                                         <span>{item.title}</span>
-                                        <span className="font-bold">${item.price.toFixed(2)}</span>
+                                        <span className="font-bold">₹{item.price.toFixed(2)}</span>
                                     </div>
                                 ))}
                               </div>
                               <div className="mt-4 space-y-1 border-t pt-2">
-                                  <div className="flex justify-between"><span>Delivery:</span><span>${(order.deliveryCharge || 0).toFixed(2)}</span></div>
-                                  <div className="text-right font-bold text-lg mt-2">Total: ${order.total?.toFixed(2)}</div>
+                                  <div className="flex justify-between"><span>Delivery:</span><span>₹{(order.deliveryCharge || 0).toFixed(2)}</span></div>
+                                  <div className="text-right font-bold text-lg mt-2">Total: ₹{order.total?.toFixed(2)}</div>
                               </div>
                           </>
                         )}
@@ -276,7 +293,3 @@ export default function AdminOrderPage() {
     </>
   );
 }
-
-    
-
-    

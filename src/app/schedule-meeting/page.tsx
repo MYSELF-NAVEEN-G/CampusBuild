@@ -14,7 +14,8 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 
 const adminUsers = {
     'nafonstudios@gmail.com': 'admin',
-    'naveen.contactme1@gmail.com': 'naveen'
+    'naveen.contactme1@gmail.com': 'naveen',
+    'john.04@nafon.in': 'johnlee',
 };
 
 export default function ScheduleMeetingPage() {
@@ -56,12 +57,21 @@ export default function ScheduleMeetingPage() {
         } catch (error: any) {
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
                 try {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    toast({
-                        title: 'Admin Account Created',
-                        description: 'Login successful. Redirecting to the admin dashboard.',
-                    });
-                    router.push('/admin');
+                    // Create user only if they are in the admin list
+                    if ((adminUsers as Record<string, string>)[email.toLowerCase()]) {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        toast({
+                            title: 'Admin Account Created',
+                            description: 'Login successful. Redirecting to the admin dashboard.',
+                        });
+                        router.push('/admin');
+                    } else {
+                         toast({
+                            title: 'Admin Login Failed',
+                            description: 'Please check your credentials.',
+                            variant: 'destructive',
+                        });
+                    }
                 } catch (creationError: any) {
                     console.error("Admin account creation failed:", creationError);
                     toast({

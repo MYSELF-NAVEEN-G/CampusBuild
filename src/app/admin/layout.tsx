@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 const adminEmails = [
   'nafonstudios@gmail.com',
   'naveen.contactme1@gmail.com',
+  'john.04@nafon.in',
 ];
 
 export default function AdminLayout({

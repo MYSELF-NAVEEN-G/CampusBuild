@@ -59,6 +59,7 @@ const Cart = () => {
             deliveryCharge: wantsDelivery ? deliveryCharge : 0,
             createdAt: serverTimestamp(),
             status: 'Not Completed',
+            deliveryStatus: 'Not Delivered',
             assigned: 'Not Assigned',
             deadline: customerDetails.deadline,
         };
@@ -146,7 +147,7 @@ const Cart = () => {
                                             <Checkbox id="delivery" checked={wantsDelivery} onCheckedChange={(checked) => setWantsDelivery(checked as boolean)} />
                                             <Label htmlFor="delivery" className="cursor-pointer">Delivery with charges</Label>
                                         </div>
-                                        <span>{wantsDelivery ? 'Varies based on place' : '₹0.00'}</span>
+                                        <span>{wantsDelivery ? `₹${deliveryCharge.toFixed(2)}` : '₹0.00'}</span>
                                     </div>
                                     <div className="flex justify-between font-bold text-lg border-t pt-2">
                                         <span>Total</span>

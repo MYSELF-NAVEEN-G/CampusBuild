@@ -74,6 +74,7 @@ const CustomOrder = () => {
             deliveryCharge: wantsDelivery ? deliveryCharge : 0,
             createdAt: serverTimestamp(),
             status: 'Not Completed',
+            deliveryStatus: 'Not Delivered',
             assigned: 'Not Assigned',
             customerPhone: '', // Not in this form, can be added if needed
         };

@@ -38,6 +38,7 @@
  * Structural Segregation:
  * The design correctly segregates public data (`/projects`) from private user data
  * (`/users/{userId}/customOrders`), ensuring that private information cannot be
+
  * accidentally exposed through list queries on public collections.
  */
 rules_version = '2';
@@ -54,7 +55,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || isSuperAdmin());
+      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || isSuperAdmin());
     }
 
     function isOwner(userId) {
