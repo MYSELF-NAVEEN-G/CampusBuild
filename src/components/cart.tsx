@@ -25,7 +25,7 @@ const Cart = () => {
     const taxes = subtotal * 0.08;
     const total = subtotal + taxes;
 
-    const onCheckout = async (customerDetails: { name: string; email: string; phone: string }) => {
+    const onCheckout = async (customerDetails: { name: string; email: string; phone: string; deadline: string }) => {
         if (cart.length === 0 || !firestore) {
             toast({ title: "Error", description: "Cart is empty or database is not available.", variant: "destructive" });
             return;
@@ -44,7 +44,7 @@ const Cart = () => {
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             assigned: 'Not Assigned',
-            deadline: '',
+            deadline: customerDetails.deadline,
         };
 
         try {
