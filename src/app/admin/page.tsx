@@ -32,6 +32,7 @@ interface Order {
   customerPhone: string;
   items?: OrderItem[]; // For catalog orders
   total?: number;
+  deliveryCharge?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
   assigned: string;
@@ -288,6 +289,7 @@ export default function AdminPage() {
                             <>
                               <div className="font-semibold text-base">Custom Project: {order.projectTitle}</div>
                               <p><strong>Domain:</strong> {order.domain}</p>
+                              <p><strong>Delivery Required:</strong> {order.deliveryCharge && order.deliveryCharge > 0 ? `Yes ($${order.deliveryCharge.toFixed(2)})` : 'No'}</p>
                               <div>
                                 <strong>Detailed Requirements:</strong>
                                 <p className="p-2 mt-1 bg-slate-50 border rounded-md whitespace-pre-wrap">{order.detailedRequirements}</p>
@@ -304,7 +306,10 @@ export default function AdminPage() {
                                       </div>
                                   ))}
                                 </div>
-                                <div className="text-right font-bold text-lg mt-4">Total: ${order.total?.toFixed(2)}</div>
+                                <div className="mt-4 space-y-1 border-t pt-2">
+                                    <div className="flex justify-between"><span>Delivery:</span><span>${(order.deliveryCharge || 0).toFixed(2)}</span></div>
+                                    <div className="text-right font-bold text-lg mt-2">Total: ${order.total?.toFixed(2)}</div>
+                                </div>
                             </>
                           )}
                         </div>

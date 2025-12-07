@@ -12,6 +12,8 @@ import { useFirebase, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Checkbox } from '../ui/checkbox';
+import { Label } from '../ui/label';
 
 const CustomOrder = () => {
     const { toast } = useToast();
@@ -20,6 +22,9 @@ const CustomOrder = () => {
     const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [domain, setDomain] = useState('iot');
+    const [wantsDelivery, setWantsDelivery] = useState(false);
+
+    const deliveryCharge = 25.00;
 
     const getMinDate = () => {
         let minDays;
@@ -66,6 +71,7 @@ const CustomOrder = () => {
             deadline: formData.get("deadline") as string || '',
             detailedRequirements: formData.get("requirements") as string,
             isCustomOrder: true,
+            deliveryCharge: wantsDelivery ? deliveryCharge : 0,
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             assigned: 'Not Assigned',
@@ -83,6 +89,7 @@ const CustomOrder = () => {
             });
             (event.target as HTMLFormElement).reset();
             setDomain('iot');
+            setWantsDelivery(false);
         } catch (error) {
             console.error("Error submitting custom order:", error);
             // This will emit a detailed error for the developer overlay
@@ -168,6 +175,10 @@ const CustomOrder = () => {
                         <div className="mb-6">
                             <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="requirements">Detailed Requirements</label>
                             <Textarea id="requirements" name="requirements" placeholder="Describe the features, specific sensors (e.g. Piezo, Ultrasonic), and any software preferences..." className="h-24 resize-none" />
+                        </div>
+                         <div className="flex items-center gap-2 mb-6">
+                            <Checkbox id="custom-delivery" name="delivery" checked={wantsDelivery} onCheckedChange={(checked) => setWantsDelivery(checked as boolean)} />
+                            <Label htmlFor="custom-delivery" className="cursor-pointer text-sm">Delivery Required (+$25.00)</Label>
                         </div>
                         <div className="flex justify-end">
                              <Button type="submit" disabled={isSubmitting} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-800 transition-all">

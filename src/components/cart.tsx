@@ -13,6 +13,8 @@ import { useFirebase } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Checkbox } from "./ui/checkbox";
+import { Label } from "./ui/label";
 
 const Cart = () => {
     const { isCartOpen, toggleCart, cart, removeFromCart, clearCart } = useAppContext();
@@ -20,10 +22,12 @@ const Cart = () => {
     const { toast } = useToast();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+    const [wantsDelivery, setWantsDelivery] = useState(false);
 
+    const deliveryCharge = 25.00;
     const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
     const taxes = subtotal * 0.08;
-    const total = subtotal + taxes;
+    const total = subtotal + taxes + (wantsDelivery ? deliveryCharge : 0);
 
     const getMinDeadline = () => {
         const hasHardwareOrIoT = cart.some(item => item.category === 'Hardware' || item.category === 'IoT');
@@ -50,6 +54,7 @@ const Cart = () => {
             subtotal,
             taxes,
             total,
+            deliveryCharge: wantsDelivery ? deliveryCharge : 0,
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             assigned: 'Not Assigned',
@@ -124,7 +129,14 @@ const Cart = () => {
                                         <span>Taxes (8%)</span>
                                         <span>${taxes.toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between font-bold text-lg">
+                                    <div className="flex justify-between items-center py-2 border-t border-dashed">
+                                        <div className="flex items-center gap-2">
+                                            <Checkbox id="delivery" checked={wantsDelivery} onCheckedChange={(checked) => setWantsDelivery(checked as boolean)} />
+                                            <Label htmlFor="delivery" className="cursor-pointer">Delivery</Label>
+                                        </div>
+                                        <span>{wantsDelivery ? `$${deliveryCharge.toFixed(2)}` : '$0.00'}</span>
+                                    </div>
+                                    <div className="flex justify-between font-bold text-lg border-t pt-2">
                                         <span>Total</span>
                                         <span>${total.toFixed(2)}</span>
                                     </div>
