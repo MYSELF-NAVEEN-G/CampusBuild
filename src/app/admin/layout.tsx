@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 
 const adminEmails = [
   'nafonstudios@gmail.com',
-  'naveen.contactme1@gmail.com',
+  'naveen.01@nafon.in',
   'john.04@nafon.in',
 ];
 
@@ -28,7 +28,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const { toast } = useToast();
 
-  const isSuperAdmin = user?.email === 'naveen.contactme1@gmail.com';
+  const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
 
   useEffect(() => {
     if (!isUserLoading && (!user || !adminEmails.includes(user.email!))) {
@@ -138,4 +138,3 @@ export default function AdminLayout({
     </div>
   );
 }
-    

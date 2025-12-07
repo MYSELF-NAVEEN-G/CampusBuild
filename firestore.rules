@@ -51,7 +51,7 @@ service cloud.firestore {
     }
     
     function isSuperAdmin() {
-      return isSignedIn() && request.auth.token.email == 'naveen.contactme1@gmail.com';
+      return isSignedIn() && request.auth.token.email == 'naveen.01@nafon.in';
     }
 
     function isAdmin() {

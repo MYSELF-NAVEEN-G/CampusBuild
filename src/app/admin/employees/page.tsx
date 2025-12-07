@@ -71,7 +71,7 @@ export default function EmployeeManagementPage() {
 
   // Security check to ensure only Super Admin can access
   useEffect(() => {
-    if (!isUserLoading && (!user || user.email !== 'naveen.contactme1@gmail.com')) {
+    if (!isUserLoading && (!user || user.email !== 'naveen.01@nafon.in')) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to manage employees.',
@@ -173,7 +173,7 @@ export default function EmployeeManagementPage() {
     return <div>Loading Employee Data...</div>;
   }
   
-  if (!user || user.email !== 'naveen.contactme1@gmail.com') {
+  if (!user || user.email !== 'naveen.01@nafon.in') {
       return <div>Redirecting...</div>
   }
 
@@ -253,5 +253,3 @@ export default function EmployeeManagementPage() {
     </>
   );
 }
-
-    

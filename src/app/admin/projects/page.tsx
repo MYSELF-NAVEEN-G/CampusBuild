@@ -90,7 +90,7 @@ export default function ProjectManagementPage() {
 
   // Security check
   useEffect(() => {
-    if (!isUserLoading && (!user || user.email !== 'naveen.contactme1@gmail.com')) {
+    if (!isUserLoading && (!user || user.email !== 'naveen.01@nafon.in')) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to manage projects.',
@@ -274,7 +274,7 @@ export default function ProjectManagementPage() {
     return <div>Loading Project Data...</div>;
   }
   
-  if (!user || user.email !== 'naveen.contactme1@gmail.com') {
+  if (!user || user.email !== 'naveen.01@nafon.in') {
       return <div>Redirecting...</div>
   }
 

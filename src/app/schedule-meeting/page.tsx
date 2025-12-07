@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 
 const adminUsers = {
     'nafonstudios@gmail.com': 'admin',
-    'naveen.contactme1@gmail.com': 'naveen',
+    'naveen.01@nafon.in': 'naveen',
     'john.04@nafon.in': 'johnlee',
 };
 
