@@ -132,7 +132,7 @@ const Cart = () => {
                                     <div className="flex justify-between items-center py-2 border-t border-dashed">
                                         <div className="flex items-center gap-2">
                                             <Checkbox id="delivery" checked={wantsDelivery} onCheckedChange={(checked) => setWantsDelivery(checked as boolean)} />
-                                            <Label htmlFor="delivery" className="cursor-pointer">Delivery</Label>
+                                            <Label htmlFor="delivery" className="cursor-pointer">Delivery with charges</Label>
                                         </div>
                                         <span>{wantsDelivery ? `$${deliveryCharge.toFixed(2)}` : '$0.00'}</span>
                                     </div>
