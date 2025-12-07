@@ -6,6 +6,7 @@ import {
   LogOut,
   Package,
   ShoppingBag,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -120,17 +121,30 @@ export default function AdminLayout({
               Order Management
             </Link>
             {isSuperAdmin && (
-              <Link
-                href="/admin/projects"
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900',
-                  pathname === '/admin/projects' &&
-                    'bg-slate-200 font-semibold'
-                )}
-              >
-                <Package className="h-4 w-4" />
-                Project Management
-              </Link>
+              <>
+                <Link
+                  href="/admin/projects"
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900',
+                    pathname === '/admin/projects' &&
+                      'bg-slate-200 font-semibold'
+                  )}
+                >
+                  <Package className="h-4 w-4" />
+                  Project Management
+                </Link>
+                <Link
+                  href="/admin/employees"
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900',
+                    pathname === '/admin/employees' &&
+                      'bg-slate-200 font-semibold'
+                  )}
+                >
+                  <Users className="h-4 w-4" />
+                  Employee Management
+                </Link>
+              </>
             )}
           </nav>
         </aside>

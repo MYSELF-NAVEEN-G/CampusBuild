@@ -97,6 +97,36 @@
         "domain",
         "detailedRequirements"
       ]
+    },
+    "Employee": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Employee",
+      "type": "object",
+      "description": "Represents an employee with their details.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the employee."
+        },
+        "age": {
+          "type": "number",
+          "description": "Age of the employee."
+        },
+        "position": {
+          "type": "string",
+          "description": "The job position or title of the employee."
+        },
+        "specialization": {
+          "type": "string",
+          "description": "The primary area of expertise or specialization."
+        }
+      },
+      "required": [
+        "name",
+        "age",
+        "position",
+        "specialization"
+      ]
     }
   },
   "auth": {
@@ -139,6 +169,22 @@
             {
               "name": "customOrderId",
               "description": "Unique identifier for the custom order request."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/employees/{employeeId}",
+        "definition": {
+          "entityName": "Employee",
+          "schema": {
+            "$ref": "#/backend/entities/Employee"
+          },
+          "description": "Stores employee details. Only the Super Admin can read and write to this collection.",
+          "params": [
+            {
+              "name": "employeeId",
+              "description": "Unique identifier for the employee."
             }
           ]
         }
