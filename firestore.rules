@@ -98,6 +98,11 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
+    
+    match /orders/{orderId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if false; // TBD: admin only
+    }
 
     /**
      * @description
