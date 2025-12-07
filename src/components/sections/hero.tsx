@@ -2,8 +2,32 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Box, Circle, Triangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 const Hero = () => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  const calculateParallax = (strength: number) => {
+    if (typeof window === 'undefined') return {};
+    const x = (mousePosition.x - window.innerWidth / 2) / strength;
+    const y = (mousePosition.y - window.innerHeight / 2) / strength;
+    return {
+      transform: `translate(${x}px, ${y}px)`,
+    };
+  };
+  
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -15,11 +39,21 @@ const Hero = () => {
       
       {/* Animated Shapes */}
       <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none z-0">
-          <Circle className="absolute -right-20 top-1/4 w-48 h-48 text-accent/10 animate-float-slow" />
-          <Box className="absolute right-1/4 top-1/2 w-32 h-32 text-primary/10 animate-spin-slow" />
-          <Triangle className="absolute right-1/2 bottom-1/4 w-40 h-40 text-accent/5 animate-float" />
-          <div className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-10 right-1/2 w-40 h-40 bg-accent/20 rounded-full blur-3xl animate-float-slow"></div>
+          <div style={calculateParallax(-20)} className="transition-transform duration-500 ease-out">
+            <Circle className="absolute -right-20 top-1/4 w-48 h-48 text-accent/10" />
+          </div>
+          <div style={calculateParallax(30)} className="transition-transform duration-500 ease-out">
+            <Box className="absolute right-1/4 top-1/2 w-32 h-32 text-primary/10" />
+          </div>
+          <div style={calculateParallax(-50)} className="transition-transform duration-500 ease-out">
+            <Triangle className="absolute right-1/2 bottom-1/4 w-40 h-40 text-accent/5" />
+          </div>
+          <div style={calculateParallax(15)} className="transition-transform duration-500 ease-out">
+            <div className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+          </div>
+          <div style={calculateParallax(40)} className="transition-transform duration-500 ease-out">
+            <div className="absolute bottom-10 right-1/2 w-40 h-40 bg-accent/20 rounded-full blur-3xl"></div>
+          </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

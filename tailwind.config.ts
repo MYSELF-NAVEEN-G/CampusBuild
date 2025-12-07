@@ -88,19 +88,6 @@ export default {
             height: '0',
           },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        'float-slow': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-15px)' },
-        },
-        'spin-slow': {
-          '0%': { transform: 'rotate(0deg) scale(1)' },
-          '50%': { transform: 'rotate(180deg) scale(1.05)' },
-          '100%': { transform: 'rotate(360deg) scale(1)' },
-        },
         typing: {
             '0%, 80%, 100%': { transform: 'scale(0)' },
             '40%': { transform: 'scale(1)' },
@@ -109,9 +96,6 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'float': 'float 6s ease-in-out infinite',
-        'float-slow': 'float 12s ease-in-out infinite',
-        'spin-slow': 'spin-slow 20s linear infinite',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'typing': 'typing 1.4s infinite ease-in-out both',
       },
