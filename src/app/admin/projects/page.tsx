@@ -49,15 +49,13 @@ import type { Project as ProjectType } from '@/lib/projects';
 import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// We need to define a version of the Project type for Firestore,
-// where the 'image' is just an ID string.
-type FirestoreProject = Omit<ProjectType, 'image' | 'id'> & {
+// This is the type we'll use in the component state, which includes the Firestore document ID and resolved image object.
+type Project = ProjectType & { docId: string };
+
+// This is the type for the data stored in Firestore.
+type FirestoreProject = Omit<ProjectType, 'id' | 'image' > & {
   image: string; // Storing image by its ID
 };
-
-// This is the type we'll use in the component state, which includes the Firestore document ID.
-type Project = Omit<ProjectType, 'id'> & { id: string };
-
 
 export default function ProjectManagementPage() {
   const { firestore } = useFirebase();
@@ -68,14 +66,16 @@ export default function ProjectManagementPage() {
   const { toast } = useToast();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [formData, setFormData] = useState<Omit<Project, 'id' | 'image'> & {image: ImagePlaceholder | null}>({
+  
+  const initialFormData = {
     title: '',
-    category: 'Software',
+    category: 'Software' as 'IoT' | 'Hardware' | 'Software' | 'AI',
     price: 0,
-    image: null,
-    tags: [],
+    image: null as ImagePlaceholder | null,
+    tags: [] as string[],
     desc: '',
-  });
+  };
+  const [formData, setFormData] = useState<typeof initialFormData>(initialFormData);
 
   // Security check
   useEffect(() => {
@@ -95,13 +95,18 @@ export default function ProjectManagementPage() {
 
     const projectsCollection = collection(firestore, 'projects');
     const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
-      const fetchedProjects = snapshot.docs.map((doc) => {
-        const data = doc.data();
+      const fetchedProjects = snapshot.docs.map((doc, index) => {
+        const data = doc.data() as FirestoreProject;
         const imagePlaceholder = PlaceHolderImages.find(p => p.id === data.image) || PlaceHolderImages[0];
         return {
-          id: doc.id,
-          ...data,
+          docId: doc.id,
+          id: index + 1, // This is just for local array key, not DB id
+          title: data.title,
+          category: data.category,
+          price: data.price,
           image: imagePlaceholder,
+          tags: data.tags || [],
+          desc: data.desc,
         } as Project;
       });
       setProjects(fetchedProjects);
@@ -119,19 +124,16 @@ export default function ProjectManagementPage() {
     if (project) {
       setEditingProject(project);
       setFormData({
-        ...project,
+        title: project.title,
+        category: project.category,
+        price: project.price,
+        image: project.image,
         tags: project.tags || [],
+        desc: project.desc,
       });
     } else {
       setEditingProject(null);
-      setFormData({
-        title: '',
-        category: 'Software',
-        price: 0,
-        image: null,
-        tags: [],
-        desc: '',
-      });
+      setFormData(initialFormData);
     }
     setIsFormOpen(true);
   };
@@ -149,7 +151,7 @@ export default function ProjectManagementPage() {
         const selectedImage = PlaceHolderImages.find(p => p.id === value);
         setFormData(prev => ({...prev, image: selectedImage || null}));
     } else {
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value as any }));
     }
   };
 
@@ -176,7 +178,7 @@ export default function ProjectManagementPage() {
 
     try {
       if (editingProject) {
-        const projectRef = doc(firestore, 'projects', editingProject.id);
+        const projectRef = doc(firestore, 'projects', editingProject.docId);
         await updateDoc(projectRef, projectData);
         toast({ title: 'Project Updated', description: `"${formData.title}" has been updated.` });
       } else {
@@ -231,7 +233,7 @@ export default function ProjectManagementPage() {
           </TableHeader>
           <TableBody>
             {projects.map((project) => (
-              <TableRow key={project.id}>
+              <TableRow key={project.docId}>
                 <TableCell className="font-medium">{project.title}</TableCell>
                 <TableCell>{project.category}</TableCell>
                 <TableCell>${project.price.toFixed(2)}</TableCell>
@@ -250,7 +252,7 @@ export default function ProjectManagementPage() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(project.id)}>Confirm</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleDelete(project.docId)}>Confirm</AlertDialogAction>
                           </AlertDialogFooter>
                       </AlertDialogContent>
                   </AlertDialog>
@@ -268,11 +270,11 @@ export default function ProjectManagementPage() {
                 <DialogDescription>{editingProject ? 'Update the details for this project.' : 'Fill out the form to add a new project to the catalog.'}</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                <div className="space-y-4">
+                <div className="space-y-4 col-span-2 md:col-span-1">
                     <Input name="title" value={formData.title} onChange={handleFormChange} placeholder="Project Title" required />
-                    <Textarea name="desc" value={formData.desc} onChange={handleFormChange} placeholder="Project Description" required className="h-24" />
+                    <Textarea name="desc" value={formData.desc} onChange={handleFormChange} placeholder="Project Description" required className="h-40" />
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 col-span-2 md:col-span-1">
                     <Select name="category" value={formData.category} onValueChange={(value) => handleSelectChange('category', value)}>
                         <SelectTrigger><SelectValue/></SelectTrigger>
                         <SelectContent>
@@ -292,10 +294,10 @@ export default function ProjectManagementPage() {
                             ))}
                         </SelectContent>
                     </Select>
-                    <Input name="price" type="number" value={formData.price} onChange={handleFormChange} placeholder="Price" required />
+                    <Input name="price" type="number" step="0.01" value={formData.price} onChange={handleFormChange} placeholder="Price" required />
                     <Input name="tags" value={formData.tags.join(', ')} onChange={handleTagsChange} placeholder="Tags (comma-separated)" />
                 </div>
-                <DialogFooter className="col-span-full">
+                <DialogFooter className="col-span-2">
                     <DialogClose asChild>
                         <Button type="button" variant="outline">Cancel</Button>
                     </DialogClose>
@@ -307,6 +309,3 @@ export default function ProjectManagementPage() {
     </>
   );
 }
-
-
-    
