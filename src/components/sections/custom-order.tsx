@@ -178,7 +178,7 @@ const CustomOrder = () => {
                         </div>
                          <div className="flex items-center gap-2 mb-6">
                             <Checkbox id="custom-delivery" name="delivery" checked={wantsDelivery} onCheckedChange={(checked) => setWantsDelivery(checked as boolean)} />
-                            <Label htmlFor="custom-delivery" className="cursor-pointer text-sm">Delivery Required (+$25.00)</Label>
+                            <Label htmlFor="custom-delivery" className="cursor-pointer text-sm">Delivery</Label>
                         </div>
                         <div className="flex justify-end">
                              <Button type="submit" disabled={isSubmitting} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-800 transition-all">
