@@ -15,7 +15,7 @@ const steps = [
     {
         icon: Users,
         title: "Contact Our Experts",
-        description: "Have questions or a custom idea? Schedule a free consultation with our R&D team to discuss your project in detail.",
+        description: "Have questions or a custom idea? Schedule a 1-hour consultation for just ₹100 with our R&D team to discuss your project in detail.",
         href: '/schedule-meeting'
     },
     {

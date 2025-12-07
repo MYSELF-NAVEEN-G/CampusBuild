@@ -124,7 +124,7 @@ const CustomOrder = () => {
                                 <MessageSquare className="text-accent mr-2" />
                                 <span className="font-bold text-sm">Have Questions?</span>
                             </div>
-                            <p className="text-xs text-slate-400 mb-3">Book a 30-minute consultation with our experts for just ₹150 to discuss your idea in detail.</p>
+                            <p className="text-xs text-slate-400 mb-3">Book a 1-hour consultation for just ₹100 to discuss your idea in detail.</p>
                             <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-sm">
                                 <Link href="/schedule-meeting">
                                     Schedule a Meeting

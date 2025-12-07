@@ -103,7 +103,7 @@ export default function ScheduleMeetingPage() {
             preferredTime,
             assignedTo: 'Not Assigned',
             createdAt: serverTimestamp(),
-            fee: 150, // Add fee
+            fee: 100, // Add fee
             paymentInfo, // Add payment info
         };
 
@@ -188,7 +188,7 @@ export default function ScheduleMeetingPage() {
                     <div className="text-center">
                         <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Book a Consultation</h2>
                         <p className="mt-2 text-sm text-gray-600">
-                            Book a 30-minute one-on-one session with our R&D team to discuss your project in detail. The fee for this consultation is ₹150.
+                            Book a 1-hour one-on-one session with our R&D team to discuss your project in detail. The fee for this consultation is ₹100.
                         </p>
                     </div>
                     <Card className="p-6 sm:p-8 shadow-xl">
@@ -217,7 +217,7 @@ export default function ScheduleMeetingPage() {
                                         <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
                                     </div>
                                     <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                                        <Label className="text-xs font-medium text-slate-600" htmlFor="payment">Payment Details (₹150)</Label>
+                                        <Label className="text-xs font-medium text-slate-600" htmlFor="payment">Payment Details (₹100)</Label>
                                         <div className="relative">
                                             <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                             <Input 
@@ -236,7 +236,7 @@ export default function ScheduleMeetingPage() {
                                 </>
                             )}
                             <Button type="submit" disabled={isSubmitting} className="w-full">
-                                {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Book Now & Pay ₹150'}
+                                {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Book Now & Pay ₹100'}
                                 {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
                             </Button>
                         </form>
