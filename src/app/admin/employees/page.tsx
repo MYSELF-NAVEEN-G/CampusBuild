@@ -180,7 +180,7 @@ export default function EmployeeManagementPage() {
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold font-headline">Employee Management</h1>
+        <p>Add, edit, or remove employee records from the company database.</p>
         <Button onClick={() => openForm()}>
           <PlusCircle className="mr-2 h-4 w-4" /> Add New Employee
         </Button>
@@ -253,3 +253,5 @@ export default function EmployeeManagementPage() {
     </>
   );
 }
+
+    
