@@ -36,24 +36,26 @@ const HowItWorks = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                     {steps.map((step, index) => (
-                        <Link key={index} href={step.href} className="block h-full">
-                            <Card className="h-full bg-slate-50 border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-xl transition-all flex flex-col group">
-                                <CardHeader className="relative">
-                                    <div className="absolute -top-8 -right-4 w-12 h-12 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg font-headline">{index + 1}</div>
-                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
-                                        index === 0 ? 'bg-blue-100 text-blue-600' :
-                                        index === 1 ? 'bg-teal-100 text-teal-600' :
-                                        'bg-purple-100 text-purple-600'
-                                    }`}>
-                                        <step.icon className="w-8 h-8" />
-                                    </div>
-                                    <CardTitle className="text-xl font-bold text-slate-900 font-headline">{step.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="flex flex-col flex-1">
-                                    <p className="text-slate-600 text-sm leading-relaxed">{step.description}</p>
-                                </CardContent>
-                            </Card>
-                        </Link>
+                        <div key={index} className="h-full fade-in-up" style={{ animationDelay: `${index * 0.15}s` }}>
+                            <Link href={step.href} className="block h-full">
+                                <Card className="h-full bg-slate-50 border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-xl transition-all flex flex-col group">
+                                    <CardHeader className="relative">
+                                        <div className="absolute -top-8 -right-4 w-12 h-12 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg font-headline">{index + 1}</div>
+                                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
+                                            index === 0 ? 'bg-blue-100 text-blue-600' :
+                                            index === 1 ? 'bg-teal-100 text-teal-600' :
+                                            'bg-purple-100 text-purple-600'
+                                        }`}>
+                                            <step.icon className="w-8 h-8" />
+                                        </div>
+                                        <CardTitle className="text-xl font-bold text-slate-900 font-headline">{step.title}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-col flex-1">
+                                        <p className="text-slate-600 text-sm leading-relaxed">{step.description}</p>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        </div>
                     ))}
                 </div>
             </div>
