@@ -6,30 +6,35 @@ import Image from "next/image";
 import { ScrollArea } from "./ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { handleCheckout } from "@/app/actions";
+import { useState } from "react";
 
 const Cart = () => {
     const { isCartOpen, toggleCart, cart, removeFromCart, clearCart } = useAppContext();
     const { toast } = useToast();
+    const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
     const taxes = subtotal * 0.08;
     const total = subtotal + taxes;
 
-    const handleCheckout = () => {
-        console.log("--- New Order ---");
-        console.log("Items:", cart.map(item => ({ title: item.title, price: item.price })));
-        console.log("Subtotal:", subtotal.toFixed(2));
-        console.log("Taxes:", taxes.toFixed(2));
-        console.log("Total:", total.toFixed(2));
-        console.log("--- End of Order ---");
+    const onCheckout = async () => {
+        if (cart.length === 0) return;
+
+        setIsCheckingOut(true);
+        const result = await handleCheckout(cart);
+        setIsCheckingOut(false);
         
         toast({
-            title: "Order Placed!",
-            description: "A confirmation email with your bill details has been sent.",
+            title: result.success ? "Order Placed!" : "Error",
+            description: result.message,
+            variant: result.success ? "default" : "destructive",
         });
 
-        clearCart();
-        toggleCart();
+        if (result.success) {
+            clearCart();
+            toggleCart();
+        }
     };
 
     return (
@@ -71,7 +76,9 @@ const Cart = () => {
                                     <span>Total</span>
                                     <span>${total.toFixed(2)}</span>
                                 </div>
-                                <Button className="w-full mt-4" size="lg" onClick={handleCheckout}>Proceed to Checkout</Button>
+                                <Button className="w-full mt-4" size="lg" onClick={onCheckout} disabled={isCheckingOut}>
+                                    {isCheckingOut ? "Processing..." : "Proceed to Checkout"}
+                                </Button>
                             </div>
                         </SheetFooter>
                     </>

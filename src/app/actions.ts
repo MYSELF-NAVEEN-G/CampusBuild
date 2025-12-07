@@ -2,6 +2,7 @@
 "use server";
 
 import { generateProjectIdea } from "@/ai/flows/generate-project-idea-flow";
+import type { Project } from "@/lib/projects";
 
 export interface CustomOrderFormState {
   message: string;
@@ -64,4 +65,29 @@ export async function getAiResponse(topic: string): Promise<string> {
         console.error("Error generating project idea:", error);
         return "Sorry, I encountered an error while generating an idea. Please try again.";
     }
+}
+
+export async function handleCheckout(cart: Project[]): Promise<{success: boolean, message: string}> {
+    const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
+    const taxes = subtotal * 0.08;
+    const total = subtotal + taxes;
+
+    // --- SERVER-SIDE LOG ---
+    // This is where you would integrate an email sending service (e.g., SendGrid, Resend).
+    // The details are logged on the server, not the client's browser.
+    console.log("--- NEW ORDER RECEIVED (SERVER) ---");
+    console.log("Items:", cart.map(item => ({ title: item.title, price: item.price })));
+    console.log("Subtotal:", subtotal.toFixed(2));
+    console.log("Taxes:", taxes.toFixed(2));
+    console.log("Total:", total.toFixed(2));
+    console.log("--- END OF ORDER (SERVER) ---");
+    
+    // Simulate sending emails
+    console.log("Simulating: Sending customer confirmation email...");
+    console.log("Simulating: Sending admin notification email...");
+
+    return {
+        success: true,
+        message: "Order Placed! A confirmation email with your bill details has been sent.",
+    };
 }
