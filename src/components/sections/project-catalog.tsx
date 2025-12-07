@@ -15,6 +15,7 @@ const categories: Category[] = ['All', 'IoT', 'Hardware', 'Software', 'AI'];
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' | 'difficulty'> & {
   image: string;
   desc: string;
+  packageIncluded: string[];
 };
 
 const ProjectCatalog = () => {
@@ -41,6 +42,7 @@ const ProjectCatalog = () => {
                     image: data.image, // This will be the data URL or placeholder ID
                     tags: data.tags || [],
                     desc: data.desc,
+                    packageIncluded: data.packageIncluded || [],
                 } as ProjectType;
             });
             setProjects(fetchedProjects);

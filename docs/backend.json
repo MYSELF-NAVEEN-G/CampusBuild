@@ -42,6 +42,13 @@
         "description": {
           "type": "string",
           "description": "A brief description of the project."
+        },
+        "packageIncluded": {
+          "type": "array",
+          "description": "List of items included in the project package.",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [

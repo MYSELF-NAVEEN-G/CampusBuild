@@ -5,7 +5,7 @@ import type { Project } from '@/lib/projects';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, PackageCheck } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -65,7 +65,19 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             <CardContent className="p-5 flex-1 flex flex-col">
                 <CardTitle className="text-lg font-bold text-slate-900 mb-2 font-headline">{project.title}</CardTitle>
                 <CardDescription className="text-slate-500 text-sm mb-4 line-clamp-2">{project.desc}</CardDescription>
-                <div className="flex flex-wrap gap-2 mb-4 mt-auto">
+                
+                {project.packageIncluded && project.packageIncluded.length > 0 && (
+                  <div className="mb-4 text-xs text-slate-600">
+                    <h4 className="font-bold uppercase tracking-wider mb-2 flex items-center"><PackageCheck className="mr-2 h-4 w-4 text-primary" />Package Includes:</h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      {project.packageIncluded.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t">
                     {project.tags.slice(0, 3).map(tag => (
                         <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
                     ))}

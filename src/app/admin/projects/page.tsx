@@ -53,12 +53,13 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 
 // This is the type we'll use in the component state, which includes the Firestore document ID.
-type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string; desc: string; };
+type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string; desc: string; packageIncluded: string[] };
 
 // This is the type for the data stored in Firestore.
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' > & {
   image: string; // Storing image as a data URL string
   desc: string;
+  packageIncluded: string[];
 };
 
 export default function ProjectManagementPage() {
@@ -78,6 +79,7 @@ export default function ProjectManagementPage() {
     image: '', // Will hold data URL
     tags: [] as string[],
     desc: '',
+    packageIncluded: [] as string[],
   };
   const [formData, setFormData] = useState<typeof initialFormData>(initialFormData);
 
@@ -116,6 +118,7 @@ export default function ProjectManagementPage() {
           image: data.image,
           tags: data.tags || [],
           desc: data.desc,
+          packageIncluded: data.packageIncluded || [],
         } as Project;
       });
       setProjects(fetchedProjects);
@@ -139,6 +142,7 @@ export default function ProjectManagementPage() {
         image: project.image,
         tags: project.tags || [],
         desc: project.desc,
+        packageIncluded: project.packageIncluded || [],
       });
     } else {
       setEditingProject(null);
@@ -219,6 +223,10 @@ export default function ProjectManagementPage() {
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, tags: e.target.value.split(',').map(tag => tag.trim()) }));
   };
+  
+  const handlePackageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, packageIncluded: e.target.value.split('\n').map(item => item.trim()) }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -239,6 +247,7 @@ export default function ProjectManagementPage() {
       image: formData.image, // Store data URL
       tags: formData.tags,
       desc: formData.desc,
+      packageIncluded: formData.packageIncluded,
       updatedAt: serverTimestamp(),
     };
 
@@ -330,17 +339,21 @@ export default function ProjectManagementPage() {
       </div>
       
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
                 <DialogTitle className="font-headline text-2xl">{editingProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
                 <DialogDescription>{editingProject ? 'Update the details for this project.' : 'Fill out the form to add a new project to the catalog.'}</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                <div className="space-y-4 col-span-2 md:col-span-1">
+                <div className="space-y-4">
                     <Input name="title" value={formData.title} onChange={handleFormChange} placeholder="Project Title" required />
-                    <Textarea name="desc" value={formData.desc} onChange={handleFormChange} placeholder="Project Description" required className="h-40" />
+                    <Textarea name="desc" value={formData.desc} onChange={handleFormChange} placeholder="Project Description" required className="h-24" />
+                    <div>
+                        <Label htmlFor="packageIncluded">Package Included (one item per line)</Label>
+                        <Textarea id="packageIncluded" name="packageIncluded" value={formData.packageIncluded.join('\n')} onChange={handlePackageChange} placeholder="e.g.,&#10;Hardware Kit&#10;Source Code&#10;Assembly Guide" required className="h-28 mt-1" />
+                    </div>
                 </div>
-                <div className="space-y-4 col-span-2 md:col-span-1">
+                <div className="space-y-4">
                     <Select name="category" value={formData.category} onValueChange={(value) => handleSelectChange('category', value)}>
                         <SelectTrigger><SelectValue/></SelectTrigger>
                         <SelectContent>
