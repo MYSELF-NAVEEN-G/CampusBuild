@@ -1,0 +1,119 @@
+/**
+ * This Firestore Security Ruleset is designed for the NAFON AI Lab application,
+ * focusing on a prototyping model that prioritizes strong authorization while
+ * maintaining flexibility in data shapes for rapid development.
+ *
+ * Core Philosophy:
+ * The security model enforces a clear separation between public and private data.
+ * Public data, such as the project catalog, is readable by anyone, but write
+ * operations are strictly locked down to prevent unauthorized modifications.
+ * User-specific data, like custom project orders, is protected using a strict
+ * path-based ownership model, ensuring users can only access their own information.
+ *
+ * Data Structure:
+ * The data is organized into two main collections:
+ * 1. /projects/{projectId}: A top-level collection containing publicly readable
+ *    project information.
+ * 2. /users/{userId}/customOrders/{customOrderId}: A subcollection where each
+ *    user's private custom order requests are stored, secured by their unique
+ *    user ID in the path.
+ *
+ * Key Security Decisions:
+ * - Public Project Catalog: The `/projects` collection is world-readable to allow
+ *   all visitors to browse project offerings. Write access is currently disabled
+ *   as an administrative role has not yet been defined in the application's logic.
+ * - Strict User Ownership: All data under `/users/{userId}` is strictly owned
+ *   by the user corresponding to `{userId}`. This prevents any user from reading
+ *   or writing another user's private data.
+ * - No User Enumeration: Direct access to user documents (`/users/{userId}`) is
+ *   denied to protect user privacy and prevent listing of all application users.
+ *
+ * Denormalization for Authorization:
+ * This ruleset primarily relies on path-based authorization for user data, which
+ * is highly performant and avoids costly `get()` calls. For example, access to a
+ * custom order at `/users/USER_A/customOrders/ORDER_1` is granted simply by
+ * checking if the authenticated user's ID is 'USER_A'.
+ *
+ * Structural Segregation:
+ * The design correctly segregates public data (`/projects`) from private user data
+ * (`/users/{userId}/customOrders`), ensuring that private information cannot be
+ * accidentally exposed through list queries on public collections.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions to improve readability and reuse of logic.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // A robust check for update/delete operations ensuring the user is the
+    // owner AND the document actually exists.
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description
+     *   Secures the top-level project catalog. All users, including anonymous
+     *   ones, can read the list of projects and view project details.
+     *   Writes are currently disabled until an admin role is implemented.
+     * @path /projects/{projectId}
+     * @allow (get) Any user can read a specific project document.
+     * @deny (create) An authenticated user cannot create a new project.
+     * @principle Public read access for catalog data with locked-down writes.
+     */
+    match /projects/{projectId} {
+      allow get, list: if true;
+
+      // CRITICAL: Write access is disabled. The application's data model
+      // describes "admin-only" writes but does not define an admin role. To
+      // maintain security, all write operations are denied by default.
+      // TODO: Implement an admin-check function (e.g., using custom claims)
+      // and apply it here to enable content management.
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description
+     *   Protects user profile documents. This rule prevents any user,
+     *   including the owner, from reading, listing, or writing directly to
+     *   the root user document. This enhances privacy by preventing user enumeration.
+     * @path /users/{userId}
+     * @allow (none) No operations are permitted.
+     * @deny (get) A user cannot read another user's root document.
+     * @principle Enforces privacy by preventing user enumeration.
+     */
+    match /users/{userId} {
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description
+     *   Enforces ownership for custom order documents. A user can only access
+     *   custom orders that are located under their own user ID path.
+     * @path /users/{userId}/customOrders/{customOrderId}
+     * @allow (create) An authenticated user can create a custom order for themselves.
+     * @deny (get) A user cannot read a custom order belonging to another user.
+     * @principle Restricts access to a user's own data tree (path-based ownership).
+     */
+    match /users/{userId}/customOrders/{customOrderId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

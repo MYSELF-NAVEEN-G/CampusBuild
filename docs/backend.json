@@ -1,94 +1,149 @@
 {
   "entities": {
-    "UserProfile": {
-      "title": "User Profile",
-      "description": "Represents a user's profile information.",
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
       "type": "object",
+      "description": "Represents a project, either pre-existing or custom-built.",
       "properties": {
-        "name": {
+        "id": {
           "type": "string",
-          "description": "The user's full name."
+          "description": "Unique identifier for the project."
         },
-        "email": {
+        "title": {
           "type": "string",
-          "format": "email",
-          "description": "The user's email address."
+          "description": "The title of the project."
         },
-        "phone": {
+        "category": {
           "type": "string",
-          "description": "The user's phone number."
-        }
-      },
-      "required": ["name", "email"]
-    },
-    "Order": {
-      "title": "Order",
-      "description": "Represents a customer's order.",
-      "type": "object",
-      "properties": {
-        "customerName": {
-          "type": "string"
+          "description": "The category the project belongs to (e.g., IoT, Hardware, Software, AI)."
         },
-        "customerEmail": {
+        "price": {
+          "type": "number",
+          "description": "The price of the project."
+        },
+        "difficulty": {
           "type": "string",
-          "format": "email"
+          "description": "The difficulty level of the project (e.g., Beginner, Intermediate, Advanced)."
         },
-        "customerPhone": {
-          "type": "string"
+        "image": {
+          "type": "string",
+          "description": "URL or path to the project's image.",
+          "format": "uri"
         },
-        "items": {
+        "tags": {
           "type": "array",
+          "description": "Keywords associated with the project.",
           "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "number"
-              },
-              "title": {
-                "type": "string"
-              },
-              "price": {
-                "type": "number"
-              }
-            }
+            "type": "string"
           }
         },
-        "subtotal": {
-          "type": "number"
-        },
-        "taxes": {
-          "type": "number"
-        },
-        "total": {
-          "type": "number"
-        },
-        "createdAt": {
+        "description": {
           "type": "string",
-          "format": "date-time"
-        },
-        "status": {
-          "type": "string",
-          "enum": ["pending", "processing", "completed", "cancelled"]
+          "description": "A brief description of the project."
         }
       },
-      "required": ["customerName", "customerEmail", "items", "total", "createdAt", "status"]
+      "required": [
+        "id",
+        "title",
+        "category",
+        "price",
+        "difficulty",
+        "description"
+      ]
+    },
+    "CustomOrder": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CustomOrder",
+      "type": "object",
+      "description": "Represents a custom order request from a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the custom order request."
+        },
+        "fullName": {
+          "type": "string",
+          "description": "The full name of the user placing the order."
+        },
+        "contactEmail": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "projectTitle": {
+          "type": "string",
+          "description": "The user-provided title or concept for the project."
+        },
+        "domain": {
+          "type": "string",
+          "description": "The domain or category of the project (e.g., Embedded Systems, IoT)."
+        },
+        "deadline": {
+          "type": "string",
+          "description": "The requested deadline for the project completion.",
+          "format": "date-time"
+        },
+        "detailedRequirements": {
+          "type": "string",
+          "description": "A detailed description of the project requirements and specifications."
+        }
+      },
+      "required": [
+        "id",
+        "fullName",
+        "contactEmail",
+        "projectTitle",
+        "domain",
+        "detailedRequirements"
+      ]
     }
   },
   "auth": {
-    "providers": ["anonymous"]
+    "providers": [
+      "password",
+      "anonymous"
+    ]
   },
   "firestore": {
-    "/orders/{orderId}": {
-      "schema": {
-        "$ref": "#/entities/Order"
+    "structure": [
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Stores project data for the application. Anyone can read the projects, and only admins can create or modify them.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "Unique identifier for the project."
+            }
+          ]
+        }
       },
-      "description": "Stores individual order details."
-    },
-    "/users/{userId}": {
-      "schema": {
-        "$ref": "#/entities/UserProfile"
-      },
-      "description": "Stores user profile information."
-    }
+      {
+        "path": "/users/{userId}/customOrders/{customOrderId}",
+        "definition": {
+          "entityName": "CustomOrder",
+          "schema": {
+            "$ref": "#/backend/entities/CustomOrder"
+          },
+          "description": "Stores custom order requests submitted by users. Path-based ownership, authorization depends on `request.auth.uid == userId`.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier of the user who placed the order."
+            },
+            {
+              "name": "customOrderId",
+              "description": "Unique identifier for the custom order request."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed to manage project data and custom orders for the NAFON AI Lab application, ensuring security, scalability, and efficient data retrieval. It is tailored to support features like browsing projects, submitting custom orders, and leveraging AI assistance. The design follows the core principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), QAPs (Rules are not Filters), and Invariants.\n\n**Authorization Independence:** Authorization Independence is achieved through path-based ownership for user-submitted data and the exclusion of authorization-dependent `get()` calls in security rules. This is because the application relies on public data, and the users only have access to create their custom orders, stored via path-based ownership.\n\n**DBAC:** The application does not require specific roles besides the user's own id, since it handles public data and custom orders which can be managed with rules based on `request.auth.uid`.\n\n**QAPs:** The structure supports secure `list` operations because the data is segregated. The projects are global and do not rely on user ownership. The custom orders are stored by path-based ownership and can be filtered using the user ID, not relying on filtering the data in the security rules."
   }
 }
