@@ -85,6 +85,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .ReactCrop__crop-selection {
+    @apply border-2 border-dashed border-white;
+  }
 }
 
 @layer utilities {
