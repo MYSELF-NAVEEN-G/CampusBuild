@@ -1,15 +1,76 @@
 'use client';
-import { useState } from 'react';
-import { projects } from '@/lib/projects';
+import { useEffect, useState } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { useFirebase } from '@/firebase';
+import type { Project as ProjectType } from '@/lib/projects';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 import ProjectCard from '@/components/project-card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Category = 'All' | 'IoT' | 'Hardware' | 'Software' | 'AI';
 const categories: Category[] = ['All', 'IoT', 'Hardware', 'Software', 'AI'];
 
+type FirestoreProject = Omit<ProjectType, 'id' | 'image' | 'difficulty'> & {
+  image: string; // Storing image by its ID
+  desc: string;
+};
+
 const ProjectCatalog = () => {
+    const { firestore } = useFirebase();
+    const [projects, setProjects] = useState<ProjectType[]>([]);
+    const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<Category>('All');
+
+    useEffect(() => {
+        if (!firestore) return;
+
+        setLoading(true);
+        const projectsCollection = collection(firestore, 'projects');
+        const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
+            const fetchedProjects = snapshot.docs.map((doc, index) => {
+                const data = doc.data() as FirestoreProject;
+                const imagePlaceholder = PlaceHolderImages.find(p => p.id === data.image) || PlaceHolderImages[0];
+                
+                return {
+                    id: doc.id.hashCode(), // Using a simple hash of doc id for a temporary numeric id
+                    docId: doc.id,
+                    title: data.title,
+                    category: data.category,
+                    price: data.price,
+                    image: imagePlaceholder,
+                    tags: data.tags || [],
+                    desc: data.desc,
+                } as ProjectType;
+            });
+            setProjects(fetchedProjects);
+            setLoading(false);
+        }, (error) => {
+            console.error('Error fetching projects:', error);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [firestore]);
+    
+    // Add a simple hashCode function to String prototype for temporary unique numeric IDs
+    // This is not cryptographically secure, just for component keys.
+    useEffect(() => {
+        Object.defineProperty(String.prototype, "hashCode", {
+            value: function() {
+                var hash = 0, i, chr;
+                if (this.length === 0) return hash;
+                for (i = 0; i < this.length; i++) {
+                    chr   = this.charCodeAt(i);
+                    hash  = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+                return hash;
+            }
+        });
+    }, []);
+
 
     const filteredProjects = filter === 'All' ? projects : projects.filter(p => p.category === filter);
 
@@ -38,13 +99,27 @@ const ProjectCatalog = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {filteredProjects.map((project, index) => (
-                        <div key={project.id} className="fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                            <ProjectCard project={project} />
-                        </div>
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, i) => (
+                           <div key={i} className="flex flex-col space-y-3">
+                               <Skeleton className="h-[200px] w-full rounded-xl" />
+                               <div className="space-y-2">
+                                   <Skeleton className="h-4 w-3/4" />
+                                   <Skeleton className="h-4 w-1/2" />
+                               </div>
+                           </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {filteredProjects.map((project, index) => (
+                            <div key={project.id} className="fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                                <ProjectCard project={project} />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );
