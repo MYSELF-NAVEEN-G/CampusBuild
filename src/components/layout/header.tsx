@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const Header = () => {
-  const { cart, toggleCart } = useAppContext();
+  const { cart, toggleCart, addToCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -62,7 +62,7 @@ const Header = () => {
             <Button asChild className="hidden sm:flex">
               <Link href="/schedule-meeting">
                 <MessageSquare className="mr-2 h-4 w-4" />
-                Book Consultation (₹100)
+                Get Idea
               </Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
@@ -92,7 +92,7 @@ const Header = () => {
             <Button asChild className="w-4/5">
               <Link href="/schedule-meeting">
                 <MessageSquare className="mr-2 h-4 w-4" />
-                Book Consultation (₹100)
+                Get Idea
               </Link>
             </Button>
           </nav>
