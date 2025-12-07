@@ -5,7 +5,7 @@ import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'NAFON Project Hub | Innovation & Research Lab',
+  title: 'CampusBuild Solution | Innovation & Research Lab',
   description: 'From Idea to Prototype. Your Innovation Partner.',
 };
 

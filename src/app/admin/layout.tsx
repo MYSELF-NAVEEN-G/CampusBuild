@@ -88,7 +88,7 @@ export default function AdminLayout({
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">
-                  NAFON
+                  CampusBuild
                 </h1>
                 <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">
                   Admin

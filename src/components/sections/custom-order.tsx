@@ -131,7 +131,7 @@ const CustomOrder = () => {
                                 <Lightbulb className="text-yellow-400 mr-2" />
                                 <span className="font-bold text-sm">Need Ideas?</span>
                             </div>
-                            <p className="text-xs text-slate-400 mb-3">Use the NAFON AI Assistant (powered by Gemini) to generate a project abstract before ordering.</p>
+                            <p className="text-xs text-slate-400 mb-3">Use the CampusBuild AI Assistant (powered by Gemini) to generate a project abstract before ordering.</p>
                             <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-sm" onClick={openAiChat}>
                                 Ask AI Assistant
                             </Button>

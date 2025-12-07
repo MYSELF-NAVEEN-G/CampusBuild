@@ -164,8 +164,8 @@ export default function ScheduleMeetingPage() {
                                 <FlaskConical className="text-accent" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">NAFON</h1>
-                                <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Project Hub</p>
+                                <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">CampusBuild</h1>
+                                <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Solution</p>
                             </div>
                         </Link>
                         <Button asChild variant="outline">

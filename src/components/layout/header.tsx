@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAppContext } from '@/context/app-context';
@@ -44,8 +45,8 @@ const Header = () => {
               <FlaskConical className="text-accent" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">NAFON</h1>
-              <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Project Hub</p>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">CampusBuild</h1>
+              <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Solution</p>
             </div>
           </div>
           <nav className="hidden md:flex space-x-8">

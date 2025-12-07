@@ -1,3 +1,4 @@
+
 'use client';
 import { FlaskConical } from 'lucide-react';
 
@@ -17,7 +18,7 @@ const Footer = () => {
         <div>
           <div className="flex items-center mb-4 text-white">
             <FlaskConical className="text-primary text-2xl mr-2" />
-            <span className="font-bold text-xl font-headline">NAFON</span>
+            <span className="font-bold text-xl font-headline">CampusBuild</span>
           </div>
           <p className="text-sm">Bridging the gap between theory and application. We provide high-quality engineering solutions.</p>
         </div>
@@ -31,8 +32,8 @@ const Footer = () => {
         </div>
         <div>
           <h4 className="text-white font-bold mb-4 font-headline">Contact</h4>
-          <p className="text-sm mb-2">support@nafonhub.com</p>
-          <p className="text-xs text-slate-500">© 2025 NAFON Project Hub.</p>
+          <p className="text-sm mb-2">support@campusbuild.com</p>
+          <p className="text-xs text-slate-500">© 2025 CampusBuild Solution.</p>
         </div>
       </div>
     </footer>

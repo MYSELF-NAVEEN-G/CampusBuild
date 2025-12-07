@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/app-context';
@@ -18,7 +19,7 @@ const AiAssistant = () => {
     const [messages, setMessages] = useState<Message[]>([
         {
             sender: 'ai',
-            text: "Hi! I'm NAFON AI (powered by Gemini). I can help you find projects or generate ideas for a custom build. Try asking about 'Smart Parking' or 'Power Generation'!",
+            text: "Hi! I'm CampusBuild AI (powered by Gemini). I can help you find projects or generate ideas for a custom build. Try asking about 'Smart Parking' or 'Power Generation'!",
         },
     ]);
     const [input, setInput] = useState('');
@@ -64,7 +65,7 @@ const AiAssistant = () => {
                     <div className="flex items-center">
                         <Bot className="mr-2 text-accent" />
                         <div>
-                            <h3 className="font-bold text-sm font-headline">NAFON AI Assistant</h3>
+                            <h3 className="font-bold text-sm font-headline">CampusBuild AI Assistant</h3>
                             <p className="text-[10px] opacity-70 font-code">RUNNING GEMINI MODEL</p>
                         </div>
                     </div>
