@@ -25,6 +25,15 @@ const Cart = () => {
     const taxes = subtotal * 0.08;
     const total = subtotal + taxes;
 
+    const getMinDeadline = () => {
+        const hasHardwareOrIoT = cart.some(item => item.category === 'Hardware' || item.category === 'IoT');
+        const minDays = hasHardwareOrIoT ? 8 : 6;
+        
+        const today = new Date();
+        today.setDate(today.getDate() + minDays);
+        return today.toISOString().split('T')[0];
+    };
+
     const onCheckout = async (customerDetails: { name: string; email: string; phone: string; deadline: string }) => {
         if (cart.length === 0 || !firestore) {
             toast({ title: "Error", description: "Cart is empty or database is not available.", variant: "destructive" });
@@ -139,6 +148,7 @@ const Cart = () => {
                 onClose={() => setShowCheckoutForm(false)}
                 onSubmit={onCheckout}
                 isSubmitting={isCheckingOut}
+                minDeadlineDate={getMinDeadline()}
             />
         </>
     );

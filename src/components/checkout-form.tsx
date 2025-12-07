@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,20 +14,21 @@ interface CheckoutFormProps {
   onClose: () => void;
   onSubmit: (details: { name: string; email: string; phone: string; deadline: string }) => void;
   isSubmitting: boolean;
+  minDeadlineDate: string;
 }
 
-const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting }: CheckoutFormProps) => {
+const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate }: CheckoutFormProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [deadline, setDeadline] = useState('');
   const [error, setError] = useState('');
 
-  const getMinDate = () => {
-    const today = new Date();
-    today.setDate(today.getDate() + 10);
-    return today.toISOString().split('T')[0];
-  };
+  useEffect(() => {
+    if (isOpen) {
+      setDeadline('');
+    }
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +62,7 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting }: CheckoutFormP
           </div>
           <div className="space-y-2">
             <Label htmlFor="deadline">Requested Deadline</Label>
-            <Input id="deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={getMinDate()} required />
+            <Input id="deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={minDeadlineDate} required />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>

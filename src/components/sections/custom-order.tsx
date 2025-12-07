@@ -19,10 +19,25 @@ const CustomOrder = () => {
     const { firestore } = useFirebase();
     const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [domain, setDomain] = useState('iot');
 
     const getMinDate = () => {
+        let minDays;
+        switch (domain) {
+            case 'embedded':
+            case 'iot':
+            case 'power':
+                minDays = 8;
+                break;
+            case 'software':
+            case 'ai':
+                minDays = 6;
+                break;
+            default:
+                minDays = 8;
+        }
         const today = new Date();
-        today.setDate(today.getDate() + 10);
+        today.setDate(today.getDate() + minDays);
         return today.toISOString().split('T')[0];
     };
 
@@ -67,6 +82,7 @@ const CustomOrder = () => {
                 description: "Your request has been received. An expert will contact you shortly to follow up.",
             });
             (event.target as HTMLFormElement).reset();
+            setDomain('iot');
         } catch (error) {
             console.error("Error submitting custom order:", error);
             // This will emit a detailed error for the developer overlay
@@ -131,7 +147,7 @@ const CustomOrder = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Domain</label>
-                                <Select name="domain" defaultValue="iot">
+                                <Select name="domain" value={domain} onValueChange={setDomain}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a domain" />
                                     </SelectTrigger>
