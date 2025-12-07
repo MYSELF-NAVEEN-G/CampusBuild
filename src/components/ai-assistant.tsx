@@ -136,9 +136,6 @@ const AiAssistant = () => {
                 aria-label="Toggle AI Assistant"
             >
                 <Bot className="h-8 w-8" />
-                {!isChatOpen && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
-                )}
             </Button>
         </div>
     );
