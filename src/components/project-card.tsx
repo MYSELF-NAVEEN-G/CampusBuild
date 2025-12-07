@@ -9,6 +9,7 @@ import { Plus, PackageCheck } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 
 interface ProjectCardProps {
     project: Project;
@@ -46,50 +47,88 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     }
 
     return (
-        <Card className="h-full flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
-            <CardHeader className="p-0">
-                <div className="relative h-48 overflow-hidden group">
-                    <Image
-                        src={imageUrl}
-                        alt={imageDescription}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        data-ai-hint={imageHint}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <Badge variant="secondary" className="absolute top-3 right-3 bg-white/90 backdrop-blur">
-                        {project.category}
-                    </Badge>
-                </div>
-            </CardHeader>
-            <CardContent className="p-5 flex-1 flex flex-col">
-                <CardTitle className="text-lg font-bold text-slate-900 mb-2 font-headline">{project.title}</CardTitle>
-                <CardDescription className="text-slate-500 text-sm mb-4 line-clamp-2">{project.desc}</CardDescription>
-                
-                {project.packageIncluded && project.packageIncluded.length > 0 && (
-                  <div className="mb-4 text-xs text-slate-600">
-                    <h4 className="font-bold uppercase tracking-wider mb-2 flex items-center"><PackageCheck className="mr-2 h-4 w-4 text-primary" />Package Includes:</h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {project.packageIncluded.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+        <Dialog>
+            <Card className="h-full flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
+                <DialogTrigger asChild>
+                    <div className="cursor-pointer">
+                        <CardHeader className="p-0">
+                            <div className="relative h-48 overflow-hidden group">
+                                <Image
+                                    src={imageUrl}
+                                    alt={imageDescription}
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                    data-ai-hint={imageHint}
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                />
+                                <Badge variant="secondary" className="absolute top-3 right-3 bg-white/90 backdrop-blur">
+                                    {project.category}
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-5 flex-1 flex flex-col">
+                            <CardTitle className="text-lg font-bold text-slate-900 mb-2 font-headline">{project.title}</CardTitle>
+                            <CardDescription className="text-slate-500 text-sm mb-4 line-clamp-2">{project.desc}</CardDescription>
+                            
+                             <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t">
+                                {project.tags.slice(0, 3).map(tag => (
+                                    <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </div>
+                </DialogTrigger>
+                <CardFooter className="p-5 flex items-center justify-between border-t mt-auto">
+                    <span className="text-xl font-bold text-slate-800">₹{project.price.toFixed(2)}</span>
+                    <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10" onClick={handleAddToCart}>
+                        Add to Order <Plus className="ml-1 h-4 w-4" />
+                    </Button>
+                </CardFooter>
+            </Card>
 
-                <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t">
-                    {project.tags.slice(0, 3).map(tag => (
-                        <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
-                    ))}
+            <DialogContent className="sm:max-w-3xl">
+                <DialogHeader>
+                    <div className="relative h-64 rounded-lg overflow-hidden mb-4">
+                        <Image src={imageUrl} alt={project.title} fill className="object-cover" />
+                    </div>
+                    <DialogTitle className="text-3xl font-bold font-headline">{project.title}</DialogTitle>
+                    <DialogDescription className="text-base text-slate-600 pt-2">{project.desc}</DialogDescription>
+                </DialogHeader>
+                <div className="py-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {project.packageIncluded && project.packageIncluded.length > 0 && (
+                      <div className="text-sm text-slate-700">
+                        <h4 className="font-bold uppercase tracking-wider mb-3 flex items-center text-slate-800"><PackageCheck className="mr-2 h-5 w-5 text-primary" />Package Includes</h4>
+                        <ul className="space-y-2 list-disc list-inside bg-slate-50 p-4 rounded-lg border">
+                          {project.packageIncluded.map((item, index) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <div className="text-sm">
+                        <h4 className="font-bold uppercase tracking-wider mb-3 text-slate-800">Details</h4>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-slate-500">Category</span>
+                                <Badge variant="secondary">{project.category}</Badge>
+                            </div>
+                             <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
+                                <span className="text-slate-500 mr-2">Tags:</span>
+                                {project.tags.map(tag => (
+                                    <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </CardContent>
-            <CardFooter className="p-5 flex items-center justify-between border-t">
-                <span className="text-xl font-bold text-slate-800">₹{project.price.toFixed(2)}</span>
-                <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10" onClick={handleAddToCart}>
-                    Add to Order <Plus className="ml-1 h-4 w-4" />
-                </Button>
-            </CardFooter>
-        </Card>
+                <DialogFooter className="border-t pt-6 flex items-center justify-between sm:justify-between">
+                    <span className="text-2xl font-extrabold text-slate-900">₹{project.price.toFixed(2)}</span>
+                    <Button size="lg" onClick={handleAddToCart}>
+                        Add to Order <Plus className="ml-2 h-4 w-4" />
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 
