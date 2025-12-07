@@ -5,10 +5,7 @@ import {
   collection,
   onSnapshot,
   doc,
-  addDoc,
   updateDoc,
-  deleteDoc,
-  serverTimestamp,
   Timestamp,
 } from 'firebase/firestore';
 import { useFirebase, useUser } from '@/firebase';
@@ -21,18 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/dialog';
+import { Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,10 +43,16 @@ interface Consultation {
   createdAt: Timestamp;
 }
 
+interface Employee {
+  id: string;
+  name: string;
+}
+
 export default function ConsultationManagementPage() {
   const { firestore } = useFirebase();
   const { user } = useUser();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
@@ -68,7 +62,7 @@ export default function ConsultationManagementPage() {
     if (!firestore) return;
 
     const consultationsCollection = collection(firestore, 'consultations');
-    const unsubscribe = onSnapshot(consultationsCollection, (snapshot) => {
+    const unsubscribeConsultations = onSnapshot(consultationsCollection, (snapshot) => {
       const fetchedConsultations = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -81,8 +75,25 @@ export default function ConsultationManagementPage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [firestore, toast]);
+    let unsubscribeEmployees = () => {};
+    if (isSuperAdmin) {
+        const employeesCollection = collection(firestore, 'employees');
+        unsubscribeEmployees = onSnapshot(employeesCollection, (snapshot) => {
+            const fetchedEmployees = snapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name })) as Employee[];
+            setEmployees(fetchedEmployees);
+        }, (error) => {
+            console.error("Error fetching employees:", error);
+            // This toast is important for debugging if the super admin can't fetch employees
+            toast({ title: "Employee Fetch Error", description: "Could not fetch employee list for assignment.", variant: 'destructive' });
+        });
+    }
+
+
+    return () => {
+        unsubscribeConsultations();
+        unsubscribeEmployees();
+    };
+  }, [firestore, toast, isSuperAdmin]);
 
   const handleUpdateConsultation = async (consultationId: string, updates: Partial<Consultation>) => {
     if (!firestore) return;
@@ -138,12 +149,21 @@ export default function ConsultationManagementPage() {
                 <TableCell>{consultation.preferredTime}</TableCell>
                 <TableCell>
                   {isSuperAdmin ? (
-                    <Input
-                      type="text"
-                      defaultValue={consultation.assignedTo}
-                      onBlur={(e) => handleUpdateConsultation(consultation.id, { assignedTo: e.target.value })}
-                      placeholder="Assign to..."
-                    />
+                    <Select
+                        value={consultation.assignedTo}
+                        onValueChange={(value) => handleUpdateConsultation(consultation.id, { assignedTo: value })}
+                        disabled={!isSuperAdmin}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Assign to..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Not Assigned">Not Assigned</SelectItem>
+                            {employees.map(emp => (
+                                <SelectItem key={emp.id} value={emp.name}>{emp.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                   ) : (
                     <span>{consultation.assignedTo || 'Not Assigned'}</span>
                   )}
