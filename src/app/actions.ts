@@ -2,6 +2,8 @@
 "use server";
 
 import { generateProjectIdea } from "@/ai/flows/generate-project-idea-flow";
+import { initializeFirebase } from "@/firebase/server";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 export interface CustomOrderFormState {
   message: string;
@@ -34,23 +36,41 @@ export async function submitCustomOrder(
   prevState: CustomOrderFormState,
   formData: FormData
 ): Promise<CustomOrderFormState> {
-  // This is a demo. In a real app, you would process the form data,
-  // save it to a database, and send notifications.
-  console.log("Custom Order Submitted:");
-  console.log({
-    fullName: formData.get("fullName"),
-    email: formData.get("email"),
+  const { firestore } = initializeFirebase();
+  
+  const customOrderData = {
+    customerName: formData.get("fullName"),
+    customerEmail: formData.get("email"),
     projectTitle: formData.get("projectTitle"),
     domain: formData.get("domain"),
-    deadline: formData.get("deadline"),
-    requirements: formData.get("requirements"),
-  });
-
-  return {
-    message: "Request Submitted! An expert will contact you.",
-    success: true,
+    deadline: formData.get("deadline") || '',
+    detailedRequirements: formData.get("detailedRequirements"),
+    isCustomOrder: true,
+    createdAt: serverTimestamp(),
+    status: 'Not Completed',
+    assigned: 'Not Assigned',
+    // Customer phone isn't on this form, so we'll leave it out
+    customerPhone: '', 
   };
+
+  try {
+    const ordersCollection = collection(firestore, 'orders');
+    await addDoc(ordersCollection, customOrderData);
+    
+    return {
+      message: "Request Submitted! An expert will contact you.",
+      success: true,
+    };
+
+  } catch (error) {
+    console.error("Error submitting custom order:", error);
+    return {
+      message: "There was a server error submitting your request. Please try again later.",
+      success: false,
+    };
+  }
 }
+
 
 export async function getAiResponse(topic: string): Promise<string> {
     if (!topic) {

@@ -9,25 +9,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, FlaskConical, LogOut } from 'lucide-react';
+import { ArrowLeft, FlaskConical, LogOut, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 
+interface OrderItem {
+  id: string;
+  title: string;
+  price: number;
+}
 
 interface Order {
   id: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  items: { id: string; title: string; price: number }[];
-  total: number;
+  items?: OrderItem[]; // For catalog orders
+  total?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
   assigned: string;
   deadline: string;
+  // Fields for custom orders
+  projectTitle?: string;
+  domain?: string;
+  detailedRequirements?: string;
+  isCustomOrder?: boolean;
 }
 
 export default function AdminPage() {
@@ -38,39 +49,35 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
-    if (!firestore) return;
-    try {
-      const orderRef = doc(firestore, 'orders', orderId);
-      await updateDoc(orderRef, updates);
-      return { success: true, message: 'Order updated successfully' };
-    } catch (error: any) {
-      console.error("Error updating order status:", error);
-      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `orders/${orderId}`, operation: 'update', requestResourceData: updates }));
-      return { success: false, message: 'Failed to update order. Check permissions.' };
-    }
-  };
-
-
   useEffect(() => {
-    // Wait until user loading is complete
     if (isUserLoading) {
       setLoading(true);
       return;
     }
 
-    // After loading, check for user and admin status
-    if (!user || user.email !== 'nafonstudios@gmail.com') {
-      toast({
-        title: "Access Denied",
-        description: "You must be an admin to view this page.",
-        variant: "destructive",
-      });
-      router.push('/schedule-meeting');
-      return; // Stop execution if not an admin
+    if (!user) {
+      if (!isUserLoading) {
+        toast({
+          title: "Access Denied",
+          description: "You must be an admin to view this page.",
+          variant: "destructive",
+        });
+        router.push('/schedule-meeting');
+      }
+      return;
+    }
+    
+    if (user.email !== 'nafonstudios@gmail.com') {
+        toast({
+            title: "Access Denied",
+            description: "You do not have permission to view this page.",
+            variant: "destructive",
+        });
+        router.push('/');
+        return;
     }
 
-    // Now that we are an authenticated admin, we can listen for data.
+
     if (!firestore) {
       setLoading(false);
       return;
@@ -97,52 +104,52 @@ export default function AdminPage() {
     return () => unsubscribe();
   }, [firestore, user, isUserLoading, router, toast]);
 
-  const handleStatusChange = async (orderId: string, status: 'Completed' | 'Not Completed') => {
-    const result = await handleUpdateOrder(orderId, { status });
-    toast({
-      title: result.success ? 'Success' : 'Error',
-      description: result.message,
-      variant: result.success ? 'default' : 'destructive',
-    });
+  const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
+    if (!firestore) return;
+    try {
+      const orderRef = doc(firestore, 'orders', orderId);
+      await updateDoc(orderRef, updates);
+      toast({
+        title: 'Success',
+        description: 'Order updated successfully.',
+      });
+    } catch (error: any) {
+      console.error("Error updating order:", error);
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `orders/${orderId}`, operation: 'update', requestResourceData: updates }));
+      toast({
+        title: 'Error',
+        description: 'Failed to update order. Check permissions.',
+        variant: 'destructive',
+      });
+    }
   };
-
-  const handleAssignedChange = async (orderId: string, assigned: string) => {
-    const result = await handleUpdateOrder(orderId, { assigned });
-    toast({
-      title: result.success ? 'Success' : 'Error',
-      description: result.message,
-      variant: result.success ? 'default' : 'destructive',
-    });
-  };
-
-  const handleDeadlineChange = async (orderId: string, deadline: string) => {
-    const result = await handleUpdateOrder(orderId, { deadline });
-    toast({
-      title: result.success ? 'Success' : 'Error',
-      description: result.message,
-      variant: result.success ? 'default' : 'destructive',
-    });
-  }
 
   const handleLogout = async () => {
     if (!auth) return;
-    await signOut(auth);
-    toast({
-      title: 'Logged Out',
-      description: 'You have been successfully logged out.',
-    });
-    router.push('/');
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/');
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: 'Logout Failed',
+        description: 'There was an issue logging out.',
+        variant: 'destructive',
+      });
+    }
   }
 
   if (loading || isUserLoading) {
     return <div className="flex justify-center items-center h-screen">Loading Admin Dashboard...</div>;
   }
 
-  // This should not be reached if the effect hook logic is correct, but serves as a fallback.
   if (!user || user.email !== 'nafonstudios@gmail.com') {
     return <div className="flex justify-center items-center h-screen">Redirecting...</div>;
   }
-
 
   return (
     <>
@@ -182,11 +189,12 @@ export default function AdminPage() {
               <TableRow>
                 <TableHead>Customer</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead>Order Total</TableHead>
+                <TableHead>Order Type</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Assigned To</TableHead>
                 <TableHead>Deadline</TableHead>
+                <TableHead>Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -197,10 +205,16 @@ export default function AdminPage() {
                     <div>{order.customerEmail}</div>
                     <div>{order.customerPhone}</div>
                   </TableCell>
-                  <TableCell>${order.total.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {order.isCustomOrder ? (
+                      <span className="font-semibold text-purple-600">Custom</span>
+                    ) : (
+                      <span className="font-semibold text-blue-600">Catalog</span>
+                    )}
+                  </TableCell>
                   <TableCell>{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                   <TableCell>
-                    <Select value={order.status} onValueChange={(value: 'Completed' | 'Not Completed') => handleStatusChange(order.id, value)}>
+                    <Select value={order.status} onValueChange={(value: 'Completed' | 'Not Completed') => handleUpdateOrder(order.id, { status: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -214,12 +228,54 @@ export default function AdminPage() {
                     <Input
                       type="text"
                       defaultValue={order.assigned}
-                      onBlur={(e) => handleAssignedChange(order.id, e.target.value)}
+                      onBlur={(e) => handleUpdateOrder(order.id, { assigned: e.target.value })}
                       placeholder="Assign to..."
                     />
                   </TableCell>
                   <TableCell>
-                    <Input type="date" defaultValue={order.deadline} onBlur={(e) => handleDeadlineChange(order.id, e.target.value)} />
+                    <Input type="date" defaultValue={order.deadline} onBlur={(e) => handleUpdateOrder(order.id, { deadline: e.target.value })} />
+                  </TableCell>
+                  <TableCell>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Eye className="mr-2 h-4 w-4" /> View
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                          <DialogTitle className="font-headline">Order Details</DialogTitle>
+                          <DialogDescription>
+                            Full details for order #{order.id.substring(0, 7)}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="mt-4 space-y-4 text-sm">
+                          {order.isCustomOrder ? (
+                            <>
+                              <div className="font-semibold text-base">Custom Project: {order.projectTitle}</div>
+                              <p><strong>Domain:</strong> {order.domain}</p>
+                              <div>
+                                <strong>Detailed Requirements:</strong>
+                                <p className="p-2 mt-1 bg-slate-50 border rounded-md whitespace-pre-wrap">{order.detailedRequirements}</p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                                <div className="font-semibold text-base">Catalog Order</div>
+                                <div className="space-y-2">
+                                  {order.items?.map(item => (
+                                      <div key={item.id} className="flex justify-between items-center p-2 bg-slate-50 border rounded-md">
+                                          <span>{item.title}</span>
+                                          <span className="font-bold">${item.price.toFixed(2)}</span>
+                                      </div>
+                                  ))}
+                                </div>
+                                <div className="text-right font-bold text-lg mt-4">Total: ${order.total?.toFixed(2)}</div>
+                            </>
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}
