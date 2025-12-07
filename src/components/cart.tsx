@@ -45,7 +45,7 @@ const Cart = () => {
                 </SheetHeader>
                 {cart.length > 0 ? (
                     <>
-                        <ScrollArea className="flex-1 -mx-6">
+                        <ScrollArea className="flex-1 -mx-6 my-4">
                             <div className="px-6">
                                 {cart.map((item) => (
                                     <div key={item.id} className="flex items-center gap-4 py-4 border-b">
