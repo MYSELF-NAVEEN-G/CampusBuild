@@ -2,7 +2,7 @@
 "use server";
 
 import { generateProjectIdea } from "@/ai/flows/generate-project-idea-flow";
-import { getSdks } from "@/firebase";
+import { getSdks } from "@/firebase/server";
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import type { Project } from "@/lib/projects";
 
