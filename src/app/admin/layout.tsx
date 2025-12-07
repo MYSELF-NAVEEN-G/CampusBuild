@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ArrowLeft, FlaskConical, LogOut, Briefcase, Users } from 'lucide-react';
+import { ArrowLeft, FlaskConical, LogOut, Briefcase, Users, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -29,9 +29,10 @@ export default function AdminLayout({
   const { toast } = useToast();
 
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
+  const isAdmin = user?.email && adminEmails.includes(user.email);
 
   useEffect(() => {
-    if (!isUserLoading && (!user || !adminEmails.includes(user.email!))) {
+    if (!isUserLoading && !isAdmin) {
       toast({
         title: 'Access Denied',
         description: 'You must be an admin to view this page.',
@@ -39,7 +40,7 @@ export default function AdminLayout({
       });
       router.push('/');
     }
-  }, [user, isUserLoading, router, toast]);
+  }, [user, isUserLoading, router, toast, isAdmin]);
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -60,7 +61,7 @@ export default function AdminLayout({
     }
   };
 
-  if (isUserLoading || !user || !adminEmails.includes(user.email!)) {
+  if (isUserLoading || !isAdmin) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading Admin Dashboard...
@@ -70,6 +71,7 @@ export default function AdminLayout({
 
   const navItems = [
     { href: '/admin', label: 'Order Management', icon: Briefcase, visible: true },
+    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: Users, visible: isSuperAdmin },
     { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: isSuperAdmin },
   ];

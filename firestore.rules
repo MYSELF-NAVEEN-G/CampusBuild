@@ -113,6 +113,19 @@ service cloud.firestore {
       allow create: if isSignedIn();
       allow list, get, update, delete: if isAdmin();
     }
+    
+    /**
+     * @description
+     *   Secures the consultations collection. Any user can create a consultation
+     *   request, but only admins can view and manage them.
+     * @path /consultations/{consultationId}
+     * @allow (create) Any user can create a consultation request.
+     * @allow (read, write) Only admins can read, update, or delete consultations.
+     */
+    match /consultations/{consultationId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
+    }
 
     /**
      * @description

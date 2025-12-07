@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Project": {
@@ -127,6 +128,47 @@
         "position",
         "specialization"
       ]
+    },
+    "Consultation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Consultation",
+      "type": "object",
+      "description": "Represents a consultation request from a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the consultation request."
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Full name of the user requesting the consultation."
+        },
+        "customerEmail": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "preferredTime": {
+          "type": "string",
+          "description": "The user's preferred time for the meeting."
+        },
+        "assignedTo": {
+          "type": "string",
+          "description": "The team member assigned to this consultation."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The timestamp when the consultation was requested.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "customerName",
+        "customerEmail",
+        "preferredTime",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -185,6 +227,22 @@
             {
               "name": "employeeId",
               "description": "Unique identifier for the employee."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/consultations/{consultationId}",
+        "definition": {
+          "entityName": "Consultation",
+          "schema": {
+            "$ref": "#/backend/entities/Consultation"
+          },
+          "description": "Stores consultation requests submitted by users. Anyone can create, but only admins can read/update.",
+          "params": [
+            {
+              "name": "consultationId",
+              "description": "Unique identifier for the consultation request."
             }
           ]
         }

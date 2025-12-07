@@ -1,9 +1,8 @@
 
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { submitContactForm, type ContactFormState } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +10,9 @@ import { Send, ArrowLeft, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const adminUsers = {
     'nafonstudios@gmail.com': 'admin',
@@ -19,26 +21,15 @@ const adminUsers = {
 };
 
 export default function ScheduleMeetingPage() {
-    const initialState: ContactFormState = { message: "", success: false };
-    const [state, dispatch] = useActionState(submitContactForm, initialState);
     const { toast } = useToast();
     const router = useRouter();
-    const { auth } = useFirebase();
+    const { auth, firestore } = useFirebase();
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [preferredTime, setPreferredTime] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        if (state.message && !state.success) { // Only show errors for contact form
-            toast({
-                title: "Error",
-                description: state.message,
-                variant: "destructive",
-            });
-        }
-    }, [state, toast]);
 
     const handleAdminLogin = async () => {
         if (!auth) {
@@ -55,9 +46,9 @@ export default function ScheduleMeetingPage() {
             });
             router.push('/admin');
         } catch (error: any) {
+            // This logic handles creating an admin user on their first login attempt
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
                 try {
-                    // Create user only if they are in the admin list
                     if ((adminUsers as Record<string, string>)[email.toLowerCase()]) {
                         await createUserWithEmailAndPassword(auth, email, password);
                         toast({
@@ -92,6 +83,53 @@ export default function ScheduleMeetingPage() {
             setIsSubmitting(false);
         }
     };
+    
+    const handleConsultationSubmit = async () => {
+        if (!firestore) {
+            toast({ title: 'Error', description: 'Database service is not available.', variant: 'destructive' });
+            return;
+        }
+        
+        setIsSubmitting(true);
+
+        const consultationData = {
+            customerName: fullName,
+            customerEmail: email,
+            preferredTime,
+            assignedTo: 'Not Assigned',
+            createdAt: serverTimestamp(),
+        };
+
+        try {
+            const consultationsCollectionRef = collection(firestore, 'consultations');
+            await addDoc(consultationsCollectionRef, consultationData);
+
+            toast({
+                title: 'Consultation Request Sent!',
+                description: "We've received your request and will contact you shortly.",
+            });
+            
+            // Reset form
+            setFullName('');
+            setEmail('');
+            setPreferredTime('');
+
+        } catch (error) {
+            console.error("Error submitting consultation:", error);
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: 'consultations',
+                operation: 'create',
+                requestResourceData: consultationData,
+            }));
+            toast({
+                title: "Submission Error",
+                description: "Could not save your request. Please check your permissions or try again later.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -104,10 +142,7 @@ export default function ScheduleMeetingPage() {
         if (isAdminLogin) {
             await handleAdminLogin();
         } else {
-            setIsSubmitting(true);
-            const formData = new FormData(event.currentTarget);
-            dispatch(formData);
-            setIsSubmitting(false);
+            await handleConsultationSubmit();
         }
     };
 
@@ -166,7 +201,7 @@ export default function ScheduleMeetingPage() {
                             {!isAdminField && (
                                 <div>
                                     <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
-                                    <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1"/>
+                                    <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
                                 </div>
                             )}
                             <Button type="submit" disabled={isSubmitting} className="w-full">
