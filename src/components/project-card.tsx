@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import type { Project } from '@/lib/projects';
@@ -52,7 +53,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                 </div>
             </CardContent>
             <CardFooter className="p-5 flex items-center justify-between border-t">
-                <span className="text-xl font-bold text-slate-800">${project.price.toFixed(2)}</span>
+                <span className="text-xl font-bold text-slate-800">₹{project.price.toFixed(2)}</span>
                 <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10" onClick={handleAddToCart}>
                     Add to Order <Plus className="ml-1 h-4 w-4" />
                 </Button>

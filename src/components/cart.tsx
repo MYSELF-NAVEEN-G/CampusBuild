@@ -110,7 +110,7 @@ const Cart = () => {
                                             <div className="flex-1">
                                                 <h4 className="font-semibold">{item.title}</h4>
                                                 <p className="text-sm text-muted-foreground">{item.category}</p>
-                                                <p className="font-bold mt-1">${item.price.toFixed(2)}</p>
+                                                <p className="font-bold mt-1">₹{item.price.toFixed(2)}</p>
                                             </div>
                                             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeFromCart(item.id)}>
                                                 <Trash2 className="h-4 w-4" />
@@ -123,22 +123,22 @@ const Cart = () => {
                                 <div className="w-full space-y-2 text-sm">
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span>${subtotal.toFixed(2)}</span>
+                                        <span>₹{subtotal.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Taxes (8%)</span>
-                                        <span>${taxes.toFixed(2)}</span>
+                                        <span>₹{taxes.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2 border-t border-dashed">
                                         <div className="flex items-center gap-2">
                                             <Checkbox id="delivery" checked={wantsDelivery} onCheckedChange={(checked) => setWantsDelivery(checked as boolean)} />
                                             <Label htmlFor="delivery" className="cursor-pointer">Delivery with charges</Label>
                                         </div>
-                                        <span>{wantsDelivery ? 'Varies based on place' : '$0.00'}</span>
+                                        <span>{wantsDelivery ? 'Varies based on place' : '₹0.00'}</span>
                                     </div>
                                     <div className="flex justify-between font-bold text-lg border-t pt-2">
                                         <span>Total</span>
-                                        <span>${total.toFixed(2)}</span>
+                                        <span>₹{total.toFixed(2)}</span>
                                     </div>
                                     <Button className="w-full mt-4" size="lg" onClick={() => setShowCheckoutForm(true)} disabled={isCheckingOut}>
                                         Proceed to Checkout

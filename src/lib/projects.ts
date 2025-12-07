@@ -1,3 +1,4 @@
+
 import type { ImagePlaceholder } from './placeholder-images';
 
 export interface Project {
@@ -6,7 +7,7 @@ export interface Project {
     title: string;
     category: 'IoT' | 'Hardware' | 'Software' | 'AI';
     price: number;
-    image: ImagePlaceholder;
+    image: ImagePlaceholder | string; // Can be a placeholder object or a data URL string
     tags: string[];
     desc: string;
 }

@@ -46,15 +46,15 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
 import type { Project as ProjectType } from '@/lib/projects';
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
-// This is the type we'll use in the component state, which includes the Firestore document ID and resolved image object.
-type Project = ProjectType & { docId: string };
+// This is the type we'll use in the component state, which includes the Firestore document ID.
+type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string };
 
 // This is the type for the data stored in Firestore.
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' > & {
-  image: string; // Storing image by its ID
+  image: string; // Storing image as a data URL string
 };
 
 export default function ProjectManagementPage() {
@@ -71,7 +71,7 @@ export default function ProjectManagementPage() {
     title: '',
     category: 'Software' as 'IoT' | 'Hardware' | 'Software' | 'AI',
     price: 0,
-    image: null as ImagePlaceholder | null,
+    image: '', // Will hold data URL
     tags: [] as string[],
     desc: '',
   };
@@ -95,16 +95,14 @@ export default function ProjectManagementPage() {
 
     const projectsCollection = collection(firestore, 'projects');
     const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
-      const fetchedProjects = snapshot.docs.map((doc, index) => {
+      const fetchedProjects = snapshot.docs.map((doc) => {
         const data = doc.data() as FirestoreProject;
-        const imagePlaceholder = PlaceHolderImages.find(p => p.id === data.image) || PlaceHolderImages[0];
         return {
           docId: doc.id,
-          id: index + 1, // This is just for local array key, not DB id
           title: data.title,
           category: data.category,
           price: data.price,
-          image: imagePlaceholder,
+          image: data.image,
           tags: data.tags || [],
           desc: data.desc,
         } as Project;
@@ -146,13 +144,19 @@ export default function ProjectManagementPage() {
     }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-     if (name === 'image') {
-        const selectedImage = PlaceHolderImages.find(p => p.id === value);
-        setFormData(prev => ({...prev, image: selectedImage || null}));
-    } else {
-        setFormData(prev => ({ ...prev, [name]: value as any }));
+   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, image: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
     }
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value as any }));
   };
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,16 +165,21 @@ export default function ProjectManagementPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firestore || !formData.image) {
-      toast({ title: 'Error', description: 'Form is invalid or database not ready.', variant: 'destructive'});
+    if (!firestore) {
+      toast({ title: 'Error', description: 'Database not ready.', variant: 'destructive'});
       return;
     }
+    if (!formData.image && !editingProject) {
+        toast({ title: 'Error', description: 'Please upload an image for the new project.', variant: 'destructive' });
+        return;
+    }
+
 
     const projectData: FirestoreProject & { updatedAt: any, createdAt?: any } = {
       title: formData.title,
       category: formData.category,
       price: formData.price,
-      image: formData.image.id, // Store only the ID
+      image: formData.image, // Store data URL
       tags: formData.tags,
       desc: formData.desc,
       updatedAt: serverTimestamp(),
@@ -236,7 +245,7 @@ export default function ProjectManagementPage() {
               <TableRow key={project.docId}>
                 <TableCell className="font-medium">{project.title}</TableCell>
                 <TableCell>{project.category}</TableCell>
-                <TableCell>${project.price.toFixed(2)}</TableCell>
+                <TableCell>₹{project.price.toFixed(2)}</TableCell>
                 <TableCell className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => openForm(project)}>
                     <Edit className="mr-2 h-4 w-4" /> Edit
@@ -284,16 +293,16 @@ export default function ProjectManagementPage() {
                             <SelectItem value="AI">AI</SelectItem>
                         </SelectContent>
                     </Select>
-                     <Select name="image" value={formData.image?.id || ''} onValueChange={(value) => handleSelectChange('image', value)}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select an image..."/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            {PlaceHolderImages.map(img => (
-                                <SelectItem key={img.id} value={img.id}>{img.description}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div>
+                        <Label htmlFor="image-upload">Project Image</Label>
+                        <Input id="image-upload" name="image" type="file" accept="image/*" onChange={handleImageChange} className="mt-1"/>
+                    </div>
+                    {formData.image && (
+                        <div className="mt-2">
+                            <p className="text-sm text-muted-foreground mb-2">Image Preview:</p>
+                            <img src={formData.image} alt="Preview" className="rounded-md object-cover h-32 w-full" />
+                        </div>
+                    )}
                     <Input name="price" type="number" step="0.01" value={formData.price} onChange={handleFormChange} placeholder="Price" required />
                     <Input name="tags" value={formData.tags.join(', ')} onChange={handleTagsChange} placeholder="Tags (comma-separated)" />
                 </div>

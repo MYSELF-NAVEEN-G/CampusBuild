@@ -1,9 +1,9 @@
+
 'use client';
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import type { Project as ProjectType } from '@/lib/projects';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import ProjectCard from '@/components/project-card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ type Category = 'All' | 'IoT' | 'Hardware' | 'Software' | 'AI';
 const categories: Category[] = ['All', 'IoT', 'Hardware', 'Software', 'AI'];
 
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' | 'difficulty'> & {
-  image: string; // Storing image by its ID
+  image: string; // Storing image by its data URL
   desc: string;
 };
 
@@ -31,7 +31,6 @@ const ProjectCatalog = () => {
         const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
             const fetchedProjects = snapshot.docs.map((doc, index) => {
                 const data = doc.data() as FirestoreProject;
-                const imagePlaceholder = PlaceHolderImages.find(p => p.id === data.image) || PlaceHolderImages[0];
                 
                 return {
                     id: doc.id.hashCode(), // Using a simple hash of doc id for a temporary numeric id
@@ -39,7 +38,12 @@ const ProjectCatalog = () => {
                     title: data.title,
                     category: data.category,
                     price: data.price,
-                    image: imagePlaceholder,
+                    image: { // Create an object compatible with ProjectCard
+                        imageUrl: data.image,
+                        description: data.title,
+                        id: doc.id,
+                        imageHint: ''
+                    },
                     tags: data.tags || [],
                     desc: data.desc,
                 } as ProjectType;
