@@ -104,6 +104,15 @@ service cloud.firestore {
       allow delete: if false;
     }
     
+    /**
+     * @description
+     *   Secures the orders collection. Any authenticated user can create an
+     *   order (including anonymous users). Only an authenticated admin can
+     *   read, update, or delete orders.
+     * @path /orders/{orderId}
+     * @allow (create) Any signed-in user can create a new order.
+     * @allow (list, get, update, delete) Only admins can manage orders.
+     */
     match /orders/{orderId} {
       allow create: if isSignedIn();
       allow list, get, update, delete: if isAdmin();
