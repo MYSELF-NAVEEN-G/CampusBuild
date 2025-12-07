@@ -33,25 +33,26 @@ Vercel is a platform that makes it incredibly easy to deploy Next.js application
     *   In the "Import Git Repository" section, find the GitHub repository you just created and click "Import".
     *   Vercel will automatically detect that it is a Next.js project. You don't need to change any build settings.
 
-### Step 3: Configure Firebase Environment Variables (Crucial!)
+### Step 3: Configure Environment Variables (Crucial!)
 
-Your application needs to connect to your Firebase project. Vercel needs the credentials to do this during the build process and on the server.
+Your application needs to connect to your Firebase project and use the Gemini API. Vercel needs the credentials to do this during the build process and on the server.
 
 1.  **Find Your Firebase Credentials:** Your Firebase configuration is located in the `src/firebase/config.ts` file. You will need these values.
 
 2.  **Add Environment Variables in Vercel:**
     *   In the Vercel project configuration screen, expand the "Environment Variables" section.
-    *   Add the following variables one by one, copying the values from your `src/firebase/config.ts` file.
+    *   Add the following variables one by one, copying the values where appropriate.
 
 | Name | Value |
 | :--- | :--- |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Your `projectId` value |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | Your `appId` value |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Your `apiKey` value |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`| Your `authDomain` value |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`| Your `messagingSenderId` value |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Your `projectId` value from `config.ts` |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Your `appId` value from `config.ts` |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Your `apiKey` value from `config.ts` |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`| Your `authDomain` value from `config.ts` |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`| Your `messagingSenderId` value from `config.ts`|
+| `GEMINI_API_KEY` | Your Gemini API key |
 
-    *Make sure the names match exactly.* These `NEXT_PUBLIC_` prefixes are how Next.js makes variables accessible in the browser.
+    *Make sure the names match exactly.* The `NEXT_PUBLIC_` prefixes are how Next.js makes variables accessible in the browser.
 
 ### Step 4: Deploy
 
