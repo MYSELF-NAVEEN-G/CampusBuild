@@ -105,7 +105,12 @@ export async function handleCheckout(cart: Project[], customerDetails: { name: s
             success: true,
             message: "Order Placed! A confirmation email will be sent shortly. IMPORTANT: If you do not receive a call or email from our team within 2 business days, your order may not have been saved correctly. Please contact us.",
         };
-    } catch (error) {
+    } catch (error: any) {
+        // This is a generic server error, not a permission error.
+        // We will keep the generic message for now, as the permission error
+        // should be caught by the onSnapshot listener on the client.
+        // In a real app, you might want to distinguish between different
+        // types of server errors here.
         console.error("Error saving order to Firestore:", error);
         return {
             success: false,
@@ -121,7 +126,9 @@ export async function updateOrderStatus(orderId: string, updates: { status?: str
         const orderRef = doc(firestore, 'orders', orderId);
         await updateDoc(orderRef, updates);
         return { success: true, message: 'Order updated successfully' };
-    } catch (error) {
+    } catch (error: any) {
+        // This is a generic server error, not a permission error.
+        // We will keep the generic message for now.
         console.error("Error updating order status:", error);
         return { success: false, message: 'Failed to update order' };
     }

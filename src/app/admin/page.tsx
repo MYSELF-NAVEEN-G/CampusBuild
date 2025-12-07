@@ -48,7 +48,6 @@ export default function AdminPage() {
         setOrders(fetchedOrders);
         setLoading(false);
     }, (error) => {
-        console.error("Error fetching orders from snapshot: ", error);
         const permissionError = new FirestorePermissionError({
           path: 'orders',
           operation: 'list',
