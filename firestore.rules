@@ -119,8 +119,8 @@ service cloud.firestore {
      *   Secures the consultations collection. Any user can create a consultation
      *   request, but only admins can view and manage them.
      * @path /consultations/{consultationId}
-     * @allow (create) Any user can create a consultation request.
-     * @allow (read, write) Only admins can read, update, or delete consultations.
+     * @allow (create) if true;
+     * @allow read, write: if isAdmin();
      */
     match /consultations/{consultationId} {
       allow create: if true;
@@ -146,14 +146,14 @@ service cloud.firestore {
 
     /**
      * @description
-     *   Secures the employee details collection. Admins can read data,
+     *   Secures the employee details collection. The public can read data,
      *   but only the Super Admin can create, update, or delete it.
      * @path /employees/{employeeId}
-     * @allow (read) Any admin can view employee data.
+     * @allow (read) Any user can view employee data.
      * @allow (write) Only the super admin has write access.
      */
     match /employees/{employeeId} {
-        allow read: if isAdmin();
+        allow read: if true;
         allow write: if isSuperAdmin();
     }
   }

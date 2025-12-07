@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { FlaskConical, Bot, ShoppingCart } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const Header = () => {
   const { cart, toggleAiChat, toggleCart } = useAppContext();
@@ -23,7 +24,11 @@ const Header = () => {
   };
   
   const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    if (document.getElementById(id)) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = `/#${id}`;
+    }
   };
 
   return (
@@ -45,6 +50,7 @@ const Header = () => {
           </div>
           <nav className="hidden md:flex space-x-8">
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('howItWorks')}>How It Works</a>
+            <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer">Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
           </nav>
