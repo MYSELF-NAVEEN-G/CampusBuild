@@ -13,7 +13,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
-    const { addToCart } = useAppContext();
+    const { addToCart, toggleCart } = useAppContext();
     const { toast } = useToast();
 
     const handleAddToCart = () => {
@@ -22,6 +22,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             title: "Added to Order",
             description: `"${project.title}" has been added to your order list.`,
         });
+        toggleCart();
     };
 
     return (

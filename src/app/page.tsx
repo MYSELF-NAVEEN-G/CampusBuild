@@ -5,6 +5,7 @@ import CustomOrder from '@/components/sections/custom-order';
 import Hero from '@/components/sections/hero';
 import HowItWorks from '@/components/sections/how-it-works';
 import ProjectCatalog from '@/components/sections/project-catalog';
+import Cart from '@/components/cart';
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       </main>
       <Footer />
       <AiAssistant />
+      <Cart />
     </>
   );
 }

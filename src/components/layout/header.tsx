@@ -4,12 +4,10 @@ import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
 import { FlaskConical, Bot, ShoppingCart } from 'lucide-react';
 import React from 'react';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
-  const { cart, toggleAiChat } = useAppContext();
-  const { toast } = useToast();
+  const { cart, toggleAiChat, toggleCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
 
   React.useEffect(() => {
@@ -26,19 +24,6 @@ const Header = () => {
   
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
-  
-  const handleCartClick = () => {
-    if (cart.length > 0) {
-      toast({
-        title: "Order Summary",
-        description: `You have ${cart.length} item(s) in your order list. (This is a demo)`,
-      });
-    } else {
-      toast({
-        description: "Your order list is empty.",
-      });
-    }
   };
 
   return (
@@ -68,7 +53,7 @@ const Header = () => {
               <Bot className="mr-2 h-4 w-4" />
               AI Assistant
             </Button>
-            <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={handleCartClick}>
+            <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
               <ShoppingCart />
               {cart.length > 0 && (
                 <span className="absolute top-1 right-1 inline-flex items-center justify-center px-2 h-5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full">
