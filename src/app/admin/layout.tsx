@@ -72,6 +72,7 @@ export default function AdminLayout({
   const navItems = [
     { href: '/admin', label: 'Order Management', icon: Briefcase, visible: true },
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: true },
+    { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: Users, visible: isSuperAdmin },
     { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: isSuperAdmin },
   ];

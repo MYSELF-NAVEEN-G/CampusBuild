@@ -146,13 +146,15 @@ service cloud.firestore {
 
     /**
      * @description
-     *   Secures the employee details collection. Only the Super Admin can
-     *   create, read, update, or delete employee data.
+     *   Secures the employee details collection. Admins can read data,
+     *   but only the Super Admin can create, update, or delete it.
      * @path /employees/{employeeId}
-     * @allow (read, write) Only the super admin has full access.
+     * @allow (read) Any admin can view employee data.
+     * @allow (write) Only the super admin has write access.
      */
     match /employees/{employeeId} {
-        allow read, write: if isSuperAdmin();
+        allow read: if isAdmin();
+        allow write: if isSuperAdmin();
     }
   }
 }
