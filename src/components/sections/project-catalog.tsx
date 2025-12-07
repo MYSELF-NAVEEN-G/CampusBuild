@@ -33,8 +33,7 @@ const ProjectCatalog = () => {
                 const data = doc.data() as FirestoreProject;
                 
                 return {
-                    id: doc.id.hashCode(), // Using a simple hash of doc id for a temporary numeric id
-                    docId: doc.id,
+                    id: doc.id,
                     title: data.title,
                     category: data.category,
                     price: data.price,
@@ -101,7 +100,7 @@ const ProjectCatalog = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {filteredProjects.map((project, index) => (
-                            <div key={project.docId} className="fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                            <div key={project.id} className="fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
                                 <ProjectCard project={project} />
                             </div>
                         ))}
