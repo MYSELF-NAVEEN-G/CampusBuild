@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
@@ -48,10 +49,15 @@ export default function ScheduleMeetingPage() {
         setIsSubmitting(true);
 
         if (fullName.toLowerCase() === 'admin' && email.toLowerCase() === 'nafonstudios@gmail.com') {
+            if (!auth) {
+                toast({ title: 'Error', description: 'Authentication service is not available.', variant: 'destructive' });
+                setIsSubmitting(false);
+                return;
+            }
             try {
                 // IMPORTANT: In a real app, the admin password should not be hardcoded.
                 // This is for demonstration purposes.
-                await signInWithEmailAndPassword(auth, email, 'admin123');
+                await signInWithEmailAndPassword(auth, email, 'nafon2025');
                 toast({
                   title: 'Admin Login Successful',
                   description: 'Redirecting to the admin dashboard.',
