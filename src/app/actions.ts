@@ -3,7 +3,7 @@
 
 import { generateProjectIdea } from "@/ai/flows/generate-project-idea-flow";
 import { getSdks } from "@/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import type { Project } from "@/lib/projects";
 
 export interface CustomOrderFormState {
@@ -84,7 +84,9 @@ export async function handleCheckout(cart: Project[], customerDetails: { name: s
         taxes,
         total,
         createdAt: serverTimestamp(),
-        status: 'pending',
+        status: 'Not Completed',
+        assigned: 'Not Assigned',
+        deadline: '',
     };
 
     try {
@@ -109,5 +111,18 @@ export async function handleCheckout(cart: Project[], customerDetails: { name: s
             success: false,
             message: "There was an error placing your order. Please try again or contact support.",
         };
+    }
+}
+
+
+export async function updateOrderStatus(orderId: string, updates: { status?: string; assigned?: string, deadline?: string }): Promise<{success: boolean, message: string}> {
+    const { firestore } = getSdks();
+    try {
+        const orderRef = doc(firestore, 'orders', orderId);
+        await updateDoc(orderRef, updates);
+        return { success: true, message: 'Order updated successfully' };
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        return { success: false, message: 'Failed to update order' };
     }
 }
