@@ -61,3 +61,29 @@ Your application needs to connect to your Firebase project. Vercel needs the cre
 ### How Auto-Updates Work
 
 Because you connected your Vercel project to GitHub, any time you (or Firebase Studio) push a new commit to your `main` branch, Vercel will automatically start a new deployment. You don't have to do anything else. Your site will always be up-to-date with your latest code.
+
+---
+
+## Troubleshooting
+
+### Authentication failed for 'https://github.com/...'
+
+If you see an error like `remote: No anonymous write access.` or `fatal: Authentication failed`, it means you need to authenticate with GitHub using a **Personal Access Token (PAT)** instead of your regular password.
+
+1.  **Create a Personal Access Token:**
+    *   Go to your GitHub **Settings**.
+    *   Scroll down and click on **Developer settings**.
+    *   Click on **Personal access tokens** > **Tokens (classic)**.
+    *   Click **Generate new token** > **Generate new token (classic)**.
+    *   Give your token a name (e.g., "Vercel Deploy").
+    *   Set the **Expiration** for your desired duration.
+    *   Under **Select scopes**, check the **`repo`** scope. This gives the token permission to access your repositories.
+    *   Scroll down and click **Generate token**.
+    *   **Important:** Copy your new token immediately. You won’t see it again.
+
+2.  **Use the Token to Push:**
+    *   Go back to your terminal and run the `git push -u origin main` command again.
+    *   When it prompts for your **Username**, enter your GitHub username.
+    *   When it prompts for your **Password**, **paste the Personal Access Token** you just created. Do not enter your GitHub password.
+
+This should authenticate you correctly and allow you to push your code.
