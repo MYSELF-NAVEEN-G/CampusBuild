@@ -15,6 +15,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
+import type { ImagePlaceholder } from "@/lib/placeholder-images";
+import type { Project } from "@/lib/projects";
 
 const Cart = () => {
     const { isCartOpen, toggleCart, cart, removeFromCart, clearCart } = useAppContext();
@@ -92,6 +94,10 @@ const Cart = () => {
             setIsCheckingOut(false);
         }
     };
+    
+    const isImagePlaceholder = (image: Project['image']): image is ImagePlaceholder => {
+        return typeof image === 'object' && 'imageUrl' in image;
+    };
 
     return (
         <>
@@ -104,9 +110,12 @@ const Cart = () => {
                         <>
                             <ScrollArea className="flex-1 -mx-6 my-4">
                                 <div className="px-6">
-                                    {cart.map((item) => (
+                                    {cart.map((item) => {
+                                        const imageUrl = isImagePlaceholder(item.image) ? item.image.imageUrl : item.image;
+                                        const imageDescription = isImagePlaceholder(item.image) ? item.image.description : item.title;
+                                        return (
                                         <div key={item.id} className="flex items-center gap-4 py-4 border-b">
-                                            <Image src={item.image.imageUrl} alt={item.title} width={80} height={80} className="rounded-md object-cover" />
+                                            <Image src={imageUrl} alt={imageDescription} width={80} height={80} className="rounded-md object-cover" />
                                             <div className="flex-1">
                                                 <h4 className="font-semibold">{item.title}</h4>
                                                 <p className="text-sm text-muted-foreground">{item.category}</p>
@@ -116,7 +125,7 @@ const Cart = () => {
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
-                                    ))}
+                                    )})}
                                 </div>
                             </ScrollArea>
                             <SheetFooter className="mt-auto pt-6 border-t">

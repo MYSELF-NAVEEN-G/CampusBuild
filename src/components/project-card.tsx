@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
+import type { ImagePlaceholder } from '@/lib/placeholder-images';
 
 interface ProjectCardProps {
     project: Project;
@@ -26,16 +27,24 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         toggleCart();
     };
 
+    const isImagePlaceholder = (image: Project['image']): image is ImagePlaceholder => {
+        return typeof image === 'object' && 'imageUrl' in image;
+    };
+
+    const imageUrl = isImagePlaceholder(project.image) ? project.image.imageUrl : project.image;
+    const imageDescription = isImagePlaceholder(project.image) ? project.image.description : project.title;
+    const imageHint = isImagePlaceholder(project.image) ? project.image.imageHint : '';
+
     return (
         <Card className="h-full flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">
             <CardHeader className="p-0">
                 <div className="relative h-48 overflow-hidden group">
                     <Image
-                        src={project.image.imageUrl}
-                        alt={project.image.description}
+                        src={imageUrl}
+                        alt={imageDescription}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        data-ai-hint={project.image.imageHint}
+                        data-ai-hint={imageHint}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <Badge variant="secondary" className="absolute top-3 right-3 bg-white/90 backdrop-blur">

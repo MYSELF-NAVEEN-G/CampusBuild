@@ -37,12 +37,7 @@ const ProjectCatalog = () => {
                     title: data.title,
                     category: data.category,
                     price: data.price,
-                    image: { // Create an object compatible with ProjectCard
-                        imageUrl: data.image,
-                        description: data.title,
-                        id: doc.id,
-                        imageHint: ''
-                    },
+                    image: data.image,
                     tags: data.tags || [],
                     desc: data.desc,
                 } as ProjectType;

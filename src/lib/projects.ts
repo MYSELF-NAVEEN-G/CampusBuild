@@ -2,7 +2,7 @@
 import type { ImagePlaceholder } from './placeholder-images';
 
 export interface Project {
-    id: string; // Changed to string to align with Firestore docId
+    id: string;
     docId?: string;
     title: string;
     category: 'IoT' | 'Hardware' | 'Software' | 'AI';
