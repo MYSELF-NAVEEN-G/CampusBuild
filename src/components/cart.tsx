@@ -1,3 +1,4 @@
+
 'use client';
 import { useAppContext } from "@/context/app-context";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
@@ -6,12 +7,16 @@ import Image from "next/image";
 import { ScrollArea } from "./ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { handleCheckout } from "@/app/actions";
 import { useState } from "react";
 import CheckoutForm from "./checkout-form";
+import { useFirebase } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const Cart = () => {
     const { isCartOpen, toggleCart, cart, removeFromCart, clearCart } = useAppContext();
+    const { firestore } = useFirebase();
     const { toast } = useToast();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [showCheckoutForm, setShowCheckoutForm] = useState(false);
@@ -21,23 +26,56 @@ const Cart = () => {
     const total = subtotal + taxes;
 
     const onCheckout = async (customerDetails: { name: string; email: string; phone: string }) => {
-        if (cart.length === 0) return;
+        if (cart.length === 0 || !firestore) {
+            toast({ title: "Error", description: "Cart is empty or database is not available.", variant: "destructive" });
+            return;
+        }
 
         setIsCheckingOut(true);
-        const result = await handleCheckout(cart, customerDetails);
-        setIsCheckingOut(false);
-        
-        toast({
-            title: result.success ? "Order Placed!" : "Error",
-            description: result.message,
-            variant: result.success ? "default" : "destructive",
-            duration: 10000,
-        });
 
-        if (result.success) {
+        const orderData = {
+            customerName: customerDetails.name,
+            customerEmail: customerDetails.email,
+            customerPhone: customerDetails.phone,
+            items: cart.map(item => ({ id: item.id, title: item.title, price: item.price })),
+            subtotal,
+            taxes,
+            total,
+            createdAt: serverTimestamp(),
+            status: 'Not Completed',
+            assigned: 'Not Assigned',
+            deadline: '',
+        };
+
+        try {
+            const ordersCollection = collection(firestore, 'orders');
+            await addDoc(ordersCollection, orderData);
+
+            toast({
+                title: "Order Placed!",
+                description: "Your order has been successfully submitted. We will contact you shortly.",
+                duration: 10000,
+            });
+
             clearCart();
             setShowCheckoutForm(false);
             toggleCart();
+        } catch (error: any) {
+            console.error("Error placing order:", error);
+            // Create and emit a contextual error for permission issues
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: 'orders',
+                operation: 'create',
+                requestResourceData: orderData
+            }));
+            toast({
+                title: "Error Placing Order",
+                description: "Could not save your order. Please check your permissions or contact support.",
+                variant: "destructive",
+                duration: 10000,
+            });
+        } finally {
+            setIsCheckingOut(false);
         }
     };
 
