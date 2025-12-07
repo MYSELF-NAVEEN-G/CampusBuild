@@ -2,20 +2,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { useFirebase, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, FlaskConical, LogOut, Eye } from 'lucide-react';
+import { ArrowLeft, FlaskConical, LogOut, Eye, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+
 
 interface OrderItem {
   id: string;
@@ -119,6 +121,26 @@ export default function AdminPage() {
       toast({
         title: 'Error',
         description: 'Failed to update order. Check permissions.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!firestore) return;
+    try {
+      const orderRef = doc(firestore, 'orders', orderId);
+      await deleteDoc(orderRef);
+      toast({
+        title: 'Order Deleted',
+        description: 'The order has been permanently removed.',
+      });
+    } catch (error: any) {
+      console.error("Error deleting order:", error);
+      errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `orders/${orderId}`, operation: 'delete' }));
+      toast({
+        title: 'Error',
+        description: 'Failed to delete order. Check permissions.',
         variant: 'destructive',
       });
     }
@@ -286,6 +308,34 @@ export default function AdminPage() {
                             </>
                           )}
                         </div>
+                        <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete Order
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the
+                                        order and remove its data from our servers.
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteOrder(order.id)}>
+                                        Continue
+                                    </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <DialogClose asChild>
+                                <Button variant="outline">Close</Button>
+                            </DialogClose>
+                        </DialogFooter>
                       </DialogContent>
                     </Dialog>
                   </TableCell>
@@ -298,3 +348,5 @@ export default function AdminPage() {
     </>
   );
 }
+
+    
