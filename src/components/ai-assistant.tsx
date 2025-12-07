@@ -47,11 +47,11 @@ const AiAssistant = () => {
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-[100]">
+        <div className="fixed bottom-6 left-6 z-[100]">
             {/* Chat Window */}
             <div
                 className={cn(
-                    'flex-col w-[350px] sm:w-[400px] h-[500px] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-all origin-bottom-right mb-4',
+                    'flex-col w-[350px] sm:w-[400px] h-[500px] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-all origin-bottom-left mb-4',
                     isChatOpen ? 'flex scale-100 opacity-100' : 'hidden scale-95 opacity-0'
                 )}
             >
@@ -135,6 +135,7 @@ const AiAssistant = () => {
                 onClick={toggleAiChat}
                 aria-label="Toggle AI Assistant"
             >
+                <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-pulse border-2 border-white"></div>
                 <Bot className="h-8 w-8" />
             </Button>
         </div>
