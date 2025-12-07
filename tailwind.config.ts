@@ -88,24 +88,30 @@ export default {
             height: '0',
           },
         },
-        typing: {
-            '0%, 80%, 100%': { transform: 'scale(0)' },
-            '40%': { transform: 'scale(1)' },
+        bounce: {
+          '0%, 100%': {
+            transform: 'translateY(-25%)',
+            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)',
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
+          },
         },
         'spin-slow': {
-          from: { transform: 'rotate(0deg)' },
-          to: { transform: 'rotate(360deg)' },
+          from: {transform: 'rotate(0deg)'},
+          to: {transform: 'rotate(360deg)'},
         },
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-20px)' },
+          '0%, 100%': {transform: 'translateY(0px)'},
+          '50%': {transform: 'translateY(-20px)'},
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'typing': 'typing 1.4s infinite ease-in-out both',
+        bounce: 'bounce 1s infinite',
         'spin-slow': 'spin-slow 20s linear infinite',
       },
     },

@@ -14,14 +14,20 @@ import {z} from 'genkit';
 const GenerateProjectIdeaInputSchema = z.object({
   topic: z.string().describe('The topic to generate a project idea for.'),
 });
-export type GenerateProjectIdeaInput = z.infer<typeof GenerateProjectIdeaInputSchema>;
+export type GenerateProjectIdeaInput = z.infer<
+  typeof GenerateProjectIdeaInputSchema
+>;
 
 const GenerateProjectIdeaOutputSchema = z.object({
   idea: z.string().describe('A project idea based on the topic.'),
 });
-export type GenerateProjectIdeaOutput = z.infer<typeof GenerateProjectIdeaOutputSchema>;
+export type GenerateProjectIdeaOutput = z.infer<
+  typeof GenerateProjectIdeaOutputSchema
+>;
 
-export async function generateProjectIdea(input: GenerateProjectIdeaInput): Promise<GenerateProjectIdeaOutput> {
+export async function generateProjectIdea(
+  input: GenerateProjectIdeaInput
+): Promise<GenerateProjectIdeaOutput> {
   return generateProjectIdeaFlow(input);
 }
 
@@ -29,11 +35,11 @@ const prompt = ai.definePrompt({
   name: 'generateProjectIdeaPrompt',
   input: {schema: GenerateProjectIdeaInputSchema},
   output: {schema: GenerateProjectIdeaOutputSchema},
-  prompt: `You are an AI assistant designed to generate innovative project ideas based on a given topic.
+  prompt: `You are an AI assistant for an engineering solutions company called CampusBuild. You specialize in generating innovative project ideas for students and researchers.
 
   Topic: {{{topic}}}
   
-  Generate a creative and feasible project idea related to the topic.`,
+  Based on the topic, generate a single, creative, and feasible project idea. Be encouraging and concise. Start your response with something like "That's a great topic! Here's an idea:" or a similar friendly opening.`,
 });
 
 const generateProjectIdeaFlow = ai.defineFlow(
@@ -44,6 +50,9 @@ const generateProjectIdeaFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('The AI model did not return a valid output.');
+    }
+    return output;
   }
 );
