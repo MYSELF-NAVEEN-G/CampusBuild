@@ -6,16 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from '@/components/ui/textarea';
-import { Lightbulb } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useFirebase, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import Link from 'next/link';
 
 const CustomOrder = () => {
     const { toast } = useToast();
-    const { openAiChat } = useAppContext();
     const { firestore } = useFirebase();
     const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,12 +121,14 @@ const CustomOrder = () => {
                         </div>
                         <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
                             <div className="flex items-center mb-2">
-                                <Lightbulb className="text-yellow-400 mr-2" />
-                                <span className="font-bold text-sm">Need Ideas?</span>
+                                <MessageSquare className="text-accent mr-2" />
+                                <span className="font-bold text-sm">Have Questions?</span>
                             </div>
-                            <p className="text-xs text-slate-400 mb-3">Use the CampusBuild AI Assistant (powered by Gemini) to generate a project abstract before ordering.</p>
-                            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-sm" onClick={openAiChat}>
-                                Ask AI Assistant
+                            <p className="text-xs text-slate-400 mb-3">Schedule a free 30-minute consultation with our experts to discuss your idea in detail.</p>
+                            <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-sm">
+                                <Link href="/schedule-meeting">
+                                    Schedule a Meeting
+                                </Link>
                             </Button>
                         </div>
                     </div>

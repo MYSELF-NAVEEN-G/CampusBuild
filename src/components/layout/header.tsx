@@ -3,13 +3,13 @@
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { FlaskConical, Bot, ShoppingCart, Menu, X } from 'lucide-react';
+import { FlaskConical, MessageSquare, ShoppingCart, Menu, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const Header = () => {
-  const { cart, toggleAiChat, toggleCart } = useAppContext();
+  const { cart, toggleCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -59,9 +59,11 @@ const Header = () => {
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
           </nav>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button className="hidden sm:flex" onClick={toggleAiChat}>
-              <Bot className="mr-2 h-4 w-4" />
-              AI Assistant
+            <Button asChild className="hidden sm:flex">
+              <Link href="/schedule-meeting">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Free 30-Min Consultation
+              </Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
               <ShoppingCart />
@@ -87,9 +89,11 @@ const Header = () => {
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
-            <Button className="w-4/5" onClick={() => { toggleAiChat(); setIsMobileMenuOpen(false); }}>
-              <Bot className="mr-2 h-4 w-4" />
-              AI Assistant
+            <Button asChild className="w-4/5">
+              <Link href="/schedule-meeting">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Free 30-Min Consultation
+              </Link>
             </Button>
           </nav>
         </div>

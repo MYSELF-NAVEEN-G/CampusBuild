@@ -1,4 +1,3 @@
-import AiAssistant from '@/components/ai-assistant';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/header';
 import CustomOrder from '@/components/sections/custom-order';
@@ -18,7 +17,6 @@ export default function Home() {
         <CustomOrder />
       </main>
       <Footer />
-      <AiAssistant />
       <Cart />
     </>
   );
