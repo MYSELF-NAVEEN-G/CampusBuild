@@ -50,7 +50,7 @@ Your application needs to connect to your Firebase project and use the Gemini AP
 | `NEXT_PUBLIC_FIREBASE_API_KEY` | Your `apiKey` value from `config.ts` |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`| Your `authDomain` value from `config.ts` |
 | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`| Your `messagingSenderId` value from `config.ts`|
-| `GEMINI_API_KEY` | Your Gemini API key |
+| `GEMINI_API_KEY` | **Your personal Gemini API key** |
 
     *Make sure the names match exactly.* The `NEXT_PUBLIC_` prefixes are how Next.js makes variables accessible in the browser.
 
