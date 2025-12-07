@@ -150,7 +150,7 @@ service cloud.firestore {
      *   but only the Super Admin can create, update, or delete it.
      * @path /employees/{employeeId}
      * @allow (read) Any user can view employee data.
-     * @allow (write) Only the super admin has write access.
+     * @allow (write) if isSuperAdmin();
      */
     match /employees/{employeeId} {
         allow read: if true;
