@@ -19,6 +19,8 @@ const adminUsers = {
     'nafonstudios@gmail.com': 'admin',
     'naveen.01@nafon.in': 'naveen',
     'john.04@nafon.in': 'johnlee',
+    'karthick.02@nafon.in': 'karthick',
+    'thamizh.03@nafon.in': 'thamizh',
 };
 
 export default function ScheduleMeetingPage() {
@@ -41,6 +43,13 @@ export default function ScheduleMeetingPage() {
         }
 
         setIsSubmitting(true);
+        // Special passwords provided for one-time creation
+        const adminPasswords: Record<string, string> = {
+            'karthick.02@nafon.in': 'karthick232223',
+            'thamizh.03@nafon.in': 'thamizh232258',
+        }
+        const creationPassword = adminPasswords[email.toLowerCase()];
+
         try {
             await signInWithEmailAndPassword(auth, email, password);
             toast({
@@ -50,22 +59,16 @@ export default function ScheduleMeetingPage() {
             router.push('/admin');
         } catch (error: any) {
             // This logic handles creating an admin user on their first login attempt
-            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+            if ((error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') && creationPassword) {
                 try {
-                    if ((adminUsers as Record<string, string>)[email.toLowerCase()]) {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                        toast({
-                            title: 'Admin Account Created',
-                            description: 'Login successful. Redirecting to the admin dashboard.',
-                        });
-                        router.push('/admin');
-                    } else {
-                         toast({
-                            title: 'Admin Login Failed',
-                            description: 'Please check your credentials.',
-                            variant: 'destructive',
-                        });
-                    }
+                    await createUserWithEmailAndPassword(auth, email, creationPassword);
+                    // Now sign them in to complete the process
+                     await signInWithEmailAndPassword(auth, email, creationPassword);
+                    toast({
+                        title: 'Admin Account Created',
+                        description: 'Login successful. Redirecting to the admin dashboard.',
+                    });
+                    router.push('/admin');
                 } catch (creationError: any) {
                     console.error("Admin account creation failed:", creationError);
                     toast({
@@ -184,7 +187,7 @@ export default function ScheduleMeetingPage() {
                     <div className="text-center">
                         <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Book a Consultation</h2>
                         <p className="mt-2 text-sm text-gray-600">
-                            Book a 1-hour one-on-one session with our R&D team to discuss your project in detail.
+                           Schedule a one-hour session with our R&D team to discuss your project for just ₹100.
                         </p>
                     </div>
                     <Card className="p-6 sm:p-8 shadow-xl">
@@ -216,7 +219,7 @@ export default function ScheduleMeetingPage() {
                             )}
                             <Button type="submit" disabled={isSubmitting} className="w-full">
                                 {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Book'}
-                                {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
+                                {!isSubmitting && !isAdminField && <Send className="ml-2 h-4 w-4" />}
                             </Button>
                         </form>
                     </Card>

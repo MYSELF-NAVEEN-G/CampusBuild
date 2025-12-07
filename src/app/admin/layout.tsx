@@ -15,6 +15,8 @@ const adminEmails = [
   'nafonstudios@gmail.com',
   'naveen.01@nafon.in',
   'john.04@nafon.in',
+  'karthick.02@nafon.in',
+  'thamizh.03@nafon.in',
 ];
 
 export default function AdminLayout({
