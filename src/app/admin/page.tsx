@@ -143,6 +143,17 @@ export default function AdminPage() {
     }
   }
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Not set';
+    // Adding T00:00:00 ensures the date isn't affected by timezone shifts during parsing
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   if (loading || isUserLoading) {
     return <div className="flex justify-center items-center h-screen">Loading Admin Dashboard...</div>;
   }
@@ -233,7 +244,7 @@ export default function AdminPage() {
                     />
                   </TableCell>
                   <TableCell>
-                    <Input type="date" defaultValue={order.deadline} onBlur={(e) => handleUpdateOrder(order.id, { deadline: e.target.value })} />
+                    {formatDate(order.deadline)}
                   </TableCell>
                   <TableCell>
                     <Dialog>
@@ -250,7 +261,7 @@ export default function AdminPage() {
                           </DialogDescription>
                         </DialogHeader>
                         <div className="mt-4 space-y-4 text-sm">
-                            <p><strong>Deadline:</strong> {order.deadline ? new Date(order.deadline).toLocaleDateString() : 'Not set'}</p>
+                            <p><strong>Deadline:</strong> {formatDate(order.deadline)}</p>
                           {order.isCustomOrder ? (
                             <>
                               <div className="font-semibold text-base">Custom Project: {order.projectTitle}</div>
