@@ -52,11 +52,11 @@ const AiAssistant = () => {
     }
 
     return (
-        <div className="fixed bottom-6 left-6 z-[100]">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:left-6 z-[100]">
             {/* Chat Window */}
             <div
                 className={cn(
-                    'flex-col w-[350px] sm:w-[400px] h-[500px] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-all origin-bottom-left',
+                    'flex-col w-[calc(100vw-2rem)] h-[calc(100vh-5rem)] sm:w-[400px] sm:h-[500px] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-all origin-bottom-right sm:origin-bottom-left',
                     isChatOpen ? 'flex scale-100 opacity-100' : 'hidden scale-95 opacity-0'
                 )}
             >

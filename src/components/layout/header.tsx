@@ -3,14 +3,15 @@
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { FlaskConical, Bot, ShoppingCart } from 'lucide-react';
-import React from 'react';
+import { FlaskConical, Bot, ShoppingCart, Menu, X } from 'lucide-react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const Header = () => {
   const { cart, toggleAiChat, toggleCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -30,12 +31,14 @@ const Header = () => {
     } else {
       window.location.href = `/#${id}`;
     }
+    setIsMobileMenuOpen(false); // Close menu on navigation
   };
 
   return (
+    <>
     <header className={cn(
       'sticky top-0 z-50 transition-all duration-300',
-      isScrolled ? 'bg-white/90 backdrop-blur-lg border-b border-slate-200/80' : 'bg-transparent border-b border-transparent'
+      isScrolled || isMobileMenuOpen ? 'bg-white/90 backdrop-blur-lg border-b border-slate-200/80' : 'bg-transparent'
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
@@ -68,10 +71,31 @@ const Header = () => {
                 </span>
               )}
             </Button>
+            <div className="md:hidden">
+                <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-500 hover:text-primary">
+                    {isMobileMenuOpen ? <X/> : <Menu/>}
+                </Button>
+            </div>
           </div>
         </div>
       </div>
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white/90 backdrop-blur-lg pb-4">
+          <nav className="flex flex-col items-center space-y-4">
+            <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('howItWorks')}>How It Works</a>
+            <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>Our Team</Link>
+            <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
+            <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
+            <Button className="w-4/5" onClick={() => { toggleAiChat(); setIsMobileMenuOpen(false); }}>
+              <Bot className="mr-2 h-4 w-4" />
+              AI Assistant
+            </Button>
+          </nav>
+        </div>
+      )}
     </header>
+    </>
   );
 };
 

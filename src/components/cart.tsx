@@ -98,7 +98,7 @@ const Cart = () => {
     return (
         <>
             <Sheet open={isCartOpen} onOpenChange={toggleCart}>
-                <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
+                <SheetContent className="w-full max-w-full sm:max-w-md flex flex-col">
                     <SheetHeader>
                         <SheetTitle className="font-headline text-2xl">Order Summary</SheetTitle>
                     </SheetHeader>

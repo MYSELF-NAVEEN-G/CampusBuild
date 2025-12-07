@@ -154,7 +154,7 @@ export default function ScheduleMeetingPage() {
     const isAdminField = (adminUsers as Record<string, string>)[lowerCaseEmail] === lowerCaseFullName;
 
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
             <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-20 items-center">
@@ -177,7 +177,7 @@ export default function ScheduleMeetingPage() {
                     </div>
                 </div>
             </header>
-            <main className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 min-h-[calc(100vh-80px)]">
+            <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
                         <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Schedule a Consultation</h2>
@@ -185,7 +185,7 @@ export default function ScheduleMeetingPage() {
                             Have questions or a custom idea? Schedule a free consultation with our R&D team to discuss your project in detail.
                         </p>
                     </div>
-                    <Card className="p-8 shadow-xl">
+                    <Card className="p-6 sm:p-8 shadow-xl">
                         <form onSubmit={handleFormSubmit} className="space-y-6">
                             <div>
                                 <label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</label>
@@ -220,7 +220,7 @@ export default function ScheduleMeetingPage() {
                     </Card>
                 </div>
             </main>
-        </>
+        </div>
     );
 }
 
