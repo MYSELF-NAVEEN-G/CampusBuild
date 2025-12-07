@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send, ArrowLeft, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
+import { useFirebase } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -24,30 +26,53 @@ export default function ScheduleMeetingPage() {
     const [state, dispatch] = useActionState(submitContactForm, initialState);
     const { toast } = useToast();
     const router = useRouter();
+    const { auth } = useFirebase();
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState(''); // New state for password
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (state.message) {
+        if (state.message && !state.success) { // Only show errors for contact form
             toast({
-                title: state.success ? "Success" : "Error",
+                title: "Error",
                 description: state.message,
-                variant: state.success ? "default" : "destructive",
+                variant: "destructive",
             });
         }
     }, [state, toast]);
 
-    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
+        setIsSubmitting(true);
+
         if (fullName.toLowerCase() === 'admin' && email.toLowerCase() === 'nafonstudios@gmail.com') {
-            router.push('/admin');
+            try {
+                // IMPORTANT: In a real app, the admin password should not be hardcoded.
+                // This is for demonstration purposes.
+                await signInWithEmailAndPassword(auth, email, 'admin123');
+                toast({
+                  title: 'Admin Login Successful',
+                  description: 'Redirecting to the admin dashboard.',
+                });
+                router.push('/admin');
+            } catch (error: any) {
+                console.error("Admin login failed:", error);
+                toast({
+                    title: 'Admin Login Failed',
+                    description: error.message || 'Please check your credentials or password.',
+                    variant: 'destructive',
+                });
+            } finally {
+                setIsSubmitting(false);
+            }
             return;
         }
         
         const formData = new FormData(event.currentTarget);
         dispatch(formData);
+        setIsSubmitting(false);
     };
 
     return (
@@ -92,11 +117,19 @@ export default function ScheduleMeetingPage() {
                             <label className="text-xs font-medium text-slate-600" htmlFor="email">Email</label>
                             <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
                         </div>
+                         {fullName.toLowerCase() === 'admin' && email.toLowerCase() === 'nafonstudios@gmail.com' && (
+                          <div>
+                            <label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</label>
+                            <Input id="password" name="password" required type="password" placeholder="Enter admin password" className="mt-1" value={password} onChange={e => setPassword(e.target.value)} />
+                          </div>
+                        )}
                         <div>
                             <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
                             <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1"/>
                         </div>
-                        <SubmitButton />
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting ? 'Submitting...' : 'Submit Request'} <Send className="ml-2 h-4 w-4" />
+                        </Button>
                     </form>
                 </Card>
             </div>

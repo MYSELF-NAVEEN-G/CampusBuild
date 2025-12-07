@@ -3,17 +3,20 @@
 
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
-import { useFirebase } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { updateOrderStatus } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, FlaskConical } from 'lucide-react';
+import { ArrowLeft, FlaskConical, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+
 
 interface Order {
   id: string;
@@ -29,13 +32,26 @@ interface Order {
 }
 
 export default function AdminPage() {
-  const { firestore } = useFirebase();
+  const { firestore, auth } = useFirebase();
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!firestore) return;
+    // Redirect non-admins or if loading is done and there's no user
+    if (!isUserLoading && (!user || user.email !== 'nafonstudios@gmail.com')) {
+        toast({
+            title: "Access Denied",
+            description: "You must be an admin to view this page.",
+            variant: "destructive",
+        });
+        router.push('/schedule-meeting');
+        return;
+    }
+
+    if (!firestore || !user) return; // Wait for user and firestore
 
     setLoading(true);
     const ordersCollection = collection(firestore, 'orders');
@@ -48,6 +64,7 @@ export default function AdminPage() {
         setOrders(fetchedOrders);
         setLoading(false);
     }, (error) => {
+        console.error("Firestore onSnapshot error: ", error)
         const permissionError = new FirestorePermissionError({
           path: 'orders',
           operation: 'list',
@@ -57,7 +74,7 @@ export default function AdminPage() {
     });
 
     return () => unsubscribe();
-  }, [firestore]);
+  }, [firestore, user, isUserLoading, router, toast]);
 
   const handleStatusChange = async (orderId: string, status: 'Completed' | 'Not Completed') => {
     const result = await updateOrderStatus(orderId, { status });
@@ -83,9 +100,24 @@ export default function AdminPage() {
     });
   }
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  const handleLogout = async () => {
+    await signOut(auth);
+    toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+    });
+    router.push('/');
   }
+
+  if (loading || isUserLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading Admin Dashboard...</div>;
+  }
+  
+  if (!user) {
+    // This case is handled by the redirect effect, but as a fallback
+    return <div className="flex justify-center items-center h-screen">Redirecting...</div>;
+  }
+
 
   return (
     <>
@@ -102,12 +134,18 @@ export default function AdminPage() {
                         <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Admin Dashboard</p>
                     </div>
                 </div>
-                <Button asChild variant="outline">
-                    <Link href="/">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
-                    </Link>
-                </Button>
+                 <div className="flex items-center gap-4">
+                    <Button asChild variant="outline">
+                        <Link href="/">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Back to Home
+                        </Link>
+                    </Button>
+                    <Button variant="destructive" onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                    </Button>
+                </div>
             </div>
         </div>
     </header>
