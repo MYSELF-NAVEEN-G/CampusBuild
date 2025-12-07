@@ -1,20 +1,13 @@
+
 'use client';
 
-import {
-  ArrowLeft,
-  FlaskConical,
-  LogOut,
-  Package,
-  ShoppingBag,
-  Users,
-} from 'lucide-react';
+import { ArrowLeft, FlaskConical, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
 
 const adminEmails = [
@@ -30,7 +23,6 @@ export default function AdminLayout({
   const { auth } = useFirebase();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -71,8 +63,6 @@ export default function AdminLayout({
     );
   }
 
-  const isSuperAdmin = user.email === 'naveen.contactme1@gmail.com';
-
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200/80">
@@ -107,49 +97,7 @@ export default function AdminLayout({
           </div>
         </div>
       </header>
-      <div className="flex">
-        <aside className="w-64 bg-white border-r border-slate-200 p-4">
-          <nav className="flex flex-col gap-2">
-            <Link
-              href="/admin"
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900',
-                pathname === '/admin' && 'bg-slate-200 font-semibold'
-              )}
-            >
-              <ShoppingBag className="h-4 w-4" />
-              Order Management
-            </Link>
-            {isSuperAdmin && (
-              <>
-                <Link
-                  href="/admin/projects"
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900',
-                    pathname === '/admin/projects' &&
-                      'bg-slate-200 font-semibold'
-                  )}
-                >
-                  <Package className="h-4 w-4" />
-                  Project Management
-                </Link>
-                <Link
-                  href="/admin/employees"
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900',
-                    pathname === '/admin/employees' &&
-                      'bg-slate-200 font-semibold'
-                  )}
-                >
-                  <Users className="h-4 w-4" />
-                  Employee Management
-                </Link>
-              </>
-            )}
-          </nav>
-        </aside>
-        <main className="flex-1 p-6">{children}</main>
-      </div>
+      <main className="p-6">{children}</main>
     </div>
   );
 }
