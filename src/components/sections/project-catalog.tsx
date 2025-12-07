@@ -29,7 +29,7 @@ const ProjectCatalog = () => {
         setLoading(true);
         const projectsCollection = collection(firestore, 'projects');
         const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
-            const fetchedProjects = snapshot.docs.map((doc, index) => {
+            const fetchedProjects = snapshot.docs.map((doc) => {
                 const data = doc.data() as FirestoreProject;
                 
                 return {
@@ -57,23 +57,6 @@ const ProjectCatalog = () => {
 
         return () => unsubscribe();
     }, [firestore]);
-    
-    // Add a simple hashCode function to String prototype for temporary unique numeric IDs
-    // This is not cryptographically secure, just for component keys.
-    useEffect(() => {
-        Object.defineProperty(String.prototype, "hashCode", {
-            value: function() {
-                var hash = 0, i, chr;
-                if (this.length === 0) return hash;
-                for (i = 0; i < this.length; i++) {
-                    chr   = this.charCodeAt(i);
-                    hash  = ((hash << 5) - hash) + chr;
-                    hash |= 0; // Convert to 32bit integer
-                }
-                return hash;
-            }
-        });
-    }, []);
 
 
     const filteredProjects = filter === 'All' ? projects : projects.filter(p => p.category === filter);
@@ -118,7 +101,7 @@ const ProjectCatalog = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {filteredProjects.map((project, index) => (
-                            <div key={project.id} className="fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                            <div key={project.docId} className="fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
                                 <ProjectCard project={project} />
                             </div>
                         ))}

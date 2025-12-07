@@ -6,7 +6,7 @@ import type { Project } from '@/lib/projects';
 interface AppContextType {
   cart: Project[];
   addToCart: (project: Project) => void;
-  removeFromCart: (projectId: number) => void;
+  removeFromCart: (projectId: string) => void;
   clearCart: () => void;
   isChatOpen: boolean;
   toggleAiChat: () => void;
@@ -32,7 +32,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (projectId: number) => {
+  const removeFromCart = (projectId: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== projectId));
   }
 
