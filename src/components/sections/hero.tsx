@@ -24,7 +24,7 @@ const Hero = () => {
   }, []);
 
   const calculateParallax = (strength: number) => {
-    if (typeof window === 'undefined' || !isClient) return {};
+    if (!isClient) return {}; // Don't apply transform on server or before hydration
     const x = (mousePosition.x - window.innerWidth / 2) / strength;
     const y = (mousePosition.y - window.innerHeight / 2) / strength;
     return {
@@ -43,19 +43,19 @@ const Hero = () => {
       
       {/* Animated Shapes */}
       <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none z-0">
-          <div style={isClient ? calculateParallax(-20) : {}} className="transition-transform duration-500 ease-out">
+          <div style={calculateParallax(-20)} className="transition-transform duration-500 ease-out">
             <Circle className="absolute -right-20 top-1/4 w-48 h-48 text-accent/10" />
           </div>
-          <div style={isClient ? calculateParallax(30) : {}} className="transition-transform duration-500 ease-out">
+          <div style={calculateParallax(30)} className="transition-transform duration-500 ease-out">
             <Box className="absolute right-1/4 top-1/2 w-32 h-32 text-primary/10" />
           </div>
-          <div style={isClient ? calculateParallax(-50) : {}} className="transition-transform duration-500 ease-out">
+          <div style={calculateParallax(-50)} className="transition-transform duration-500 ease-out">
             <Triangle className="absolute right-1/2 bottom-1/4 w-40 h-40 text-accent/5" />
           </div>
-          <div style={isClient ? calculateParallax(15) : {}} className="transition-transform duration-500 ease-out">
+          <div style={calculateParallax(15)} className="transition-transform duration-500 ease-out">
             <div className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
           </div>
-          <div style={isClient ? calculateParallax(40) : {}} className="transition-transform duration-500 ease-out">
+          <div style={calculateParallax(40)} className="transition-transform duration-500 ease-out">
             <div className="absolute bottom-10 right-1/2 w-40 h-40 bg-accent/20 rounded-full blur-3xl"></div>
           </div>
       </div>
@@ -63,18 +63,18 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16">
           <div className="text-left">
-            <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent text-xs font-code mb-6 fade-in-up">
+            <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent text-xs font-code mb-6">
               <span className="flex w-2 h-2 bg-accent rounded-full mr-2 animate-pulse"></span>
               POWERED BY NAFON STUDIOS
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6 font-headline fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6 font-headline">
               Your Innovation Partner. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">From Idea to Prototype.</span>
             </h1>
-            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-2xl fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-2xl">
               Browse our catalog of ready-made projects or use our AI assistant to spec out a completely custom build. We deliver hardware, code, and documentation.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 fade-in-up" style={{ animationDelay: '0.6s' }}>
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="shadow-lg shadow-primary/30" onClick={() => scrollToSection('projectCatalog')}>
                 Browse Projects
                 <ArrowRight className="ml-2 h-4 w-4" />
