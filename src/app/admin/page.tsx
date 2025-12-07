@@ -40,8 +40,14 @@ export default function AdminPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Redirect non-admins or if loading is done and there's no user
-    if (!isUserLoading && (!user || user.email !== 'nafonstudios@gmail.com')) {
+    // If auth is still loading, wait.
+    if (isUserLoading) {
+      setLoading(true);
+      return;
+    }
+
+    // After loading, if there's no user or the user is not an admin, redirect.
+    if (!user || user.email !== 'nafonstudios@gmail.com') {
         toast({
             title: "Access Denied",
             description: "You must be an admin to view this page.",
@@ -51,11 +57,10 @@ export default function AdminPage() {
         return;
     }
 
-    if (!firestore || !user) return; // Wait for user and firestore
+    // Now that we've confirmed we are an authenticated admin, we can safely listen for data.
+    if (!firestore) return;
 
-    setLoading(true);
     const ordersCollection = collection(firestore, 'orders');
-
     const unsubscribe = onSnapshot(ordersCollection, (snapshot) => {
         const fetchedOrders = snapshot.docs.map(doc => ({
             id: doc.id,
