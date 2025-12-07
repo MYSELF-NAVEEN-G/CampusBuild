@@ -101,6 +101,7 @@ export default function AdminPage() {
   }
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
     toast({
         title: 'Logged Out',
