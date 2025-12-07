@@ -2,7 +2,7 @@
 "use server";
 
 import { generateProjectIdea } from "@/ai/flows/generate-project-idea-flow";
-import { firestore } from "@/firebase";
+import { getSdks } from "@/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import type { Project } from "@/lib/projects";
 
@@ -70,6 +70,7 @@ export async function getAiResponse(topic: string): Promise<string> {
 }
 
 export async function handleCheckout(cart: Project[], customerDetails: { name: string; email: string; phone: string }): Promise<{success: boolean, message: string}> {
+    const { firestore } = getSdks();
     const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
     const taxes = subtotal * 0.08;
     const total = subtotal + taxes;
