@@ -2,6 +2,8 @@
 "use server";
 
 import { generateProjectIdea } from "@/ai/flows/generate-project-idea-flow";
+import { firestore } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import type { Project } from "@/lib/projects";
 
 export interface CustomOrderFormState {
@@ -67,27 +69,44 @@ export async function getAiResponse(topic: string): Promise<string> {
     }
 }
 
-export async function handleCheckout(cart: Project[]): Promise<{success: boolean, message: string}> {
+export async function handleCheckout(cart: Project[], customerDetails: { name: string; email: string; phone: string }): Promise<{success: boolean, message: string}> {
     const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
     const taxes = subtotal * 0.08;
     const total = subtotal + taxes;
 
-    // --- SERVER-SIDE LOG ---
-    // This is where you would integrate an email sending service (e.g., SendGrid, Resend).
-    // The details are logged on the server, not the client's browser.
-    console.log("--- NEW ORDER RECEIVED (SERVER) ---");
-    console.log("Items:", cart.map(item => ({ title: item.title, price: item.price })));
-    console.log("Subtotal:", subtotal.toFixed(2));
-    console.log("Taxes:", taxes.toFixed(2));
-    console.log("Total:", total.toFixed(2));
-    console.log("--- END OF ORDER (SERVER) ---");
-    
-    // Simulate sending emails
-    console.log("Simulating: Sending customer confirmation email...");
-    console.log("Simulating: Sending admin notification email...");
-
-    return {
-        success: true,
-        message: "Order Placed! A confirmation email with your bill details has been sent.",
+    const orderData = {
+        customerName: customerDetails.name,
+        customerEmail: customerDetails.email,
+        customerPhone: customerDetails.phone,
+        items: cart.map(item => ({ id: item.id, title: item.title, price: item.price })),
+        subtotal,
+        taxes,
+        total,
+        createdAt: serverTimestamp(),
+        status: 'pending',
     };
+
+    try {
+        const ordersCollection = collection(firestore, 'orders');
+        await addDoc(ordersCollection, orderData);
+
+        // This is where you would integrate a real email sending service (e.g., SendGrid, Resend)
+        // by calling another server action or an external API.
+        console.log("--- NEW ORDER SAVED TO FIRESTORE (SERVER) ---");
+        console.log(orderData);
+        console.log("--- END OF ORDER (SERVER) ---");
+        console.log("Simulating: Sending customer confirmation email...");
+        console.log("Simulating: Sending admin notification email...");
+
+        return {
+            success: true,
+            message: "Order Placed! A confirmation email will be sent shortly. IMPORTANT: If you do not receive a call or email from our team within 2 business days, your order may not have been saved correctly. Please contact us.",
+        };
+    } catch (error) {
+        console.error("Error saving order to Firestore:", error);
+        return {
+            success: false,
+            message: "There was an error placing your order. Please try again or contact support.",
+        };
+    }
 }
