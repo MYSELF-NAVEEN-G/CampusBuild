@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ArrowLeft, FlaskConical } from 'lucide-react';
+import { Send, ArrowLeft, FlaskConical, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Label } from '@/components/ui/label';
 
 const adminUsers = {
     'nafonstudios@gmail.com': 'admin',
@@ -31,6 +32,8 @@ export default function ScheduleMeetingPage() {
     const [password, setPassword] = useState('');
     const [preferredTime, setPreferredTime] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [paymentInfo, setPaymentInfo] = useState('');
+
 
     const handleAdminLogin = async () => {
         if (!auth) {
@@ -100,6 +103,8 @@ export default function ScheduleMeetingPage() {
             preferredTime,
             assignedTo: 'Not Assigned',
             createdAt: serverTimestamp(),
+            fee: 150, // Add fee
+            paymentInfo, // Add payment info
         };
 
         try {
@@ -107,8 +112,8 @@ export default function ScheduleMeetingPage() {
             await addDoc(consultationsCollectionRef, consultationData);
 
             toast({
-                title: 'Consultation Request Sent!',
-                description: "We've received your request and will contact you shortly.",
+                title: 'Consultation Booked!',
+                description: "We've received your request and payment. We'll contact you shortly to confirm the meeting time.",
             });
             
             // Reset form
@@ -116,6 +121,7 @@ export default function ScheduleMeetingPage() {
             setEmail('');
             setProjectTopic('');
             setPreferredTime('');
+            setPaymentInfo('');
 
         } catch (error) {
             console.error("Error submitting consultation:", error);
@@ -180,40 +186,57 @@ export default function ScheduleMeetingPage() {
             <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Schedule a Consultation</h2>
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Book a Consultation</h2>
                         <p className="mt-2 text-sm text-gray-600">
-                            Have questions or a custom idea? Schedule a free consultation with our R&D team to discuss your project in detail.
+                            Book a 30-minute one-on-one session with our R&D team to discuss your project in detail. The fee for this consultation is ₹150.
                         </p>
                     </div>
                     <Card className="p-6 sm:p-8 shadow-xl">
                         <form onSubmit={handleFormSubmit} className="space-y-6">
                             <div>
-                                <label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</label>
+                                <Label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" className="mt-1" value={fullName} onChange={e => setFullName(e.target.value)} />
                             </div>
                             <div>
-                                <label className="text-xs font-medium text-slate-600" htmlFor="email">Email</label>
+                                <Label className="text-xs font-medium text-slate-600" htmlFor="email">Email</Label>
                                 <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
                             </div>
                              {isAdminField ? (
                               <div>
-                                <label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</label>
+                                <Label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</Label>
                                 <Input id="password" name="password" required type="password" placeholder="Enter admin password" className="mt-1" value={password} onChange={e => setPassword(e.target.value)} />
                               </div>
                             ) : (
                                 <>
                                     <div>
-                                        <label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</label>
+                                        <Label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</Label>
                                         <Input id="projectTopic" name="projectTopic" placeholder="e.g., IoT, AI in healthcare" required type="text" className="mt-1" value={projectTopic} onChange={e => setProjectTopic(e.target.value)} />
                                     </div>
                                     <div>
-                                        <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
+                                        <Label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</Label>
                                         <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                        <Label className="text-xs font-medium text-slate-600" htmlFor="payment">Payment Details (₹150)</Label>
+                                        <div className="relative">
+                                            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                            <Input 
+                                                id="payment" 
+                                                name="payment" 
+                                                placeholder="Card Number or UPI ID (mock field)" 
+                                                required 
+                                                type="text" 
+                                                className="pl-9"
+                                                value={paymentInfo}
+                                                onChange={e => setPaymentInfo(e.target.value)} 
+                                            />
+                                        </div>
+                                         <p className="text-xs text-slate-500 pt-1">This is a mock payment field for demonstration purposes.</p>
                                     </div>
                                 </>
                             )}
                             <Button type="submit" disabled={isSubmitting} className="w-full">
-                                {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Submit Request'}
+                                {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Book Now & Pay ₹150'}
                                 {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
                             </Button>
                         </form>
