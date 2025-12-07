@@ -38,7 +38,7 @@ const HowItWorks = () => {
                     {steps.map((step, index) => (
                         <div key={index} className="h-full fade-in-up" style={{ animationDelay: `${index * 0.15}s` }}>
                             <Link href={step.href} className="block h-full">
-                                <Card className="h-full bg-slate-50 border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-xl transition-all flex flex-col group">
+                                <Card className="h-full bg-slate-50 border-slate-100 hover:border-primary/30 hover:bg-white hover:shadow-xl transition-all flex flex-col group hover:-translate-y-2">
                                     <CardHeader className="relative">
                                         <div className="absolute -top-8 -right-4 w-12 h-12 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg font-headline">{index + 1}</div>
                                         <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
