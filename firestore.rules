@@ -101,7 +101,7 @@ service cloud.firestore {
     
     match /orders/{orderId} {
       allow create: if isSignedIn();
-      allow read, update, delete: if false; // TBD: admin only
+      allow read, update, delete: if isSignedIn(); // TBD: admin only, for now allow signed in users to manage
     }
 
     /**
@@ -122,3 +122,4 @@ service cloud.firestore {
     }
   }
 }
+
