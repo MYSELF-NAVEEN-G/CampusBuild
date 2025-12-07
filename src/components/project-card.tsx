@@ -28,10 +28,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
     };
 
     const isImagePlaceholder = (image: Project['image']): image is ImagePlaceholder => {
-        return typeof image === 'object' && 'imageUrl' in image;
+        return typeof image === 'object' && image !== null && 'imageUrl' in image;
     };
+    
+    // Fallback image in case project.image is invalid
+    const fallbackImage = 'https://picsum.photos/seed/1/600/400';
 
-    const imageUrl = isImagePlaceholder(project.image) ? project.image.imageUrl : project.image;
+    const imageUrl = isImagePlaceholder(project.image) 
+        ? project.image.imageUrl 
+        : (typeof project.image === 'string' && project.image ? project.image : fallbackImage);
+
     const imageDescription = isImagePlaceholder(project.image) ? project.image.description : project.title;
     const imageHint = isImagePlaceholder(project.image) ? project.image.imageHint : '';
 
