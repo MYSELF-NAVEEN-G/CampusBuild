@@ -96,16 +96,16 @@ export default function AdminLayout({
             <ul className="space-y-2">
                 {navItems.filter(item => item.visible).map(item => (
                     <li key={item.href}>
-                        <Link href={item.href} legacyBehavior>
-                            <a className={cn(
+                        <Link href={item.href} className={cn(
                                 "flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition-colors",
                                 pathname === item.href
                                     ? "bg-primary text-primary-foreground"
                                     : "text-slate-600 hover:bg-slate-100"
                             )}>
+                            
                                 <item.icon className="h-5 w-5" />
                                 {item.label}
-                            </a>
+                            
                         </Link>
                     </li>
                 ))}
@@ -137,5 +137,4 @@ export default function AdminLayout({
     </div>
   );
 }
-
     
