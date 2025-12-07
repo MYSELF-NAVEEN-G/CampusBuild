@@ -2,36 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Box, Circle, Triangle } from 'lucide-react';
-import { useState, useEffect } from 'react';
 
 const Hero = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    // This ensures this code runs only on the client, after hydration
-    setIsClient(true);
-    
-    const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-
-  const calculateParallax = (strength: number) => {
-    if (!isClient) return {}; // Don't apply transform on server or before hydration
-    const x = (mousePosition.x - window.innerWidth / 2) / strength;
-    const y = (mousePosition.y - window.innerHeight / 2) / strength;
-    return {
-      transform: `translate(${x}px, ${y}px)`,
-    };
-  };
-  
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -41,21 +13,21 @@ const Hero = () => {
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/20 to-transparent"></div>
       
-      {/* Animated Shapes */}
+      {/* Static Shapes */}
       <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none z-0">
-          <div style={calculateParallax(-20)} className="transition-transform duration-500 ease-out">
+          <div>
             <Circle className="absolute -right-20 top-1/4 w-48 h-48 text-accent/10" />
           </div>
-          <div style={calculateParallax(30)} className="transition-transform duration-500 ease-out">
+          <div>
             <Box className="absolute right-1/4 top-1/2 w-32 h-32 text-primary/10" />
           </div>
-          <div style={calculateParallax(-50)} className="transition-transform duration-500 ease-out">
+          <div>
             <Triangle className="absolute right-1/2 bottom-1/4 w-40 h-40 text-accent/5" />
           </div>
-          <div style={calculateParallax(15)} className="transition-transform duration-500 ease-out">
+          <div>
             <div className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
           </div>
-          <div style={calculateParallax(40)} className="transition-transform duration-500 ease-out">
+          <div>
             <div className="absolute bottom-10 right-1/2 w-40 h-40 bg-accent/20 rounded-full blur-3xl"></div>
           </div>
       </div>
