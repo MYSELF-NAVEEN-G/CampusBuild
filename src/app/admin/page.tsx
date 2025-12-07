@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs, onSnapshot, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, QueryDocumentSnapshot, DocumentData, Timestamp } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,7 +22,7 @@ interface Order {
   total: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
-  assigned: 'Assigned' | 'Not Assigned';
+  assigned: string;
   deadline: string;
 }
 
@@ -60,7 +61,7 @@ export default function AdminPage() {
     });
   };
 
-  const handleAssignedChange = async (orderId: string, assigned: 'Assigned' | 'Not Assigned') => {
+  const handleAssignedChange = async (orderId: string, assigned: string) => {
     const result = await updateOrderStatus(orderId, { assigned });
     toast({
         title: result.success ? 'Success' : 'Error',
@@ -115,7 +116,7 @@ export default function AdminPage() {
               <TableHead>Order Total</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Assigned</TableHead>
+              <TableHead>Assigned To</TableHead>
               <TableHead>Deadline</TableHead>
             </TableRow>
           </TableHeader>
@@ -141,15 +142,12 @@ export default function AdminPage() {
                   </Select>
                 </TableCell>
                 <TableCell>
-                    <Select value={order.assigned} onValueChange={(value: 'Assigned' | 'Not Assigned') => handleAssignedChange(order.id, value)}>
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Assigned">Assigned</SelectItem>
-                            <SelectItem value="Not Assigned">Not Assigned</SelectItem>
-                        </SelectContent>
-                    </Select>
+                  <Input 
+                    type="text" 
+                    defaultValue={order.assigned} 
+                    onBlur={(e) => handleAssignedChange(order.id, e.target.value)}
+                    placeholder="Assign to..."
+                   />
                 </TableCell>
                 <TableCell>
                     <Input type="date" defaultValue={order.deadline} onBlur={(e) => handleDeadlineChange(order.id, e.target.value)} />
