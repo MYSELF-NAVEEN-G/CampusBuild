@@ -6,19 +6,12 @@ import { getFirestore } from 'firebase/firestore';
 
 // This function is for SERVER-SIDE use only.
 export function initializeFirebase(): { firebaseApp: FirebaseApp; auth: any; firestore: any; } {
-  if (!getApps().length) {
-    let firebaseApp;
-    try {
-      firebaseApp = initializeApp();
-    } catch (e) {
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
-      firebaseApp = initializeApp(firebaseConfig);
-    }
-    return getSdks(firebaseApp);
+  if (getApps().length) {
+    return getSdks(getApp());
   }
-  return getSdks(getApp());
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  return getSdks(firebaseApp);
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
