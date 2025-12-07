@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Send, ArrowLeft, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, AuthError } from 'firebase/auth';
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -55,21 +55,40 @@ export default function ScheduleMeetingPage() {
                 return;
             }
             try {
-                // IMPORTANT: In a real app, the admin password should not be hardcoded.
-                // This is for demonstration purposes.
-                await signInWithEmailAndPassword(auth, email, 'nafon2025');
+                // First, try to sign in.
+                await signInWithEmailAndPassword(auth, email, password);
                 toast({
                   title: 'Admin Login Successful',
                   description: 'Redirecting to the admin dashboard.',
                 });
                 router.push('/admin');
             } catch (error: any) {
-                console.error("Admin login failed:", error);
-                toast({
-                    title: 'Admin Login Failed',
-                    description: error.message || 'Please check your credentials or password.',
-                    variant: 'destructive',
-                });
+                // If sign-in fails because the user doesn't exist, create the user.
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+                    try {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        toast({
+                          title: 'Admin Account Created',
+                          description: 'Login successful. Redirecting to the admin dashboard.',
+                        });
+                        router.push('/admin');
+                    } catch (creationError: any) {
+                        console.error("Admin account creation failed:", creationError);
+                        toast({
+                            title: 'Admin Creation Failed',
+                            description: creationError.message || 'Could not create the admin account.',
+                            variant: 'destructive',
+                        });
+                    }
+                } else {
+                    // Handle other errors (e.g., wrong password, network issues)
+                    console.error("Admin login failed:", error);
+                    toast({
+                        title: 'Admin Login Failed',
+                        description: error.message || 'Please check your credentials.',
+                        variant: 'destructive',
+                    });
+                }
             } finally {
                 setIsSubmitting(false);
             }
@@ -151,3 +170,5 @@ const Card = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => 
       {...props}
     />
   );
+
+    
