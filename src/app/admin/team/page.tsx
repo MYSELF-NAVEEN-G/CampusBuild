@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 interface Employee {
   id: string;
@@ -41,6 +43,13 @@ export default function TeamPage() {
       setLoading(false);
     }, (error) => {
       console.error('Error fetching employees:', error);
+      
+      const contextualError = new FirestorePermissionError({
+        path: 'employees',
+        operation: 'list',
+      });
+      errorEmitter.emit('permission-error', contextualError);
+
       toast({ title: 'Error', description: 'Could not fetch employee data. Check your permissions.', variant: 'destructive'});
       setLoading(false);
     });
