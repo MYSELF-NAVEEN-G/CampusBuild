@@ -12,6 +12,7 @@ import { updateOrderStatus } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
+import { errorEmitter, FirestorePermissionError } from '@/firebase';
 
 interface Order {
   id: string;
@@ -46,7 +47,12 @@ export default function AdminPage() {
         setOrders(fetchedOrders);
         setLoading(false);
     }, (error) => {
-        console.error("Error fetching orders: ", error);
+        console.error("Error fetching orders from snapshot: ", error);
+        const permissionError = new FirestorePermissionError({
+          path: 'orders',
+          operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
         setLoading(false);
     });
 
