@@ -53,13 +53,13 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 
 // This is the type we'll use in the component state, which includes the Firestore document ID.
-type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string; desc: string; packageIncluded: string[] };
+type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string; desc: string; bundleIncluded: string[] };
 
 // This is the type for the data stored in Firestore.
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' > & {
   image: string; // Storing image as a data URL string
   desc: string;
-  packageIncluded: string[];
+  bundleIncluded: string[];
 };
 
 export default function ProjectManagementPage() {
@@ -79,7 +79,7 @@ export default function ProjectManagementPage() {
     image: '', // Will hold data URL
     tags: [] as string[],
     desc: '',
-    packageIncluded: [] as string[],
+    bundleIncluded: [] as string[],
   };
   const [formData, setFormData] = useState<typeof initialFormData>(initialFormData);
 
@@ -118,7 +118,7 @@ export default function ProjectManagementPage() {
           image: data.image,
           tags: data.tags || [],
           desc: data.desc,
-          packageIncluded: data.packageIncluded || [],
+          bundleIncluded: data.bundleIncluded || [],
         } as Project;
       });
       setProjects(fetchedProjects);
@@ -142,7 +142,7 @@ export default function ProjectManagementPage() {
         image: project.image,
         tags: project.tags || [],
         desc: project.desc,
-        packageIncluded: project.packageIncluded || [],
+        bundleIncluded: project.bundleIncluded || [],
       });
     } else {
       setEditingProject(null);
@@ -224,8 +224,8 @@ export default function ProjectManagementPage() {
     setFormData(prev => ({ ...prev, tags: e.target.value.split(',').map(tag => tag.trim()) }));
   };
   
-  const handlePackageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, packageIncluded: e.target.value.split('\n').map(item => item.trim()) }));
+  const handleBundleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, bundleIncluded: e.target.value.split('\n').map(item => item.trim()) }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -247,7 +247,7 @@ export default function ProjectManagementPage() {
       image: formData.image, // Store data URL
       tags: formData.tags,
       desc: formData.desc,
-      packageIncluded: formData.packageIncluded,
+      bundleIncluded: formData.bundleIncluded,
       updatedAt: serverTimestamp(),
     };
 
@@ -349,8 +349,8 @@ export default function ProjectManagementPage() {
                     <Input name="title" value={formData.title} onChange={handleFormChange} placeholder="Project Title" required />
                     <Textarea name="desc" value={formData.desc} onChange={handleFormChange} placeholder="Project Description" required className="h-24" />
                     <div>
-                        <Label htmlFor="packageIncluded">Package Included (one item per line)</Label>
-                        <Textarea id="packageIncluded" name="packageIncluded" value={formData.packageIncluded.join('\n')} onChange={handlePackageChange} placeholder="e.g.,&#10;Hardware Kit&#10;Source Code&#10;Assembly Guide" required className="h-28 mt-1" />
+                        <Label htmlFor="bundleIncluded">Bundle Included (one item per line)</Label>
+                        <Textarea id="bundleIncluded" name="bundleIncluded" value={formData.bundleIncluded.join('\n')} onChange={handleBundleChange} placeholder="e.g.,&#10;Hardware Kit&#10;Source Code&#10;Assembly Guide" required className="h-28 mt-1" />
                     </div>
                 </div>
                 <div className="space-y-4">

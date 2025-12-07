@@ -43,9 +43,9 @@
           "type": "string",
           "description": "A brief description of the project."
         },
-        "packageIncluded": {
+        "bundleIncluded": {
           "type": "array",
-          "description": "List of items included in the project package.",
+          "description": "List of items included in the project bundle.",
           "items": {
             "type": "string"
           }

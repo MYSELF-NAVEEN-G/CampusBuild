@@ -10,5 +10,5 @@ export interface Project {
     image: string; // Can be a placeholder ID string or a data URL string
     tags: string[];
     desc: string;
-    packageIncluded: string[];
+    bundleIncluded: string[];
 }

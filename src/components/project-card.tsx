@@ -95,11 +95,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                     <DialogDescription className="text-base text-slate-600 pt-2">{project.desc}</DialogDescription>
                 </DialogHeader>
                 <div className="py-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {project.packageIncluded && project.packageIncluded.length > 0 && (
+                    {project.bundleIncluded && project.bundleIncluded.length > 0 && (
                       <div className="text-sm text-slate-700">
-                        <h4 className="font-bold uppercase tracking-wider mb-3 flex items-center text-slate-800"><PackageCheck className="mr-2 h-5 w-5 text-primary" />Package Includes</h4>
+                        <h4 className="font-bold uppercase tracking-wider mb-3 flex items-center text-slate-800"><PackageCheck className="mr-2 h-5 w-5 text-primary" />Bundle Includes</h4>
                         <ul className="space-y-2 list-disc list-inside bg-slate-50 p-4 rounded-lg border">
-                          {project.packageIncluded.map((item, index) => (
+                          {project.bundleIncluded.map((item, index) => (
                             <li key={index}>{item}</li>
                           ))}
                         </ul>
