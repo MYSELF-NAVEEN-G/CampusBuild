@@ -2,7 +2,6 @@
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { submitContactForm, type ContactFormState } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -11,16 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Send, ArrowLeft, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 import { useFirebase } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, AuthError } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
-function SubmitButton() {
-    const { pending } = useFormStatus();
-    return (
-      <Button type="submit" disabled={pending} className="w-full">
-        {pending ? 'Sending...' : 'Schedule a Call'} <Send className="ml-2 h-4 w-4" />
-      </Button>
-    );
-}
+const adminUsers = {
+    'nafonstudios@gmail.com': 'admin',
+    'naveen.contactme1@gmail.com': 'naveen'
+};
 
 export default function ScheduleMeetingPage() {
     const initialState: ContactFormState = { message: "", success: false };
@@ -31,7 +26,7 @@ export default function ScheduleMeetingPage() {
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState(''); // New state for password
+    const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -44,131 +39,141 @@ export default function ScheduleMeetingPage() {
         }
     }, [state, toast]);
 
-    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setIsSubmitting(true);
+    const handleAdminLogin = async () => {
+        if (!auth) {
+            toast({ title: 'Error', description: 'Authentication service is not available.', variant: 'destructive' });
+            return;
+        }
 
-        if (fullName.toLowerCase() === 'admin' && email.toLowerCase() === 'nafonstudios@gmail.com') {
-            if (!auth) {
-                toast({ title: 'Error', description: 'Authentication service is not available.', variant: 'destructive' });
-                setIsSubmitting(false);
-                return;
-            }
-            try {
-                // First, try to sign in.
-                await signInWithEmailAndPassword(auth, email, password);
-                toast({
-                  title: 'Admin Login Successful',
-                  description: 'Redirecting to the admin dashboard.',
-                });
-                router.push('/admin');
-            } catch (error: any) {
-                // If sign-in fails because the user doesn't exist, create the user.
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
-                    try {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                        toast({
-                          title: 'Admin Account Created',
-                          description: 'Login successful. Redirecting to the admin dashboard.',
-                        });
-                        router.push('/admin');
-                    } catch (creationError: any) {
-                        console.error("Admin account creation failed:", creationError);
-                        toast({
-                            title: 'Admin Creation Failed',
-                            description: creationError.message || 'Could not create the admin account.',
-                            variant: 'destructive',
-                        });
-                    }
-                } else {
-                    // Handle other errors (e.g., wrong password, network issues)
-                    console.error("Admin login failed:", error);
+        setIsSubmitting(true);
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            toast({
+                title: 'Admin Login Successful',
+                description: 'Redirecting to the admin dashboard.',
+            });
+            router.push('/admin');
+        } catch (error: any) {
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+                try {
+                    await createUserWithEmailAndPassword(auth, email, password);
                     toast({
-                        title: 'Admin Login Failed',
-                        description: error.message || 'Please check your credentials.',
+                        title: 'Admin Account Created',
+                        description: 'Login successful. Redirecting to the admin dashboard.',
+                    });
+                    router.push('/admin');
+                } catch (creationError: any) {
+                    console.error("Admin account creation failed:", creationError);
+                    toast({
+                        title: 'Admin Creation Failed',
+                        description: creationError.message || 'Could not create the admin account.',
                         variant: 'destructive',
                     });
                 }
-            } finally {
-                setIsSubmitting(false);
+            } else {
+                console.error("Admin login failed:", error);
+                toast({
+                    title: 'Admin Login Failed',
+                    description: error.message || 'Please check your credentials.',
+                    variant: 'destructive',
+                });
             }
-            return;
+        } finally {
+            setIsSubmitting(false);
         }
-        
-        const formData = new FormData(event.currentTarget);
-        dispatch(formData);
-        setIsSubmitting(false);
     };
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        
+        const lowerCaseEmail = email.toLowerCase();
+        const lowerCaseFullName = fullName.toLowerCase();
+
+        const isAdminLogin = (adminUsers as Record<string, string>)[lowerCaseEmail] === lowerCaseFullName;
+
+        if (isAdminLogin) {
+            await handleAdminLogin();
+        } else {
+            setIsSubmitting(true);
+            const formData = new FormData(event.currentTarget);
+            dispatch(formData);
+            setIsSubmitting(false);
+        }
+    };
+
+    const lowerCaseEmail = email.toLowerCase();
+    const lowerCaseFullName = fullName.toLowerCase();
+    const isAdminField = (adminUsers as Record<string, string>)[lowerCaseEmail] === lowerCaseFullName;
 
     return (
         <>
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200/80">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-20 items-center">
-                    <Link href="/" className="flex items-center cursor-pointer group">
-                        <div className="relative w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
-                            <div className="absolute inset-0 bg-primary opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                            <FlaskConical className="text-accent" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">NAFON</h1>
-                            <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Project Hub</p>
-                        </div>
-                    </Link>
-                    <Button asChild variant="outline">
-                        <Link href="/">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Home
+            <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200/80">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-20 items-center">
+                        <Link href="/" className="flex items-center cursor-pointer group">
+                            <div className="relative w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
+                                <div className="absolute inset-0 bg-primary opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                                <FlaskConical className="text-accent" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">NAFON</h1>
+                                <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Project Hub</p>
+                            </div>
                         </Link>
-                    </Button>
-                </div>
-            </div>
-        </header>
-        <main className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 min-h-[calc(100vh-80px)]">
-            <div className="max-w-md w-full space-y-8">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Schedule a Consultation</h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Have questions or a custom idea? Schedule a free consultation with our R&D team to discuss your project in detail.
-                    </p>
-                </div>
-                <Card className="p-8 shadow-xl">
-                    <form onSubmit={handleFormSubmit} className="space-y-6">
-                        <div>
-                            <label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</label>
-                            <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" className="mt-1" value={fullName} onChange={e => setFullName(e.target.value)} />
-                        </div>
-                        <div>
-                            <label className="text-xs font-medium text-slate-600" htmlFor="email">Email</label>
-                            <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
-                        </div>
-                         {fullName.toLowerCase() === 'admin' && email.toLowerCase() === 'nafonstudios@gmail.com' && (
-                          <div>
-                            <label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</label>
-                            <Input id="password" name="password" required type="password" placeholder="Enter admin password" className="mt-1" value={password} onChange={e => setPassword(e.target.value)} />
-                          </div>
-                        )}
-                        <div>
-                            <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
-                            <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1"/>
-                        </div>
-                        <Button type="submit" disabled={isSubmitting} className="w-full">
-                            {isSubmitting ? 'Submitting...' : 'Submit Request'} <Send className="ml-2 h-4 w-4" />
+                        <Button asChild variant="outline">
+                            <Link href="/">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Back to Home
+                            </Link>
                         </Button>
-                    </form>
-                </Card>
-            </div>
-        </main>
+                    </div>
+                </div>
+            </header>
+            <main className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 min-h-[calc(100vh-80px)]">
+                <div className="max-w-md w-full space-y-8">
+                    <div className="text-center">
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Schedule a Consultation</h2>
+                        <p className="mt-2 text-sm text-gray-600">
+                            Have questions or a custom idea? Schedule a free consultation with our R&D team to discuss your project in detail.
+                        </p>
+                    </div>
+                    <Card className="p-8 shadow-xl">
+                        <form onSubmit={handleFormSubmit} className="space-y-6">
+                            <div>
+                                <label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</label>
+                                <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" className="mt-1" value={fullName} onChange={e => setFullName(e.target.value)} />
+                            </div>
+                            <div>
+                                <label className="text-xs font-medium text-slate-600" htmlFor="email">Email</label>
+                                <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
+                            </div>
+                             {isAdminField && (
+                              <div>
+                                <label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</label>
+                                <Input id="password" name="password" required type="password" placeholder="Enter admin password" className="mt-1" value={password} onChange={e => setPassword(e.target.value)} />
+                              </div>
+                            )}
+                            {!isAdminField && (
+                                <div>
+                                    <label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</label>
+                                    <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1"/>
+                                </div>
+                            )}
+                            <Button type="submit" disabled={isSubmitting} className="w-full">
+                                {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Submit Request'}
+                                {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
+                            </Button>
+                        </form>
+                    </Card>
+                </div>
+            </main>
         </>
     );
 }
 
-// Add a simple Card component for styling consistency.
 const Card = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
       className={`bg-white rounded-2xl border border-slate-200 ${className}`}
       {...props}
     />
-  );
-
-    
+);

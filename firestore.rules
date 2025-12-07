@@ -21,8 +21,8 @@
  *
  * Key Security Decisions:
  * - Public Project Catalog: The `/projects` collection is world-readable to allow
- *   all visitors to browse project offerings. Write access is currently disabled
- *   as an administrative role has not yet been defined in the application's logic.
+ *   all visitors to browse project offerings. Write access is strictly limited
+ *   to a designated super admin.
  * - Strict User Ownership: All data under `/users/{userId}` is strictly owned
  *   by the user corresponding to `{userId}`. This prevents any user from reading
  *   or writing another user's private data.
@@ -49,8 +49,12 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    function isSuperAdmin() {
+      return isSignedIn() && request.auth.token.email == 'naveen.contactme1@gmail.com';
+    }
+
     function isAdmin() {
-      return isSignedIn() && request.auth.token.email == 'nafonstudios@gmail.com';
+      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || isSuperAdmin());
     }
 
     function isOwner(userId) {
@@ -67,23 +71,14 @@ service cloud.firestore {
      * @description
      *   Secures the top-level project catalog. All users, including anonymous
      *   ones, can read the list of projects and view project details.
-     *   Writes are currently disabled until an admin role is implemented.
+     *   Writes are restricted to the Super Admin.
      * @path /projects/{projectId}
      * @allow (get) Any user can read a specific project document.
-     * @deny (create) An authenticated user cannot create a new project.
-     * @principle Public read access for catalog data with locked-down writes.
+     * @allow (write) Only the super admin can create, update, or delete projects.
      */
     match /projects/{projectId} {
       allow get, list: if true;
-
-      // CRITICAL: Write access is disabled. The application's data model
-      // describes "admin-only" writes but does not define an admin role. To
-      // maintain security, all write operations are denied by default.
-      // TODO: Implement an admin-check function (e.g., using custom claims)
-      // and apply it here to enable content management.
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow write: if isSuperAdmin(); // create, update, delete
     }
 
     /**
