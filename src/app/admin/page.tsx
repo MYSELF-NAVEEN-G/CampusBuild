@@ -7,7 +7,6 @@ import { useFirebase, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Trash2 } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -42,10 +41,16 @@ interface Order {
   isCustomOrder?: boolean;
 }
 
+interface Employee {
+  id: string;
+  name: string;
+}
+
 export default function AdminOrderPage() {
   const { firestore } = useFirebase();
   const { user } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -59,7 +64,7 @@ export default function AdminOrderPage() {
     };
 
     const ordersCollection = collection(firestore, 'orders');
-    const unsubscribe = onSnapshot(ordersCollection, (snapshot) => {
+    const unsubscribeOrders = onSnapshot(ordersCollection, (snapshot) => {
       const fetchedOrders = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -76,8 +81,23 @@ export default function AdminOrderPage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [firestore]);
+    let unsubscribeEmployees = () => {};
+    if (isSuperAdmin) {
+        const employeesCollection = collection(firestore, 'employees');
+        unsubscribeEmployees = onSnapshot(employeesCollection, (snapshot) => {
+            const fetchedEmployees = snapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }) as Employee[]);
+            setEmployees(fetchedEmployees);
+        }, (error) => {
+            console.error("Error fetching employees for order assignment:", error);
+            toast({ title: "Employee Fetch Error", description: "Could not fetch employee list for assignment.", variant: 'destructive' });
+        });
+    }
+
+    return () => {
+        unsubscribeOrders();
+        unsubscribeEmployees();
+    };
+  }, [firestore, isSuperAdmin, toast]);
 
   const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
     if (!firestore) return;
@@ -198,12 +218,20 @@ export default function AdminOrderPage() {
                 </TableCell>
                 <TableCell>
                   {isSuperAdmin ? (
-                    <Input
-                      type="text"
-                      defaultValue={order.assigned}
-                      onBlur={(e) => handleUpdateOrder(order.id, { assigned: e.target.value })}
-                      placeholder="Assign to..."
-                    />
+                    <Select
+                        value={order.assigned}
+                        onValueChange={(value) => handleUpdateOrder(order.id, { assigned: value })}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Assign to..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Not Assigned">Not Assigned</SelectItem>
+                            {employees.map(emp => (
+                                <SelectItem key={emp.id} value={emp.name}>{emp.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                   ) : (
                     <span>{order.assigned || 'Not Assigned'}</span>
                   )}
@@ -231,7 +259,7 @@ export default function AdminOrderPage() {
                           <>
                             <div className="font-semibold text-base">Custom Project: {order.projectTitle}</div>
                             <p><strong>Domain:</strong> {order.domain}</p>
-                            <p><strong>Delivery Required:</strong> {order.deliveryCharge && order.deliveryCharge > 0 ? `Yes ($${order.deliveryCharge.toFixed(2)})` : 'No'}</p>
+                            <p><strong>Delivery Required:</strong> {order.deliveryCharge && order.deliveryCharge > 0 ? `Yes (₹${order.deliveryCharge.toFixed(2)})` : 'No'}</p>
                             <div>
                               <strong>Detailed Requirements:</strong>
                               <p className="p-2 mt-1 bg-slate-50 border rounded-md whitespace-pre-wrap">{order.detailedRequirements}</p>
