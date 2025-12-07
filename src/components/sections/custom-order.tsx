@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -59,22 +58,21 @@ const CustomOrder = () => {
 
         const formData = new FormData(event.currentTarget);
         const customOrderData = {
+            isCustomOrder: true,
             customerName: formData.get("fullName") as string,
             customerEmail: formData.get("email") as string,
             projectTitle: formData.get("projectTitle") as string,
             domain: formData.get("domain") as string,
             deadline: formData.get("deadline") as string || '',
             detailedRequirements: formData.get("requirements") as string,
-            isCustomOrder: true,
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             deliveryStatus: 'Not Delivered',
             assigned: 'Not Assigned',
-            customerPhone: '', // Not in this form, can be added if needed
         };
 
         try {
-            // Use the user's UID to create a user-specific subcollection path
+            // All orders, including custom ones, go to the top-level 'orders' collection
             const ordersCollectionRef = collection(firestore, 'orders');
             await addDoc(ordersCollectionRef, customOrderData);
             
@@ -86,9 +84,8 @@ const CustomOrder = () => {
             setDomain('iot');
         } catch (error) {
             console.error("Error submitting custom order:", error);
-            // This will emit a detailed error for the developer overlay
             errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: `users/${user.uid}/customOrders`,
+                path: 'orders',
                 operation: 'create',
                 requestResourceData: customOrderData,
             }));
