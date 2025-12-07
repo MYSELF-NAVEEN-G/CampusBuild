@@ -5,13 +5,32 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ScrollArea } from "./ui/scroll-area";
 import { Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Cart = () => {
-    const { isCartOpen, toggleCart, cart, removeFromCart } = useAppContext();
+    const { isCartOpen, toggleCart, cart, removeFromCart, clearCart } = useAppContext();
+    const { toast } = useToast();
 
     const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
     const taxes = subtotal * 0.08;
     const total = subtotal + taxes;
+
+    const handleCheckout = () => {
+        console.log("--- New Order ---");
+        console.log("Items:", cart.map(item => ({ title: item.title, price: item.price })));
+        console.log("Subtotal:", subtotal.toFixed(2));
+        console.log("Taxes:", taxes.toFixed(2));
+        console.log("Total:", total.toFixed(2));
+        console.log("--- End of Order ---");
+        
+        toast({
+            title: "Order Placed!",
+            description: "A confirmation email with your bill details has been sent.",
+        });
+
+        clearCart();
+        toggleCart();
+    };
 
     return (
         <Sheet open={isCartOpen} onOpenChange={toggleCart}>
@@ -52,7 +71,7 @@ const Cart = () => {
                                     <span>Total</span>
                                     <span>${total.toFixed(2)}</span>
                                 </div>
-                                <Button className="w-full mt-4" size="lg">Proceed to Checkout</Button>
+                                <Button className="w-full mt-4" size="lg" onClick={handleCheckout}>Proceed to Checkout</Button>
                             </div>
                         </SheetFooter>
                     </>

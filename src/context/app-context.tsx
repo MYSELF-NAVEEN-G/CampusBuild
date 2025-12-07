@@ -7,6 +7,7 @@ interface AppContextType {
   cart: Project[];
   addToCart: (project: Project) => void;
   removeFromCart: (projectId: number) => void;
+  clearCart: () => void;
   isChatOpen: boolean;
   toggleAiChat: () => void;
   openAiChat: () => void;
@@ -35,6 +36,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCart((prevCart) => prevCart.filter((item) => item.id !== projectId));
   }
 
+  const clearCart = () => {
+    setCart([]);
+  }
+
   const toggleAiChat = () => {
     setIsChatOpen((prev) => !prev);
   };
@@ -48,7 +53,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ cart, addToCart, removeFromCart, isChatOpen, toggleAiChat, openAiChat, isCartOpen, toggleCart }}>
+    <AppContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, isChatOpen, toggleAiChat, openAiChat, isCartOpen, toggleCart }}>
       {children}
     </AppContext.Provider>
   );
