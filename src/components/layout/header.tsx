@@ -7,11 +7,14 @@ import { FlaskConical, MessageSquare, ShoppingCart, Menu, X } from 'lucide-react
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import type { Project } from '@/lib/projects';
+import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
-  const { cart, toggleCart } = useAppContext();
+  const { cart, toggleCart, addToCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -32,6 +35,26 @@ const Header = () => {
       window.location.href = `/#${id}`;
     }
     setIsMobileMenuOpen(false); // Close menu on navigation
+  };
+
+  const handleBookConsultation = () => {
+    const consultationProduct: Project = {
+      id: 'consult-30-min',
+      title: '30-Min Expert Consultation',
+      category: 'Software', // Assign a default category
+      price: 150.00,
+      image: 'https://picsum.photos/seed/consult/600/400',
+      tags: ['Consultation', 'Expert Advice'],
+      desc: 'A 30-minute one-on-one consultation with an R&D expert to discuss your project idea, scope, and technical requirements.',
+      bundleIncluded: ['Expert advice', 'Project scope analysis', 'Technical feasibility report'],
+    };
+    addToCart(consultationProduct);
+    toast({
+      title: 'Consultation Added',
+      description: 'The 30-minute consultation has been added to your order.',
+    });
+    toggleCart();
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -59,11 +82,9 @@ const Header = () => {
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
           </nav>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button asChild className="hidden sm:flex">
-              <Link href="/schedule-meeting">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Free 30-Min Consultation
-              </Link>
+            <Button onClick={handleBookConsultation} className="hidden sm:flex">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              30-Min Consultation (₹150)
             </Button>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
               <ShoppingCart />
@@ -89,11 +110,9 @@ const Header = () => {
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
-            <Button asChild className="w-4/5">
-              <Link href="/schedule-meeting">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Free 30-Min Consultation
-              </Link>
+            <Button onClick={handleBookConsultation} className="w-4/5">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              30-Min Consultation (₹150)
             </Button>
           </nav>
         </div>
