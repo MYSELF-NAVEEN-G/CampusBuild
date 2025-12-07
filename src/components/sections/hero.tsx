@@ -13,23 +13,13 @@ const Hero = () => {
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/20 to-transparent"></div>
       
-      {/* Static Shapes */}
+      {/* Animated Shapes */}
       <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none z-0">
-          <div>
-            <Circle className="absolute -right-20 top-1/4 w-48 h-48 text-accent/10" />
-          </div>
-          <div>
-            <Box className="absolute right-1/4 top-1/2 w-32 h-32 text-primary/10" />
-          </div>
-          <div>
-            <Triangle className="absolute right-1/2 bottom-1/4 w-40 h-40 text-accent/5" />
-          </div>
-          <div>
-            <div className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
-          </div>
-          <div>
-            <div className="absolute bottom-10 right-1/2 w-40 h-40 bg-accent/20 rounded-full blur-3xl"></div>
-          </div>
+          <Circle className="absolute -right-20 top-1/4 w-48 h-48 text-accent/10 animate-spin-slow" />
+          <Box className="absolute right-1/4 top-1/2 w-32 h-32 text-primary/10 animate-[float_8s_ease-in-out_infinite]" />
+          <Triangle className="absolute right-1/2 bottom-1/4 w-40 h-40 text-accent/5 animate-[float_12s_ease-in-out_infinite]" />
+          <div className="absolute top-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-[float_10s_ease-in-out_infinite]"></div>
+          <div className="absolute bottom-10 right-1/2 w-40 h-40 bg-accent/20 rounded-full blur-3xl animate-[float_14s_ease-in-out_infinite]"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
