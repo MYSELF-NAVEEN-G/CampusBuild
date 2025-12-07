@@ -13,7 +13,7 @@ type Category = 'All' | 'IoT' | 'Hardware' | 'Software' | 'AI';
 const categories: Category[] = ['All', 'IoT', 'Hardware', 'Software', 'AI'];
 
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' | 'difficulty'> & {
-  image: string; // Storing image by its data URL
+  image: string;
   desc: string;
 };
 
@@ -33,11 +33,12 @@ const ProjectCatalog = () => {
                 const data = doc.data() as FirestoreProject;
                 
                 return {
-                    id: doc.id,
+                    id: doc.id, // Use Firestore doc ID as the unique ID
+                    docId: doc.id,
                     title: data.title,
                     category: data.category,
                     price: data.price,
-                    image: data.image,
+                    image: data.image, // This will be the data URL or placeholder ID
                     tags: data.tags || [],
                     desc: data.desc,
                 } as ProjectType;

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useToast } from '@/hooks/use-toast';
-import type { ImagePlaceholder } from '@/lib/placeholder-images';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface ProjectCardProps {
     project: Project;
@@ -26,20 +26,24 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         });
         toggleCart();
     };
-
-    const isImagePlaceholder = (image: Project['image']): image is ImagePlaceholder => {
-        return typeof image === 'object' && image !== null && 'imageUrl' in image;
-    };
     
-    // Fallback image in case project.image is invalid
     const fallbackImage = 'https://picsum.photos/seed/1/600/400';
+    let imageUrl = fallbackImage;
+    let imageDescription = project.title;
+    let imageHint = '';
 
-    const imageUrl = isImagePlaceholder(project.image) 
-        ? project.image.imageUrl 
-        : (typeof project.image === 'string' && project.image ? project.image : fallbackImage);
-
-    const imageDescription = isImagePlaceholder(project.image) ? project.image.description : project.title;
-    const imageHint = isImagePlaceholder(project.image) ? project.image.imageHint : '';
+    // Check if project.image is a base64 data URL
+    if (typeof project.image === 'string' && project.image.startsWith('data:image')) {
+        imageUrl = project.image;
+    } else if (typeof project.image === 'string') {
+        // If it's a string but not a data URL, assume it's a placeholder ID
+        const placeholder = PlaceHolderImages.find(p => p.id === project.image);
+        if (placeholder) {
+            imageUrl = placeholder.imageUrl;
+            imageDescription = placeholder.description;
+            imageHint = placeholder.imageHint;
+        }
+    }
 
     return (
         <Card className="h-full flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-xl">

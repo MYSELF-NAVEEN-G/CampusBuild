@@ -15,7 +15,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import type { ImagePlaceholder } from "@/lib/placeholder-images";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 import type { Project } from "@/lib/projects";
 
 const Cart = () => {
@@ -95,8 +95,12 @@ const Cart = () => {
         }
     };
     
-    const isImagePlaceholder = (image: Project['image']): image is ImagePlaceholder => {
-        return typeof image === 'object' && 'imageUrl' in image;
+    const getImageUrl = (project: Project) => {
+        if (typeof project.image === 'string' && project.image.startsWith('data:image')) {
+            return project.image;
+        }
+        const placeholder = PlaceHolderImages.find(p => p.id === project.image);
+        return placeholder ? placeholder.imageUrl : 'https://picsum.photos/seed/1/80/80';
     };
 
     return (
@@ -111,11 +115,10 @@ const Cart = () => {
                             <ScrollArea className="flex-1 -mx-6 my-4">
                                 <div className="px-6">
                                     {cart.map((item) => {
-                                        const imageUrl = isImagePlaceholder(item.image) ? item.image.imageUrl : item.image;
-                                        const imageDescription = isImagePlaceholder(item.image) ? item.image.description : item.title;
+                                        const imageUrl = getImageUrl(item);
                                         return (
                                         <div key={item.id} className="flex items-center gap-4 py-4 border-b">
-                                            <Image src={imageUrl} alt={imageDescription} width={80} height={80} className="rounded-md object-cover" />
+                                            <Image src={imageUrl} alt={item.title} width={80} height={80} className="rounded-md object-cover" />
                                             <div className="flex-1">
                                                 <h4 className="font-semibold">{item.title}</h4>
                                                 <p className="text-sm text-muted-foreground">{item.category}</p>

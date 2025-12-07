@@ -7,7 +7,7 @@ export interface Project {
     title: string;
     category: 'IoT' | 'Hardware' | 'Software' | 'AI';
     price: number;
-    image: ImagePlaceholder | string; // Can be a placeholder object or a data URL string
+    image: string; // Can be a placeholder ID string or a data URL string
     tags: string[];
     desc: string;
 }
