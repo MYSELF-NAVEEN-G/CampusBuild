@@ -32,6 +32,7 @@ const HowItWorks = () => {
                 <div className="text-center mb-16">
                     <span className="text-primary font-bold uppercase tracking-widest text-xs font-code">Workflow</span>
                     <h2 className="text-3xl font-bold text-slate-900 mt-2 font-headline">How to Order</h2>
+                    <p className="mt-2 text-sm text-slate-500">Click each step to redirect.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                     {steps.map((step, index) => (
