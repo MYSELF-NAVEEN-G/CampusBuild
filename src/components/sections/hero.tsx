@@ -6,8 +6,12 @@ import { useState, useEffect } from 'react';
 
 const Hero = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // This ensures this code runs only on the client, after hydration
+    setIsClient(true);
+    
     const handleMouseMove = (event: MouseEvent) => {
       setMousePosition({ x: event.clientX, y: event.clientY });
     };
@@ -20,7 +24,7 @@ const Hero = () => {
   }, []);
 
   const calculateParallax = (strength: number) => {
-    if (typeof window === 'undefined') return {};
+    if (typeof window === 'undefined' || !isClient) return {};
     const x = (mousePosition.x - window.innerWidth / 2) / strength;
     const y = (mousePosition.y - window.innerHeight / 2) / strength;
     return {
@@ -58,7 +62,7 @@ const Hero = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16">
-          <div className="fade-in-up text-left" style={{ animationDelay: '0.1s' }}>
+          <div className="text-left">
             <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent/30 bg-accent/10 text-accent text-xs font-code mb-6">
               <span className="flex w-2 h-2 bg-accent rounded-full mr-2 animate-pulse"></span>
               POWERED BY NAFON STUDIOS
