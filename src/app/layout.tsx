@@ -42,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="selection:bg-accent selection:text-white">
       <head>
-        <link rel="icon" href="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" sizes="any" />
+        <link rel="icon" href="https://image2url.com/images/1765187653532-73c5f0ac-c1ed-4b37-8f1d-587411f599df.png" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;800&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
