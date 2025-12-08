@@ -62,7 +62,7 @@ const Header = () => {
             <Button asChild className="hidden sm:flex">
                 <Link href="/schedule-meeting">
                     <MessageSquare className="mr-2 h-4 w-4" />
-                    Schedule Meeting
+                    Get Idea
                 </Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
@@ -92,7 +92,7 @@ const Header = () => {
             <Button asChild className="w-4/5">
               <Link href="/schedule-meeting" onClick={() => setIsMobileMenuOpen(false)}>
                 <MessageSquare className="mr-2 h-4 w-4" />
-                Schedule Meeting
+                Get Idea
               </Link>
             </Button>
           </nav>
