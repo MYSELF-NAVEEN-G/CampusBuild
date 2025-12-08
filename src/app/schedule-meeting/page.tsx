@@ -22,6 +22,7 @@ const adminUsers: Record<string, string> = {
     'john.04@nafon.in': 'johnlee',
     'karthick.02@nafon.in': 'karthick',
     'thamizh.03@nafon.in': 'thamizh',
+    'jed.05@nafon.in': 'jed',
 };
 
 export default function ScheduleMeetingPage() {
@@ -48,6 +49,7 @@ export default function ScheduleMeetingPage() {
         const adminPasswords: Record<string, string> = {
             'karthick.02@nafon.in': 'karthick232223',
             'thamizh.03@nafon.in': 'thamizh232258',
+            'jed.05@nafon.in': 'jed232211',
         }
         const creationPassword = adminPasswords[email.toLowerCase()];
         const adminName = adminDisplayNames[email.toLowerCase()] || adminUsers[email.toLowerCase()];
@@ -173,6 +175,7 @@ export default function ScheduleMeetingPage() {
         'john.04@nafon.in': 'John Lee',
         'karthick.02@nafon.in': 'Karthick',
         'thamizh.03@nafon.in': 'Thamizh',
+        'jed.05@nafon.in': 'JED',
     };
 
     return (

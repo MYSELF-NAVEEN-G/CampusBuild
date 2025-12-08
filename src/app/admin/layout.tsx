@@ -19,6 +19,7 @@ const adminEmails = [
   'john.04@nafon.in',
   'karthick.02@nafon.in',
   'thamizh.03@nafon.in',
+  'jed.05@nafon.in',
 ];
 
 const adminDisplayNames: Record<string, string> = {
@@ -27,6 +28,7 @@ const adminDisplayNames: Record<string, string> = {
     'john.04@nafon.in': 'John Lee',
     'karthick.02@nafon.in': 'Karthick',
     'thamizh.03@nafon.in': 'Thamizh',
+    'jed.05@nafon.in': 'JED',
 };
 
 
@@ -48,8 +50,7 @@ export default function AdminLayout({
   // Permissions based on roles defined in firestore.rules
   const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in'].includes(userEmail);
   const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
-  // For prototyping, we allow all admins to see orders and consultations, relying on page-level security.
-  const canManageOrders = isAdmin;
+  const canManageOrders = isSuperAdmin || ['john.04@nafon.in'].includes(userEmail);
   const canManageConsultations = isAdmin; 
 
   // Redirect non-admins immediately
