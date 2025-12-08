@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -5,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ArrowLeft, CreditCard } from 'lucide-react';
+import { Send, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
@@ -21,6 +22,7 @@ const adminUsers: Record<string, string> = {
     'john.04@nafon.in': 'johnlee',
     'karthick.02@nafon.in': 'karthick',
     'thamizh.03@nafon.in': 'thamizh',
+    'jed.05@nafon.in': 'jed',
 };
 
 export default function ScheduleMeetingPage() {
@@ -47,9 +49,10 @@ export default function ScheduleMeetingPage() {
         const adminPasswords: Record<string, string> = {
             'karthick.02@nafon.in': 'karthick232223',
             'thamizh.03@nafon.in': 'thamizh232258',
+            'jed.05@nafon.in': 'jed232211',
         }
         const creationPassword = adminPasswords[email.toLowerCase()];
-        const adminName = adminUsers[email.toLowerCase()];
+        const adminName = adminDisplayNames[email.toLowerCase()] || adminUsers[email.toLowerCase()];
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -165,6 +168,15 @@ export default function ScheduleMeetingPage() {
     const isAdminField = Object.keys(adminUsers).some(
         adminEmail => adminEmail.toLowerCase() === lowerCaseEmail && adminUsers[adminEmail].toLowerCase() === fullName.toLowerCase()
     );
+    
+    const adminDisplayNames: Record<string, string> = {
+        'nafonstudios@gmail.com': 'Admin',
+        'naveen.01@nafon.in': 'Naveen Kumar',
+        'john.04@nafon.in': 'John Lee',
+        'karthick.02@nafon.in': 'Karthick',
+        'thamizh.03@nafon.in': 'Thamizh',
+        'jed.05@nafon.in': 'JED',
+    };
 
     return (
         <div className="flex flex-col min-h-screen">

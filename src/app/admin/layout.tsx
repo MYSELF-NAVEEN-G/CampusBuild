@@ -18,6 +18,7 @@ const adminEmails = [
   'john.04@nafon.in',
   'karthick.02@nafon.in',
   'thamizh.03@nafon.in',
+  'jed.05@nafon.in',
 ];
 
 const adminDisplayNames: Record<string, string> = {
@@ -26,6 +27,7 @@ const adminDisplayNames: Record<string, string> = {
     'john.04@nafon.in': 'John Lee',
     'karthick.02@nafon.in': 'Karthick',
     'thamizh.03@nafon.in': 'Thamizh',
+    'jed.05@nafon.in': 'JED',
 };
 
 
@@ -41,7 +43,7 @@ export default function AdminLayout({
   const { toast } = useToast();
 
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
-  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in';
+  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in' || user?.email === 'jed.05@nafon.in';
   const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
@@ -94,7 +96,7 @@ export default function AdminLayout({
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const getDisplayName = () => {
     if (!user || !user.email) return 'Admin';
-    if (isSuperAdmin) return 'CEO';
+    if (user.displayName) return user.displayName;
     return adminDisplayNames[user.email] || 'Admin';
   }
   const headerTitle = getDisplayName();
