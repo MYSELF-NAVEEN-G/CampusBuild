@@ -94,7 +94,7 @@ export default function ProjectManagementPage() {
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in';
+  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in' || user?.email === 'jed.05@nafon.in';
 
   // Security check
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function ProjectManagementPage() {
 
 
   useEffect(() => {
-    if (!firestore) return;
+    if (!firestore || !canManageProjects) return;
 
     const projectsCollection = collection(firestore, 'projects');
     const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
@@ -136,7 +136,7 @@ export default function ProjectManagementPage() {
     });
 
     return () => unsubscribe();
-  }, [firestore, toast]);
+  }, [firestore, toast, canManageProjects]);
 
   const openForm = (project: Project | null = null) => {
     if (project) {
