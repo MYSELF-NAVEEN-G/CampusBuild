@@ -34,6 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/navigation';
 
 interface Consultation {
   id: string;
@@ -55,18 +56,30 @@ interface Employee {
 
 export default function ConsultationManagementPage() {
   const { firestore } = useFirebase();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
-  const canAssignConsultants = user?.email === 'naveen.01@nafon.in' || user?.email === 'thamizh.03@nafon.in';
-  const canManageMeetings = user?.email === 'naveen.01@nafon.in' || user?.email === 'thamizh.03@nafon.in';
+  const userEmail = user?.email || '';
+  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
+  const isAdmin = userEmail && ['nafonstudios@gmail.com', 'naveen.01@nafon.in', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+  const canAssignConsultants = isSuperAdmin || userEmail === 'thamizh.03@nafon.in';
+  const canManageMeetings = isSuperAdmin || userEmail === 'thamizh.03@nafon.in';
 
   useEffect(() => {
-    if (!firestore) return;
+    if (!isUserLoading && !isAdmin) {
+      router.replace('/');
+    }
+  }, [isUserLoading, isAdmin, router]);
+
+  useEffect(() => {
+    if (!firestore || !isAdmin) {
+        setLoading(false);
+        return;
+    };
 
     const consultationsCollection = collection(firestore, 'consultations');
     const unsubscribeConsultations = onSnapshot(consultationsCollection, (snapshot) => {
@@ -94,15 +107,14 @@ export default function ConsultationManagementPage() {
         });
     }
 
-
     return () => {
         unsubscribeConsultations();
         unsubscribeEmployees();
     };
-  }, [firestore, toast, canAssignConsultants]);
+  }, [firestore, toast, canAssignConsultants, isAdmin]);
 
   const handleUpdateConsultation = async (consultationId: string, updates: Partial<Consultation>) => {
-    if (!firestore) return;
+    if (!firestore || !isAdmin) return;
     const consultationRef = doc(firestore, 'consultations', consultationId);
     try {
       await updateDoc(consultationRef, updates);
@@ -114,7 +126,7 @@ export default function ConsultationManagementPage() {
   };
 
   const handleDeleteConsultation = async (consultationId: string) => {
-      if (!firestore) return;
+      if (!firestore || !isSuperAdmin) return;
       try {
           await deleteDoc(doc(firestore, 'consultations', consultationId));
           toast({title: 'Consultation Removed', description: 'The consultation has been removed.'});
@@ -124,8 +136,12 @@ export default function ConsultationManagementPage() {
       }
   }
 
-  if (loading) {
+  if (isUserLoading || loading) {
     return <div>Loading Consultation Data...</div>;
+  }
+
+  if (!isAdmin) {
+      return <div>Redirecting...</div>
   }
 
   return (
@@ -161,7 +177,6 @@ export default function ConsultationManagementPage() {
                     <Select
                         value={consultation.assignedTo}
                         onValueChange={(value) => handleUpdateConsultation(consultation.id, { assignedTo: value })}
-                        disabled={!canAssignConsultants}
                     >
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Assign to..." />

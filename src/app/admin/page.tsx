@@ -55,11 +55,13 @@ export default function AdminOrderPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
-  const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
-  const isPrivilegedAdmin = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
+  const userEmail = user?.email || '';
+  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
+  // In a prototyping environment, we assume any admin can manage orders.
+  // The firestore.rules will be the final arbiter in production.
+  const canManageOrders = userEmail && ['nafonstudios@gmail.com', 'naveen.01@nafon.in', 'john.04@nafon.in'].includes(userEmail);
 
-  // Security check
+  // Security check: Redirect if the user doesn't have permission.
   useEffect(() => {
     if (!isUserLoading && !canManageOrders) {
       toast({
@@ -67,8 +69,7 @@ export default function AdminOrderPage() {
         description: 'You do not have permission to view this page.',
         variant: 'destructive',
       });
-      // Redirect to a page they are allowed to see
-      router.push('/admin/projects'); 
+      router.replace('/admin/projects'); 
     }
   }, [user, isUserLoading, router, toast, canManageOrders]);
 
@@ -222,8 +223,7 @@ export default function AdminOrderPage() {
                   </Select>
                 </TableCell>
                  <TableCell>
-                  {isPrivilegedAdmin ? (
-                    <Select value={order.deliveryStatus} onValueChange={(value: 'Delivered' | 'Not Delivered') => handleUpdateOrder(order.id, { deliveryStatus: value })}>
+                  <Select value={order.deliveryStatus} onValueChange={(value: 'Delivered' | 'Not Delivered') => handleUpdateOrder(order.id, { deliveryStatus: value })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -232,9 +232,6 @@ export default function AdminOrderPage() {
                         <SelectItem value="Not Delivered">Not Delivered</SelectItem>
                       </SelectContent>
                     </Select>
-                  ) : (
-                    <span>{order.deliveryStatus || 'Not Delivered'}</span>
-                  )}
                 </TableCell>
                 <TableCell>
                   {isSuperAdmin ? (

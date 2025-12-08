@@ -139,9 +139,7 @@ service cloud.firestore {
      *   Enforces ownership for custom order documents. A user can only access
      *   custom orders that are located under their own user ID path.
      * @path /users/{userId}/customOrders/{customOrderId}
-     * @allow (create) An authenticated user can create a custom order for themselves.
-     * @deny (get) A user cannot read a custom order belonging to another user.
-     * @principle Restricts access to a user's own data tree (path-based ownership).
+     * @allow (get, list, create, update, delete) if isOwner(userId);
      */
     match /users/{userId}/customOrders/{customOrderId} {
       allow get, list, create, update, delete: if isOwner(userId);

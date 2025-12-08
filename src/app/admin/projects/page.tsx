@@ -94,7 +94,8 @@ export default function ProjectManagementPage() {
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in' || user?.email === 'jed.05@nafon.in';
+  const userEmail = user?.email || '';
+  const canManageProjects = userEmail === 'naveen.01@nafon.in' || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
 
   // Security check
   useEffect(() => {
@@ -104,13 +105,16 @@ export default function ProjectManagementPage() {
         description: 'You do not have permission to manage projects.',
         variant: 'destructive',
       });
-      router.push('/admin');
+      router.replace('/admin');
     }
   }, [user, isUserLoading, router, toast, canManageProjects]);
 
 
   useEffect(() => {
-    if (!firestore || !canManageProjects) return;
+    if (!firestore || !canManageProjects) {
+        setLoading(false);
+        return;
+    }
 
     const projectsCollection = collection(firestore, 'projects');
     const unsubscribe = onSnapshot(projectsCollection, (snapshot) => {
@@ -236,8 +240,8 @@ export default function ProjectManagementPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firestore) {
-      toast({ title: 'Error', description: 'Database not ready.', variant: 'destructive'});
+    if (!firestore || !canManageProjects) {
+      toast({ title: 'Error', description: 'Database not ready or insufficient permissions.', variant: 'destructive'});
       return;
     }
     if (!formData.image && !editingProject) {
@@ -275,7 +279,7 @@ export default function ProjectManagementPage() {
   };
   
   const handleDelete = async (projectId: string) => {
-      if (!firestore) return;
+      if (!firestore || !canManageProjects) return;
       try {
           await deleteDoc(doc(firestore, 'projects', projectId));
           toast({title: 'Project Deleted', description: 'The project has been removed.'});
@@ -287,7 +291,7 @@ export default function ProjectManagementPage() {
 
   const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !firestore) return;
+    if (!file || !firestore || !canManageProjects) return;
 
     setIsUploading(true);
 

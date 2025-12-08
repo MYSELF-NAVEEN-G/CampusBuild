@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban } from 'lucide-react';
@@ -11,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
+// Central source of truth for admin roles
 const adminEmails = [
   'nafonstudios@gmail.com',
   'naveen.01@nafon.in',
@@ -41,14 +43,18 @@ export default function AdminLayout({
   const pathname = usePathname();
   const { toast } = useToast();
 
-  const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
-  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in' || user?.email === 'jed.05@nafon.in';
-  const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
-  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
-  const isAdmin = user?.email && adminEmails.includes(user.email);
-  // All admins can manage consultations according to firestore.rules
+  const userEmail = user?.email || '';
+  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
+  const isAdmin = adminEmails.includes(userEmail);
+  
+  // Permissions based on roles defined in firestore.rules
+  const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+  const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
+  // For prototyping, we allow all admins to see orders and consultations, relying on page-level security.
+  const canManageOrders = isAdmin;
   const canManageConsultations = isAdmin; 
 
+  // Redirect non-admins immediately
   useEffect(() => {
     if (!isUserLoading && !isAdmin) {
       toast({
@@ -56,29 +62,10 @@ export default function AdminLayout({
         description: 'You must be an admin to view this page.',
         variant: 'destructive',
       });
-      router.push('/');
+      router.replace('/');
     }
   }, [user, isUserLoading, router, toast, isAdmin]);
   
-  // This effect ensures that if an admin without specific permissions lands on the base /admin page,
-  // they are redirected to a page they can see.
-  useEffect(() => {
-    if (!isUserLoading && isAdmin) {
-      // If user is on a page they shouldn't see, redirect them.
-      const navItems = getNavItems();
-      const currentNavItem = navItems.find(item => item.href === pathname);
-      
-      if ((pathname === '/admin' && !canManageOrders) || (currentNavItem && !currentNavItem.visible)) {
-        const firstVisiblePage = navItems.find(item => item.visible)?.href;
-        if (firstVisiblePage) {
-          router.replace(firstVisiblePage);
-        } else {
-          router.replace('/'); // Fallback if no pages are visible
-        }
-      }
-    }
-  }, [isUserLoading, isAdmin, canManageOrders, pathname, router]);
-
   const handleLogout = async () => {
     if (!auth) return;
     try {
@@ -117,12 +104,7 @@ export default function AdminLayout({
   }
 
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
-  const getDisplayName = () => {
-    if (!user || !user.email) return 'Admin';
-    if (user.displayName) return user.displayName;
-    return adminDisplayNames[user.email] || 'Admin';
-  }
-  const headerTitle = getDisplayName();
+  const displayName = adminDisplayNames[userEmail] || user?.displayName || 'Admin';
   const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
 
   return (
@@ -175,7 +157,7 @@ export default function AdminLayout({
         <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b h-20 flex items-center px-6">
             <div className="flex-1">
                 <h1 className="text-2xl font-bold text-slate-800">
-                    {headerTitle}
+                    {displayName}
                 </h1>
                 <p className="text-sm text-slate-500">{currentPageLabel}</p>
             </div>
