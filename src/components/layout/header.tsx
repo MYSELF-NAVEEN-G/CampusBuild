@@ -3,16 +3,18 @@
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X, Sparkles } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
+import { IdeaGenerator } from '@/components/idea-generator';
 
 const Header = () => {
-  const { cart, toggleCart, addToCart } = useAppContext();
+  const { cart, toggleCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isIdeaGeneratorOpen, setIsIdeaGeneratorOpen] = useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +47,7 @@ const Header = () => {
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center cursor-pointer group" onClick={scrollToTop}>
             <div className="relative w-10 h-10 flex items-center justify-center mr-3">
-              <Image src="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
+              <Image src="https://image2url.com/images/1765187653532-73c5f0ac-c1ed-4b37-8f1d-587411f599df.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
             </div>
              <div>
                 <span className="font-bold text-xl font-headline text-slate-800 leading-none">CampusBuild</span>
@@ -55,15 +57,13 @@ const Header = () => {
           <nav className="hidden md:flex space-x-8">
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('howItWorks')}>How It Works</a>
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer">Our Team</Link>
-            <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
+            <a className="text-sm font-medium text-slate-600 hover-text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
           </nav>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button asChild className="hidden sm:flex">
-              <Link href="/schedule-meeting">
-                <Image src="https://image2url.com/images/1765199291088-f2ac1397-5b95-4f3b-ad70-cc5fcd221ce3.png" alt="Get Idea icon" width={16} height={16} className="mr-2" />
-                Get Idea
-              </Link>
+            <Button className="hidden sm:flex" onClick={() => setIsIdeaGeneratorOpen(true)}>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Get Idea
             </Button>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
               <ShoppingCart />
@@ -89,16 +89,15 @@ const Header = () => {
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
-            <Button asChild className="w-4/5">
-              <Link href="/schedule-meeting">
-                <Image src="https://image2url.com/images/1765199291088-f2ac1397-5b95-4f3b-ad70-cc5fcd221ce3.png" alt="Get Idea icon" width={16} height={16} className="mr-2" />
-                Get Idea
-              </Link>
+            <Button className="w-4/5" onClick={() => { setIsIdeaGeneratorOpen(true); setIsMobileMenuOpen(false); }}>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Get Idea
             </Button>
           </nav>
         </div>
       )}
     </header>
+    <IdeaGenerator isOpen={isIdeaGeneratorOpen} onClose={() => setIsIdeaGeneratorOpen(false)} />
     </>
   );
 };
