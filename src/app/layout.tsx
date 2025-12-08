@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { AppProvider } from '@/context/app-context';
 import { Toaster } from '@/components/ui/toaster';
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     siteName: "CampusBuild Solutions",
     images: [
       {
-        url: "https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png",
+        url: "https://image2url.com/images/1765187653532-73c5f0ac-c1ed-4b37-8f1d-587411f599df.png",
         width: 1200,
         height: 630,
       },
