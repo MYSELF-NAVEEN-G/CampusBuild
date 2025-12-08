@@ -69,9 +69,11 @@ export default function EmployeeManagementPage() {
     specialization: '',
   });
 
-  // Security check to ensure only Super Admin can access
+  const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
+
+  // Security check
   useEffect(() => {
-    if (!isUserLoading && (!user || user.email !== 'naveen.01@nafon.in')) {
+    if (!isUserLoading && !canManageEmployees) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to manage employees.',
@@ -79,7 +81,7 @@ export default function EmployeeManagementPage() {
       });
       router.push('/admin');
     }
-  }, [user, isUserLoading, router, toast]);
+  }, [user, isUserLoading, router, toast, canManageEmployees]);
 
   useEffect(() => {
     if (!firestore) return;
@@ -173,7 +175,7 @@ export default function EmployeeManagementPage() {
     return <div>Loading Employee Data...</div>;
   }
   
-  if (!user || user.email !== 'naveen.01@nafon.in') {
+  if (!canManageEmployees) {
       return <div>Redirecting...</div>
   }
 

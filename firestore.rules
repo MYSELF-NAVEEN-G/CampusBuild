@@ -62,6 +62,10 @@ service cloud.firestore {
         return isSuperAdmin() || (isSignedIn() && request.auth.token.email == 'karthick.02@nafon.in');
     }
 
+    function canManageEmployees() {
+        return isSuperAdmin() || (isSignedIn() && request.auth.token.email == 'john.04@nafon.in');
+    }
+
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
@@ -151,14 +155,14 @@ service cloud.firestore {
     /**
      * @description
      *   Secures the employee details collection. The public can read data,
-     *   but only the Super Admin can create, update, or delete it.
+     *   but only authorized admins can create, update, or delete it.
      * @path /employees/{employeeId}
      * @allow (read) Any user can view employee data.
-     * @allow (write) if isSuperAdmin();
+     * @allow (write) if canManageEmployees();
      */
     match /employees/{employeeId} {
         allow read: if true;
-        allow write: if isSuperAdmin();
+        allow write: if canManageEmployees();
     }
   }
 }
