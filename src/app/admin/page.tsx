@@ -55,7 +55,7 @@ export default function AdminOrderPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
+  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in' || user?.email === 'jed.05@nafon.in';
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
   const isPrivilegedAdmin = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
 
