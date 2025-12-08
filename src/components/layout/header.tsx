@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAppContext } from '@/context/app-context';
@@ -60,7 +61,7 @@ const Header = () => {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Button asChild className="hidden sm:flex">
               <Link href="/schedule-meeting">
-                <MessageSquare className="mr-2 h-4 w-4" />
+                <Image src="https://image2url.com/images/1765199291088-f2ac1397-5b95-4f3b-ad70-cc5fcd221ce3.png" alt="Get Idea icon" width={16} height={16} className="mr-2" />
                 Get Idea
               </Link>
             </Button>
@@ -90,7 +91,7 @@ const Header = () => {
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
             <Button asChild className="w-4/5">
               <Link href="/schedule-meeting">
-                <MessageSquare className="mr-2 h-4 w-4" />
+                <Image src="https://image2url.com/images/1765199291088-f2ac1397-5b95-4f3b-ad70-cc5fcd221ce3.png" alt="Get Idea icon" width={16} height={16} className="mr-2" />
                 Get Idea
               </Link>
             </Button>
