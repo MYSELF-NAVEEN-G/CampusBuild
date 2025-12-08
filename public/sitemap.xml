@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://campus-builds-official.vercel.app/</loc></url>
-  <url><loc>https://campus-builds-official.vercel.app/admin</loc></url>
-  <url><loc>https://campus-builds-official.vercel.app/admin/projects</loc></url>
-  <url><loc>https://campus-builds-official.vercel.app/admin/employees</loc></url>
-  <url><loc>https://campus-builds-official.vercel.app/admin/team</loc></url>
-  <url><loc>https://campus-builds-official.vercel.app/our-team</loc></url>
-  <url><loc>https://campus-builds-official.vercel.app/schedule-meeting</loc></url>
+  <url><loc>https://campus-build.vercel.app/</loc></url>
+  <url><loc>https://campus-build.vercel.app/admin</loc></url>
+  <url><loc>https://campus-build.vercel.app/admin/projects</loc></url>
+  <url><loc>https://campus-build.vercel.app/admin/employees</loc></url>
+  <url><loc>https://campus-build.vercel.app/admin/team</loc></url>
+  <url><loc>https://campus-build.vercel.app/our-team</loc></url>
+  <url><loc>https://campus-build.vercel.app/schedule-meeting</loc></url>
 </urlset>

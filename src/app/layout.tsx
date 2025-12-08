@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CampusBuild Solutions",
     description: "Professional Project Building & Technical Services",
-    url: "https://campus-builds-official.vercel.app/",
+    url: "https://campus-build.vercel.app/",
     siteName: "CampusBuild Solutions",
     images: [
       {
