@@ -31,6 +31,7 @@ export default function AdminLayout({
   const { toast } = useToast();
 
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
+  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in';
   const isAdmin = user?.email && adminEmails.includes(user.email);
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function AdminLayout({
     { href: '/admin', label: 'Order Management', icon: Briefcase, visible: true },
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: true },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
-    { href: '/admin/projects', label: 'Project Management', icon: Users, visible: isSuperAdmin },
+    { href: '/admin/projects', label: 'Project Management', icon: Users, visible: canManageProjects },
     { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: isSuperAdmin },
   ];
 

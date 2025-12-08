@@ -58,6 +58,10 @@ service cloud.firestore {
       return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || isSuperAdmin());
     }
 
+    function canManageProjects() {
+        return isSuperAdmin() || (isSignedIn() && request.auth.token.email == 'karthick.02@nafon.in');
+    }
+
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
@@ -72,14 +76,14 @@ service cloud.firestore {
      * @description
      *   Secures the top-level project catalog. All users, including anonymous
      *   ones, can read the list of projects and view project details.
-     *   Writes are restricted to the Super Admin.
+     *   Writes are restricted to authorized personnel.
      * @path /projects/{projectId}
      * @allow (get) Any user can read a specific project document.
-     * @allow (write) Only the super admin can create, update, or delete projects.
+     * @allow (write) Only users with project management permissions can write.
      */
     match /projects/{projectId} {
       allow get, list: if true;
-      allow write: if isSuperAdmin(); // create, update, delete
+      allow write: if canManageProjects();
     }
 
     /**

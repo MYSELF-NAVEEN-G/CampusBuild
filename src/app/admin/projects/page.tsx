@@ -90,9 +90,11 @@ export default function ProjectManagementPage() {
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
+  const canManageProjects = user?.email === 'naveen.01@nafon.in' || user?.email === 'karthick.02@nafon.in';
+
   // Security check
   useEffect(() => {
-    if (!isUserLoading && (!user || user.email !== 'naveen.01@nafon.in')) {
+    if (!isUserLoading && !canManageProjects) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to manage projects.',
@@ -100,7 +102,7 @@ export default function ProjectManagementPage() {
       });
       router.push('/admin');
     }
-  }, [user, isUserLoading, router, toast]);
+  }, [user, isUserLoading, router, toast, canManageProjects]);
 
 
   useEffect(() => {
@@ -283,7 +285,7 @@ export default function ProjectManagementPage() {
     return <div>Loading Project Data...</div>;
   }
   
-  if (!user || user.email !== 'naveen.01@nafon.in') {
+  if (!canManageProjects) {
       return <div>Redirecting...</div>
   }
 
