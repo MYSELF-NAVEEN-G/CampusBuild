@@ -148,11 +148,7 @@ service cloud.firestore {
      * @principle Restricts access to a user's own data tree (path-based ownership).
      */
     match /users/{userId}/customOrders/{customOrderId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      allow get, list, create, update, delete: if isOwner(userId);
     }
 
     /**
