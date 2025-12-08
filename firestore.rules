@@ -55,11 +55,11 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || isSuperAdmin());
+      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || isSuperAdmin());
     }
 
     function canManageProjects() {
-        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'jed.05@nafon.in'));
+        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in'));
     }
 
     function canManageEmployees() {
@@ -140,10 +140,7 @@ service cloud.firestore {
      *   custom orders that are located under their own user ID path.
      * @path /users/{userId}/customOrders/{customOrderId}
      * @allow (get, list, create, update, delete) if isOwner(userId);
-     */
-    match /users/{userId}/customOrders/{customOrderId} {
-      allow get, list, create, update, delete: if isOwner(userId);
-    }
+     }
 
     /**
      * @description
