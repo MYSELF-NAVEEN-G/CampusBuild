@@ -7,6 +7,7 @@ import {
   doc,
   updateDoc,
   Timestamp,
+  deleteDoc,
 } from 'firebase/firestore';
 import { useFirebase, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,7 @@ export default function ConsultationManagementPage() {
   const { toast } = useToast();
   
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
+  const canAssignConsultants = user?.email === 'naveen.01@nafon.in' || user?.email === 'thamizh.03@nafon.in';
 
   useEffect(() => {
     if (!firestore) return;
@@ -76,14 +78,13 @@ export default function ConsultationManagementPage() {
     });
 
     let unsubscribeEmployees = () => {};
-    if (isSuperAdmin) {
+    if (canAssignConsultants) {
         const employeesCollection = collection(firestore, 'employees');
         unsubscribeEmployees = onSnapshot(employeesCollection, (snapshot) => {
             const fetchedEmployees = snapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name })) as Employee[];
             setEmployees(fetchedEmployees);
         }, (error) => {
             console.error("Error fetching employees:", error);
-            // This toast is important for debugging if the super admin can't fetch employees
             toast({ title: "Employee Fetch Error", description: "Could not fetch employee list for assignment.", variant: 'destructive' });
         });
     }
@@ -93,7 +94,7 @@ export default function ConsultationManagementPage() {
         unsubscribeConsultations();
         unsubscribeEmployees();
     };
-  }, [firestore, toast, isSuperAdmin]);
+  }, [firestore, toast, canAssignConsultants]);
 
   const handleUpdateConsultation = async (consultationId: string, updates: Partial<Consultation>) => {
     if (!firestore) return;
@@ -148,11 +149,11 @@ export default function ConsultationManagementPage() {
                 <TableCell>{consultation.projectTopic}</TableCell>
                 <TableCell>{consultation.preferredTime}</TableCell>
                 <TableCell>
-                  {isSuperAdmin ? (
+                  {canAssignConsultants ? (
                     <Select
                         value={consultation.assignedTo}
                         onValueChange={(value) => handleUpdateConsultation(consultation.id, { assignedTo: value })}
-                        disabled={!isSuperAdmin}
+                        disabled={!canAssignConsultants}
                     >
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Assign to..." />
