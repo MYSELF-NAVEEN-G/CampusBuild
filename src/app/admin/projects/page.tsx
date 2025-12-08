@@ -9,6 +9,7 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
+  writeBatch,
 } from 'firebase/firestore';
 import { useFirebase, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Edit, Trash2, Crop } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Crop, Upload } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -50,6 +51,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import ReactCrop, { type Crop as CropType, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import * as XLSX from 'xlsx';
 
 
 // This is the type we'll use in the component state, which includes the Firestore document ID.
@@ -71,6 +73,8 @@ export default function ProjectManagementPage() {
   const { toast } = useToast();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   const initialFormData = {
     title: '',
@@ -281,6 +285,62 @@ export default function ProjectManagementPage() {
       }
   }
 
+  const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !firestore) return;
+
+    setIsUploading(true);
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+        try {
+            const data = event.target?.result;
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+            if (json.length === 0) {
+              toast({ title: 'Upload Error', description: 'Excel file is empty or in the wrong format.', variant: 'destructive'});
+              return;
+            }
+
+            const batch = writeBatch(firestore);
+            const projectsCollection = collection(firestore, 'projects');
+            
+            json.forEach((row) => {
+              const docRef = doc(projectsCollection); // Create a new doc with a random ID
+              const projectData = {
+                title: row.title || 'No Title',
+                category: row.category || 'Software',
+                price: parseFloat(row.price) || 0,
+                desc: row.description || '',
+                tags: row.tags ? String(row.tags).split(',').map(t => t.trim()) : [],
+                bundleIncluded: row.bundleIncluded ? String(row.bundleIncluded).split('\n').map(t => t.trim()) : [],
+                image: row.image || `https://picsum.photos/seed/${Math.random()}/600/400`,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+              };
+              batch.set(docRef, projectData);
+            });
+
+            await batch.commit();
+
+            toast({ title: 'Upload Successful', description: `${json.length} projects have been added.` });
+            setIsUploadDialogOpen(false);
+        } catch (error) {
+            console.error('Error processing Excel file:', error);
+            toast({ title: 'Upload Failed', description: 'There was an error processing your file.', variant: 'destructive'});
+        } finally {
+            setIsUploading(false);
+             // Reset file input
+            e.target.value = '';
+        }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+
   if (isUserLoading || loading) {
     return <div>Loading Project Data...</div>;
   }
@@ -293,9 +353,14 @@ export default function ProjectManagementPage() {
     <>
       <div className="flex justify-between items-center mb-6">
         <p>Manage the publicly available projects in the catalog.</p>
-        <Button onClick={() => openForm()}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Add New Project
-        </Button>
+        <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
+                <Upload className="mr-2 h-4 w-4" /> Upload Catalog
+            </Button>
+            <Button onClick={() => openForm()}>
+              <PlusCircle className="mr-2 h-4 w-4" /> Add New Project
+            </Button>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-md border">
@@ -410,6 +475,33 @@ export default function ProjectManagementPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCropperOpen(false)}>Cancel</Button>
             <Button onClick={handleCropConfirm}><Crop className="mr-2 h-4 w-4" /> Crop and Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Project Catalog</DialogTitle>
+            <DialogDescription>
+              Select an Excel file (.xlsx) to bulk upload projects. Ensure your file has the following columns: <strong>title, category, price, description, tags, bundleIncluded, image</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+              <Label htmlFor="excel-upload">Excel File</Label>
+              <Input 
+                id="excel-upload" 
+                type="file" 
+                accept=".xlsx, .xls"
+                onChange={handleExcelUpload}
+                disabled={isUploading}
+              />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsUploadDialogOpen(false)} disabled={isUploading}>Cancel</Button>
+            <Button disabled={true} className="hidden">
+              {isUploading ? 'Uploading...' : 'Upload'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
