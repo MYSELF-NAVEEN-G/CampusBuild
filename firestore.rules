@@ -49,8 +49,7 @@ service cloud.firestore {
     
     match /consultations/{consultationId} {
       allow create: if true;
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin();
+      allow read, list, write: if isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || request.auth.token.email == 'jed.05@nafon.in'));
     }
 
     match /users/{userId}/customOrders/{customOrderId} {
