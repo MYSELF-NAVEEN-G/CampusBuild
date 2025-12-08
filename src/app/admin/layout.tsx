@@ -81,6 +81,9 @@ export default function AdminLayout({
     { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },
   ];
 
+  const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
+  const headerTitle = isSuperAdmin ? 'CEO' : 'Admin';
+
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <aside className="w-64 bg-white border-r flex flex-col">
@@ -131,8 +134,9 @@ export default function AdminLayout({
         <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b h-20 flex items-center px-6">
             <div className="flex-1">
                 <h1 className="text-2xl font-bold text-slate-800">
-                    {navItems.find(item => item.href === pathname)?.label || 'Dashboard'}
+                    {headerTitle}
                 </h1>
+                <p className="text-sm text-slate-500">{currentPageLabel}</p>
             </div>
         </header>
         <main className="flex-1 p-6 overflow-y-auto">{children}</main>
