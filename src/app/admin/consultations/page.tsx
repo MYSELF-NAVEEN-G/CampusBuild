@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2 } from 'lucide-react';
@@ -42,6 +43,8 @@ interface Consultation {
   preferredTime: string;
   assignedTo: string;
   createdAt: Timestamp;
+  meetingLink?: string;
+  meetingStatus?: 'Pending' | 'Completed';
 }
 
 interface Employee {
@@ -59,6 +62,7 @@ export default function ConsultationManagementPage() {
   
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
   const canAssignConsultants = user?.email === 'naveen.01@nafon.in' || user?.email === 'thamizh.03@nafon.in';
+  const canManageMeetings = user?.email === 'naveen.01@nafon.in' || user?.email === 'thamizh.03@nafon.in';
 
   useEffect(() => {
     if (!firestore) return;
@@ -138,6 +142,8 @@ export default function ConsultationManagementPage() {
               <TableHead>Project Topic</TableHead>
               <TableHead>Preferred Time</TableHead>
               <TableHead>Assigned To</TableHead>
+              <TableHead>Meeting Link</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -168,6 +174,39 @@ export default function ConsultationManagementPage() {
                   ) : (
                     <span>{consultation.assignedTo || 'Not Assigned'}</span>
                   )}
+                </TableCell>
+                <TableCell>
+                    {canManageMeetings ? (
+                        <Input
+                            type="text"
+                            placeholder="Add meeting link..."
+                            defaultValue={consultation.meetingLink}
+                            onBlur={(e) => handleUpdateConsultation(consultation.id, { meetingLink: e.target.value })}
+                            className="w-[180px]"
+                        />
+                    ) : (
+                        <a href={consultation.meetingLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            {consultation.meetingLink ? 'Join Meeting' : 'Not set'}
+                        </a>
+                    )}
+                </TableCell>
+                <TableCell>
+                     {canManageMeetings ? (
+                        <Select
+                            value={consultation.meetingStatus || 'Pending'}
+                            onValueChange={(value: 'Pending' | 'Completed') => handleUpdateConsultation(consultation.id, { meetingStatus: value })}
+                        >
+                            <SelectTrigger className="w-[140px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Pending">Pending</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     ) : (
+                        <span>{consultation.meetingStatus || 'Pending'}</span>
+                     )}
                 </TableCell>
                 <TableCell className="flex gap-2">
                   <AlertDialog>
