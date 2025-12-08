@@ -46,7 +46,7 @@ const Header = () => {
             <div className="relative w-10 h-10 flex items-center justify-center mr-3">
               <Image src="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
             </div>
-            <div>
+             <div>
                 <span className="font-bold text-xl font-headline text-slate-800 leading-none">CampusBuild</span>
                 <p className="text-xs font-bold font-code tracking-widest text-accent -mt-1">SOLUTION</p>
             </div>
