@@ -31,12 +31,16 @@ const Hero = () => {
               POWERED BY CAMPUSBUILD STUDIOS
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6 font-headline">
-              Your Innovation Partner. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">From Idea to Prototype.</span>
+              CampusBuild Solutions – Student & College Project Development
             </h1>
-            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Browse our catalog of ready-made projects or use our AI assistant to spec out a completely custom build. We deliver hardware, code, and documentation.
-            </p>
+            <div className="text-lg text-slate-400 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 space-y-4">
+              <p>
+                CampusBuild Solutions is a leading platform for engineering, diploma, arts, and science students to build high-quality academic projects. We specialize in AI/ML projects, IoT-based hardware development, software development, mini-projects, final year projects, and professional project guidance for students across India.
+              </p>
+              <p>
+                We provide project consultation, prototype development, documentation support, and end-to-end technical services. CampusBuild Solutions helps students complete their projects with quality, clarity, and professional guidance.
+              </p>
+            </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button size="lg" className="shadow-lg shadow-primary/30" onClick={() => scrollToSection('projectCatalog')}>
                 Browse Projects
