@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare } from 'lucide-react';
@@ -83,6 +84,7 @@ export default function AdminLayout({
 
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const headerTitle = isSuperAdmin ? 'CEO' : 'Admin';
+  const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -94,7 +96,7 @@ export default function AdminLayout({
               </div>
                <div>
                     <span className="font-bold text-xl font-headline text-slate-800 leading-none">CampusBuild</span>
-                    <p className="text-xs font-bold font-code tracking-widest text-accent -mt-1">SOLUTION</p>
+                    <p className="text-xs font-bold font-code tracking-widest text-accent -mt-1">{brandingSubtitle}</p>
                 </div>
             </div>
         </div>
