@@ -43,10 +43,13 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center cursor-pointer group" onClick={scrollToTop}>
-            <div className="relative w-10 h-10 flex items-center justify-center mr-2">
+            <div className="relative w-10 h-10 flex items-center justify-center mr-3">
               <Image src="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
             </div>
-            <span className="font-bold text-xl font-headline text-slate-800">CampusBuild</span>
+            <div>
+                <span className="font-bold text-xl font-headline text-slate-800 leading-none">CampusBuild</span>
+                <p className="text-xs font-bold font-code tracking-widest text-accent -mt-1">SOLUTION</p>
+            </div>
           </div>
           <nav className="hidden md:flex space-x-8">
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('howItWorks')}>How It Works</a>
