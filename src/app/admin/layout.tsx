@@ -58,6 +58,14 @@ export default function AdminLayout({
       router.push('/');
     }
   }, [user, isUserLoading, router, toast, isAdmin]);
+  
+  // This effect ensures that if an admin without order management permissions
+  // lands on the base /admin page, they are redirected to a page they can see.
+  useEffect(() => {
+    if (!isUserLoading && isAdmin && !canManageOrders && pathname === '/admin') {
+        router.replace('/admin/consultations');
+    }
+  }, [isUserLoading, isAdmin, canManageOrders, pathname, router]);
 
   const handleLogout = async () => {
     if (!auth) return;
