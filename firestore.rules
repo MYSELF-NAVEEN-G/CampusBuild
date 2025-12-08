@@ -120,7 +120,7 @@ service cloud.firestore {
      */
     match /orders/{orderId} {
       allow create: if isSignedIn();
-      allow list, get, update: if isAdmin();
+      allow read, update: if isSignedIn();
       allow delete: if isAdmin();
     }
     
