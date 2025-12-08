@@ -83,7 +83,12 @@ export default function AdminLayout({
   ];
 
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
-  const headerTitle = isSuperAdmin ? 'CEO' : 'Admin';
+  const getDisplayName = () => {
+    if (user?.displayName) return user.displayName;
+    if (isSuperAdmin) return 'CEO';
+    return 'Admin';
+  }
+  const headerTitle = getDisplayName();
   const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
 
   return (

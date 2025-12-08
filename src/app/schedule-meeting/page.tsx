@@ -9,13 +9,13 @@ import { Send, ArrowLeft, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Label } from '@/components/ui/label';
 
-const adminUsers = {
+const adminUsers: Record<string, string> = {
     'nafonstudios@gmail.com': 'admin',
     'naveen.01@nafon.in': 'naveen',
     'john.04@nafon.in': 'johnlee',
@@ -49,6 +49,7 @@ export default function ScheduleMeetingPage() {
             'thamizh.03@nafon.in': 'thamizh232258',
         }
         const creationPassword = adminPasswords[email.toLowerCase()];
+        const adminName = adminUsers[email.toLowerCase()];
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -61,7 +62,11 @@ export default function ScheduleMeetingPage() {
             // This logic handles creating an admin user on their first login attempt
             if ((error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') && creationPassword) {
                 try {
-                    await createUserWithEmailAndPassword(auth, email, creationPassword);
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, creationPassword);
+                    // Set the display name for the new user
+                    if (userCredential.user) {
+                        await updateProfile(userCredential.user, { displayName: adminName });
+                    }
                     // Now sign them in to complete the process
                      await signInWithEmailAndPassword(auth, email, creationPassword);
                     toast({
@@ -143,9 +148,11 @@ export default function ScheduleMeetingPage() {
         event.preventDefault();
         
         const lowerCaseEmail = email.toLowerCase();
-        const lowerCaseFullName = fullName.toLowerCase();
-
-        const isAdminLogin = (adminUsers as Record<string, string>)[lowerCaseEmail] === lowerCaseFullName;
+        
+        // Use a case-insensitive check for admin login
+        const isAdminLogin = Object.keys(adminUsers).some(
+            adminEmail => adminEmail.toLowerCase() === lowerCaseEmail && adminUsers[adminEmail].toLowerCase() === fullName.toLowerCase()
+        );
 
         if (isAdminLogin) {
             await handleAdminLogin();
@@ -155,8 +162,9 @@ export default function ScheduleMeetingPage() {
     };
 
     const lowerCaseEmail = email.toLowerCase();
-    const lowerCaseFullName = fullName.toLowerCase();
-    const isAdminField = (adminUsers as Record<string, string>)[lowerCaseEmail] === lowerCaseFullName;
+    const isAdminField = Object.keys(adminUsers).some(
+        adminEmail => adminEmail.toLowerCase() === lowerCaseEmail && adminUsers[adminEmail].toLowerCase() === fullName.toLowerCase()
+    );
 
     return (
         <div className="flex flex-col min-h-screen">
