@@ -13,6 +13,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useRouter } from 'next/navigation';
 
 
 interface OrderItem {
@@ -47,17 +48,32 @@ interface Employee {
 
 export default function AdminOrderPage() {
   const { firestore } = useFirebase();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
   const isPrivilegedAdmin = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
 
+  // Security check
   useEffect(() => {
-    if (!firestore) {
+    if (!isUserLoading && !canManageOrders) {
+      toast({
+        title: 'Access Denied',
+        description: 'You do not have permission to view this page.',
+        variant: 'destructive',
+      });
+      router.push('/admin/consultations'); // Redirect to a page they can access
+    }
+  }, [user, isUserLoading, router, toast, canManageOrders]);
+
+
+  useEffect(() => {
+    if (!firestore || !canManageOrders) {
       setLoading(false);
       return;
     };
@@ -96,7 +112,7 @@ export default function AdminOrderPage() {
         unsubscribeOrders();
         unsubscribeEmployees();
     };
-  }, [firestore, isSuperAdmin, toast]);
+  }, [firestore, isSuperAdmin, toast, canManageOrders]);
 
   const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
     if (!firestore) return;
@@ -151,10 +167,14 @@ export default function AdminOrderPage() {
     });
   };
 
-  if (loading) {
+  if (isUserLoading || loading) {
     return <div className="flex justify-center items-center h-screen">Loading Orders...</div>;
   }
   
+  if (!canManageOrders) {
+    return <div className="flex justify-center items-center h-screen">Redirecting...</div>
+  }
+
   return (
     <>
       <h1 className="text-3xl font-bold mb-6 font-headline">Order Management</h1>
