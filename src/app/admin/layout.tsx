@@ -1,7 +1,6 @@
-
 'use client';
 
-import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare } from 'lucide-react';
+import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -47,7 +46,8 @@ export default function AdminLayout({
   const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const isAdmin = user?.email && adminEmails.includes(user.email);
-  const canManageConsultations = isAdmin; // All admins can manage consultations
+  // All admins can manage consultations according to firestore.rules
+  const canManageConsultations = isAdmin; 
 
   useEffect(() => {
     if (!isUserLoading && !isAdmin) {
@@ -60,11 +60,22 @@ export default function AdminLayout({
     }
   }, [user, isUserLoading, router, toast, isAdmin]);
   
-  // This effect ensures that if an admin without order management permissions
-  // lands on the base /admin page, they are redirected to a page they can see.
+  // This effect ensures that if an admin without specific permissions lands on the base /admin page,
+  // they are redirected to a page they can see.
   useEffect(() => {
-    if (!isUserLoading && isAdmin && !canManageOrders && pathname === '/admin') {
-        router.replace('/admin/consultations');
+    if (!isUserLoading && isAdmin) {
+      // If user is on a page they shouldn't see, redirect them.
+      const navItems = getNavItems();
+      const currentNavItem = navItems.find(item => item.href === pathname);
+      
+      if ((pathname === '/admin' && !canManageOrders) || (currentNavItem && !currentNavItem.visible)) {
+        const firstVisiblePage = navItems.find(item => item.visible)?.href;
+        if (firstVisiblePage) {
+          router.replace(firstVisiblePage);
+        } else {
+          router.replace('/'); // Fallback if no pages are visible
+        }
+      }
     }
   }, [isUserLoading, isAdmin, canManageOrders, pathname, router]);
 
@@ -87,6 +98,16 @@ export default function AdminLayout({
     }
   };
 
+  const getNavItems = () => [
+    { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders },
+    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
+    { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
+    { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects },
+    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },
+  ];
+  
+  const navItems = getNavItems();
+
   if (isUserLoading || !isAdmin) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -94,14 +115,6 @@ export default function AdminLayout({
       </div>
     );
   }
-
-  const navItems = [
-    { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders },
-    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
-    { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
-    { href: '/admin/projects', label: 'Project Management', icon: Users, visible: canManageProjects },
-    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },
-  ];
 
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const getDisplayName = () => {

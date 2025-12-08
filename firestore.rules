@@ -110,9 +110,8 @@ service cloud.firestore {
     
     /**
      * @description
-     *   Secures the orders collection. Any authenticated user can create an
-     *   order (including anonymous users). This rule is permissive for prototyping
-     *   and should be tightened in production.
+     *   Secures the orders collection. For prototyping, any authenticated user can
+     *   create, read, and manage their own orders. Admins have broader access.
      * @path /orders/{orderId}
      * @allow (read, write) Any signed-in user can manage orders.
      */
@@ -122,15 +121,17 @@ service cloud.firestore {
     
     /**
      * @description
-     *   Secures the consultations collection. Any user can create a consultation
-     *   request, but only admins can view and manage them.
+     *   Secures the consultations collection. For prototyping, any signed-in user
+     *   can read the list of consultations, but only admins can modify them. Anyone can create.
      * @path /consultations/{consultationId}
      * @allow (create) if true;
-     * @allow read, write: if isAdmin();
+     * @allow read: if isSignedIn();
+     * @allow write: if isAdmin();
      */
     match /consultations/{consultationId} {
       allow create: if true;
-      allow read, write: if isAdmin();
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     /**

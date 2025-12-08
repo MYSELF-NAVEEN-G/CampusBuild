@@ -55,7 +55,7 @@ export default function AdminOrderPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in' || user?.email === 'jed.05@nafon.in';
+  const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
   const isPrivilegedAdmin = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
 
@@ -67,7 +67,8 @@ export default function AdminOrderPage() {
         description: 'You do not have permission to view this page.',
         variant: 'destructive',
       });
-      router.push('/admin/consultations'); // Redirect to a page they can access
+      // Redirect to a page they are allowed to see
+      router.push('/admin/projects'); 
     }
   }, [user, isUserLoading, router, toast, canManageOrders]);
 
