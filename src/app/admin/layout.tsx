@@ -20,6 +20,15 @@ const adminEmails = [
   'thamizh.03@nafon.in',
 ];
 
+const adminDisplayNames: Record<string, string> = {
+    'nafonstudios@gmail.com': 'Admin',
+    'naveen.01@nafon.in': 'Naveen Kumar',
+    'john.04@nafon.in': 'John Lee',
+    'karthick.02@nafon.in': 'Karthick',
+    'thamizh.03@nafon.in': 'Thamizh',
+};
+
+
 export default function AdminLayout({
   children,
 }: {
@@ -84,9 +93,9 @@ export default function AdminLayout({
 
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const getDisplayName = () => {
-    if (user?.displayName) return user.displayName;
+    if (!user || !user.email) return 'Admin';
     if (isSuperAdmin) return 'CEO';
-    return 'Admin';
+    return adminDisplayNames[user.email] || 'Admin';
   }
   const headerTitle = getDisplayName();
   const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
