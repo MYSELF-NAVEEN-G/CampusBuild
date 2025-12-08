@@ -95,7 +95,8 @@ export default function ProjectManagementPage() {
   const imgRef = useRef<HTMLImageElement>(null);
 
   const userEmail = user?.email || '';
-  const canManageProjects = userEmail === 'naveen.01@nafon.in' || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
+  const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
 
   // Security check
   useEffect(() => {

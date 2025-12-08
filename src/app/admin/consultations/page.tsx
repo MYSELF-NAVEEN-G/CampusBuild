@@ -68,15 +68,17 @@ export default function ConsultationManagementPage() {
   const isAdmin = userEmail && ['nafonstudios@gmail.com', 'naveen.01@nafon.in', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
   const canAssignConsultants = isSuperAdmin || userEmail === 'thamizh.03@nafon.in';
   const canManageMeetings = isSuperAdmin || userEmail === 'thamizh.03@nafon.in';
+  const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+
 
   useEffect(() => {
-    if (!isUserLoading && !isAdmin) {
+    if (!isUserLoading && !canManageConsultations) {
       router.replace('/');
     }
-  }, [isUserLoading, isAdmin, router]);
+  }, [isUserLoading, canManageConsultations, router]);
 
   useEffect(() => {
-    if (!firestore || !isAdmin) {
+    if (!firestore || !canManageConsultations) {
         setLoading(false);
         return;
     };
@@ -111,10 +113,10 @@ export default function ConsultationManagementPage() {
         unsubscribeConsultations();
         unsubscribeEmployees();
     };
-  }, [firestore, toast, canAssignConsultants, isAdmin]);
+  }, [firestore, toast, canAssignConsultants, canManageConsultations]);
 
   const handleUpdateConsultation = async (consultationId: string, updates: Partial<Consultation>) => {
-    if (!firestore || !isAdmin) return;
+    if (!firestore || !canManageConsultations) return;
     const consultationRef = doc(firestore, 'consultations', consultationId);
     try {
       await updateDoc(consultationRef, updates);
@@ -140,7 +142,7 @@ export default function ConsultationManagementPage() {
     return <div>Loading Consultation Data...</div>;
   }
 
-  if (!isAdmin) {
+  if (!canManageConsultations) {
       return <div>Redirecting...</div>
   }
 
