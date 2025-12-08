@@ -57,9 +57,7 @@ export default function AdminOrderPage() {
 
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
-  // In a prototyping environment, we assume any admin can manage orders.
-  // The firestore.rules will be the final arbiter in production.
-  const canManageOrders = userEmail && ['nafonstudios@gmail.com', 'naveen.01@nafon.in', 'john.04@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
 
   // Security check: Redirect if the user doesn't have permission.
   useEffect(() => {

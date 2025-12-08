@@ -1,46 +1,4 @@
 
-/**
- * This Firestore Security Ruleset is designed for the NAFON AI Lab application,
- * focusing on a prototyping model that prioritizes strong authorization while
- * maintaining flexibility in data shapes for rapid development.
- *
- * Core Philosophy:
- * The security model enforces a clear separation between public and private data.
- * Public data, such as the project catalog, is readable by anyone, but write
- * operations are strictly locked down to prevent unauthorized modifications.
- * User-specific data, like custom project orders, is protected using a strict
- * path-based ownership model, ensuring users can only access their own information.
- *
- * Data Structure:
- * The data is organized into two main collections:
- * 1. /projects/{projectId}: A top-level collection containing publicly readable
- *    project information.
- * 2. /users/{userId}/customOrders/{customOrderId}: A subcollection where each
- *    user's private custom order requests are stored, secured by their unique
- *    user ID in the path.
- *
- * Key Security Decisions:
- * - Public Project Catalog: The `/projects` collection is world-readable to allow
- *   all visitors to browse project offerings. Write access is strictly limited
- *   to a designated super admin.
- * - Strict User Ownership: All data under `/users/{userId}` is strictly owned
- *   by the user corresponding to `{userId}`. This prevents any user from reading
- *   or writing another user's private data.
- * - No User Enumeration: Direct access to user documents (`/users/{userId}`) is
- *   denied to protect user privacy and prevent listing of all application users.
- *
- * Denormalization for Authorization:
- * This ruleset primarily relies on path-based authorization for user data, which
- * is highly performant and avoids costly `get()` calls. For example, access to a
- * custom order at `/users/USER_A/customOrders/ORDER_1` is granted simply by
- * checking if the authenticated user's ID is 'USER_A'.
- *
- * Structural Segregation:
- * The design correctly segregates public data (`/projects`) from private user data
- * (`/users/{userId}/customOrders`), ensuring that private information cannot be
-
- * accidentally exposed through list queries on public collections.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -59,97 +17,46 @@ service cloud.firestore {
     }
 
     function canManageProjects() {
-        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in'));
+        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'jed.05@nafon.in'));
     }
 
     function canManageEmployees() {
         return isSuperAdmin() || (isSignedIn() && request.auth.token.email == 'john.04@nafon.in');
+    }
+    
+    function canManageOrders() {
+      return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'jed.05@nafon.in'));
     }
 
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // A robust check for update/delete operations ensuring the user is the
-    // owner AND the document actually exists.
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description
-     *   Secures the top-level project catalog. All users, including anonymous
-     *   ones, can read the list of projects and view project details.
-     *   Writes are restricted to authorized personnel.
-     * @path /projects/{projectId}
-     * @allow (get) Any user can read a specific project document.
-     * @allow (write) Only users with project management permissions can write.
-     */
     match /projects/{projectId} {
       allow get, list: if true;
       allow write: if canManageProjects();
     }
 
-    /**
-     * @description
-     *   Protects user profile documents. This rule prevents any user,
-     *   including the owner, from reading, listing, or writing directly to
-     *   the root user document. This enhances privacy by preventing user enumeration.
-     * @path /users/{userId}
-     * @allow (none) No operations are permitted.
-     * @deny (get) A user cannot read another user's root document.
-     * @principle Enforces privacy by preventing user enumeration.
-     */
     match /users/{userId} {
-      allow get: if false;
-      allow list: if false;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow read, write: if false;
     }
     
-    /**
-     * @description
-     *   Secures the orders collection. For prototyping, any authenticated user can
-     *   create, read, and manage their own orders. Admins have broader access.
-     * @path /orders/{orderId}
-     * @allow (read, write) Any signed-in user can manage orders.
-     */
     match /orders/{orderId} {
-      allow read, write: if isSignedIn();
+      allow list, read: if canManageOrders();
+      allow create: if isSignedIn();
+      allow update, delete: if canManageOrders();
     }
     
-    /**
-     * @description
-     *   Secures the consultations collection. For prototyping, any signed-in user
-     *   can read the list of consultations, but only admins can modify them. Anyone can create.
-     * @path /consultations/{consultationId}
-     * @allow (create) if true;
-      allow read: if isSignedIn();
-     * @allow write: if isAdmin();
-     */
     match /consultations/{consultationId} {
       allow create: if true;
-      allow read: if isSignedIn();
+      allow read, list: if isSignedIn();
       allow write: if isAdmin();
     }
 
-    /**
-     * @description
-     *   Enforces ownership for custom order documents. A user can only access
-     *   custom orders that are located under their own user ID path.
-     * @path /users/{userId}/customOrders/{customOrderId}
-     * @allow (get, list, create, update, delete) if isOwner(userId);
-     }
+    match /users/{userId}/customOrders/{customOrderId} {
+      allow get, list, create, update, delete: if isOwner(userId);
+    }
 
-    /**
-     * @description
-     *   Secures the employee details collection. The public can read data,
-     *   but only authorized admins can create, update, or delete it.
-     * @path /employees/{employeeId}
-     * @allow (read) Any user can view employee data.
-     * @allow (write) if canManageEmployees();
-     */
     match /employees/{employeeId} {
         allow read: if true;
         allow write: if canManageEmployees();
