@@ -45,6 +45,7 @@ interface Consultation {
   createdAt: Timestamp;
   meetingLink?: string;
   meetingStatus?: 'Pending' | 'Completed';
+  linkSentStatus?: 'Sent' | 'Not Sent';
 }
 
 interface Employee {
@@ -143,7 +144,8 @@ export default function ConsultationManagementPage() {
               <TableHead>Preferred Time</TableHead>
               <TableHead>Assigned To</TableHead>
               <TableHead>Meeting Link</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Link Status</TableHead>
+              <TableHead>Meeting Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -189,6 +191,24 @@ export default function ConsultationManagementPage() {
                             {consultation.meetingLink ? 'Join Meeting' : 'Not set'}
                         </a>
                     )}
+                </TableCell>
+                <TableCell>
+                     {canManageMeetings ? (
+                        <Select
+                            value={consultation.linkSentStatus || 'Not Sent'}
+                            onValueChange={(value: 'Sent' | 'Not Sent') => handleUpdateConsultation(consultation.id, { linkSentStatus: value })}
+                        >
+                            <SelectTrigger className="w-[140px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Not Sent">Not Sent</SelectItem>
+                                <SelectItem value="Sent">Sent</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     ) : (
+                        <span>{consultation.linkSentStatus || 'Not Sent'}</span>
+                     )}
                 </TableCell>
                 <TableCell>
                      {canManageMeetings ? (

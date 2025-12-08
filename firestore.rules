@@ -115,12 +115,13 @@ service cloud.firestore {
      *   read, update, or delete orders.
      * @path /orders/{orderId}
      * @allow (create) Any signed-in user can create a new order.
-     * @allow (list, get, update, delete) Only admins can manage orders.
+     * @allow (list, get, update) Only admins can manage orders.
+     * @allow (delete) Only admins can manage orders.
      */
     match /orders/{orderId} {
       allow create: if isSignedIn();
       allow list, get, update: if isAdmin();
-      allow delete: if isSuperAdmin();
+      allow delete: if isAdmin();
     }
     
     /**
@@ -134,7 +135,7 @@ service cloud.firestore {
     match /consultations/{consultationId} {
       allow create: if true;
       allow read: if isAdmin();
-      allow write: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['assignedTo', 'meetingLink', 'meetingStatus']) && isAdmin() || isSuperAdmin();
+      allow write: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['assignedTo', 'meetingLink', 'meetingStatus', 'linkSentStatus']) && isAdmin() || isSuperAdmin();
     }
 
     /**
