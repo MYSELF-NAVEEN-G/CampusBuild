@@ -125,7 +125,7 @@ service cloud.firestore {
      *   can read the list of consultations, but only admins can modify them. Anyone can create.
      * @path /consultations/{consultationId}
      * @allow (create) if true;
-     * @allow read: if isSignedIn();
+      allow read: if isSignedIn();
      * @allow write: if isAdmin();
      */
     match /consultations/{consultationId} {
