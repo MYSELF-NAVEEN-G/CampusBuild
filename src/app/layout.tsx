@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "CampusBuild Solutions",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png",
         width: 1200,
         height: 630,
       },
@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="selection:bg-accent selection:text-white">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;800&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -51,7 +51,7 @@ export default function RootLayout({
   "@type": "Organization",
   "name": "CampusBuild Solutions",
   "url": "https://campus-build.vercel.app/",
-  "logo": "https://campus-build.vercel.app/logo.png",
+  "logo": "https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png",
   "description": "CampusBuild Solutions provides student project development services including AI/ML, IoT, hardware, software, and academic project consultation.",
   "sameAs": []
 }

@@ -164,13 +164,8 @@ export default function ScheduleMeetingPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-20 items-center">
                         <Link href="/" className="flex items-center cursor-pointer group">
-                            <div className="relative w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
-                                <div className="absolute inset-0 bg-primary opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                                <Image src="/logo.png" alt="CampusBuild Logo" width={28} height={28} />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">CampusBuild</h1>
-                                <p className="text-xs text-primary font-code font-medium tracking-widest uppercase">Solution</p>
+                            <div className="relative w-36 h-10 flex items-center justify-center mr-3 overflow-hidden">
+                                <Image src="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
                             </div>
                         </Link>
                         <Button asChild variant="outline">
