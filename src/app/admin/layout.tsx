@@ -47,6 +47,7 @@ export default function AdminLayout({
   const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const canManageOrders = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
   const isAdmin = user?.email && adminEmails.includes(user.email);
+  const canManageConsultations = isAdmin; // All admins can manage consultations
 
   useEffect(() => {
     if (!isUserLoading && !isAdmin) {
@@ -96,7 +97,7 @@ export default function AdminLayout({
 
   const navItems = [
     { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders },
-    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: true },
+    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: Users, visible: canManageProjects },
     { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },

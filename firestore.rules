@@ -130,8 +130,7 @@ service cloud.firestore {
      */
     match /consultations/{consultationId} {
       allow create: if true;
-      allow read: if isAdmin();
-      allow write: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['assignedTo', 'meetingLink', 'meetingStatus', 'linkSentStatus']) && isAdmin() || isSuperAdmin();
+      allow read, write: if isAdmin();
     }
 
     /**
