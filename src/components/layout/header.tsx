@@ -3,7 +3,7 @@
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { MessageSquare, ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
