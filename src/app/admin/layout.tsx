@@ -19,7 +19,6 @@ const adminEmails = [
   'john.04@nafon.in',
   'karthick.02@nafon.in',
   'thamizh.03@nafon.in',
-  'jed.05@nafon.in',
 ];
 
 const adminDisplayNames: Record<string, string> = {
@@ -45,12 +44,12 @@ export default function AdminLayout({
 
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
-  const isAdmin = adminEmails.includes(userEmail);
+  const isAdmin = adminEmails.includes(userEmail) || userEmail === 'jed.05@nafon.in';
   
   // Permissions based on roles defined in firestore.rules
   const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
   const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
-  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+  const canManageOrders = isSuperAdmin || ['john.04@nafon.in'].includes(userEmail);
   const canManageConsultations = isSuperAdmin || ['thamizh.03@nafon.in', 'nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail); 
 
   // Redirect non-admins immediately
