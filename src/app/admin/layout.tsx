@@ -1,8 +1,8 @@
-
 'use client';
 
-import { ArrowLeft, FlaskConical, LogOut, Briefcase, Users, MessageSquare } from 'lucide-react';
+import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useFirebase, useUser } from '@/firebase';
@@ -88,7 +88,7 @@ export default function AdminLayout({
           <div className="flex items-center cursor-pointer group" onClick={() => router.push('/')}>
               <div className="relative w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
                 <div className="absolute inset-0 bg-primary opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <FlaskConical className="text-accent" />
+                <Image src="/logo.png" alt="CampusBuild Logo" width={28} height={28} />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">

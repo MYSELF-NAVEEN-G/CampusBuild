@@ -1,12 +1,12 @@
-
 'use client';
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { FlaskConical, MessageSquare, ShoppingCart, Menu, X } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Menu, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Header = () => {
   const { cart, toggleCart, addToCart } = useAppContext();
@@ -45,7 +45,7 @@ const Header = () => {
           <div className="flex items-center cursor-pointer group" onClick={scrollToTop}>
             <div className="relative w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
               <div className="absolute inset-0 bg-primary opacity-20 group-hover:opacity-40 transition-opacity"></div>
-              <FlaskConical className="text-accent" />
+              <Image src="/logo.png" alt="CampusBuild Logo" width={28} height={28} />
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-none font-headline">CampusBuild</h1>
