@@ -115,12 +115,12 @@ service cloud.firestore {
      *   read, update, or delete orders.
      * @path /orders/{orderId}
      * @allow (create) Any signed-in user can create a new order.
-     * @allow (list, get, update) Only admins can manage orders.
+     * @allow (read, list, update) Only admins can manage orders.
      * @allow (delete) Only admins can manage orders.
      */
     match /orders/{orderId} {
       allow create: if isSignedIn();
-      allow read, update: if isSignedIn();
+      allow read, update, list: if isAdmin();
       allow delete: if isAdmin();
     }
     
