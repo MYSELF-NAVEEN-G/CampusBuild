@@ -3,18 +3,16 @@
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { ShoppingCart, Menu, X, Sparkles } from 'lucide-react';
+import { ShoppingCart, Menu, X, MessageSquare } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { IdeaGenerator } from '@/components/idea-generator';
 
 const Header = () => {
   const { cart, toggleCart } = useAppContext();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isIdeaGeneratorOpen, setIsIdeaGeneratorOpen] = useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -61,9 +59,11 @@ const Header = () => {
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
           </nav>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button className="hidden sm:flex" onClick={() => setIsIdeaGeneratorOpen(true)}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Get Idea
+            <Button asChild className="hidden sm:flex">
+                <Link href="/schedule-meeting">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Schedule Meeting
+                </Link>
             </Button>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
               <ShoppingCart />
@@ -89,15 +89,16 @@ const Header = () => {
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
-            <Button className="w-4/5" onClick={() => { setIsIdeaGeneratorOpen(true); setIsMobileMenuOpen(false); }}>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Get Idea
+            <Button asChild className="w-4/5">
+              <Link href="/schedule-meeting" onClick={() => setIsMobileMenuOpen(false)}>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Schedule Meeting
+              </Link>
             </Button>
           </nav>
         </div>
       )}
     </header>
-    <IdeaGenerator isOpen={isIdeaGeneratorOpen} onClose={() => setIsIdeaGeneratorOpen(false)} />
     </>
   );
 };
