@@ -57,8 +57,8 @@ export default function AdminOrderPage() {
 
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
-  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in'].includes(userEmail);
-  const canManageDelivery = isSuperAdmin || userEmail === 'john.04@nafon.in' || userEmail === 'jed.05@nafon.in';
+  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
+  const canManageDelivery = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
 
   // Security check: Redirect if the user doesn't have permission.
   useEffect(() => {
