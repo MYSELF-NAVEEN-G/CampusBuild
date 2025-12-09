@@ -87,43 +87,45 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                 </CardFooter>
             </Card>
 
-            <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
-                <DialogHeader>
-                    <div className="relative h-48 md:h-64 rounded-lg overflow-hidden mb-4">
-                        <Image src={imageUrl} alt={project.title} fill className="object-cover" />
-                    </div>
+            <DialogContent className="sm:max-w-xl md:max-w-3xl max-h-[90vh] flex flex-col">
+                <DialogHeader className="pr-6">
                     <DialogTitle className="text-3xl font-bold font-headline">{project.title}</DialogTitle>
                     <DialogDescription className="text-base text-slate-600 pt-2">{project.desc}</DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="flex-1">
-                    <div className="py-6 grid grid-cols-1 gap-8 pr-6">
-                        {project.bundleIncluded && project.bundleIncluded.length > 0 && (
-                          <div className="text-sm text-slate-700">
-                            <h4 className="font-bold uppercase tracking-wider mb-3 flex items-center text-slate-800"><PackageCheck className="mr-2 h-5 w-5 text-primary" />Bundle Includes</h4>
-                            <ul className="space-y-2 list-disc list-inside bg-slate-50 p-4 rounded-lg border">
-                              {project.bundleIncluded.map((item, index) => (
-                                <li key={index}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        <div className="text-sm">
-                            <h4 className="font-bold uppercase tracking-wider mb-3 text-slate-800">Details</h4>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-slate-500">Category</span>
-                                    <Badge variant="secondary">{project.category}</Badge>
-                                </div>
-                                 <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
-                                    <span className="text-slate-500 mr-2">Tags:</span>
-                                    {project.tags.map(tag => (
-                                        <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
-                                    ))}
+                <div className="grid md:grid-cols-2 gap-6 flex-1 min-h-0">
+                    <div className="relative rounded-lg overflow-hidden h-64 md:h-auto">
+                        <Image src={imageUrl} alt={project.title} fill className="object-cover" />
+                    </div>
+                    <ScrollArea className="h-full">
+                         <div className="space-y-6 pr-6">
+                            {project.bundleIncluded && project.bundleIncluded.length > 0 && (
+                              <div className="text-sm text-slate-700">
+                                <h4 className="font-bold uppercase tracking-wider mb-3 flex items-center text-slate-800"><PackageCheck className="mr-2 h-5 w-5 text-primary" />Bundle Includes</h4>
+                                <ul className="space-y-2 list-disc list-inside bg-slate-50 p-4 rounded-lg border">
+                                  {project.bundleIncluded.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            <div className="text-sm">
+                                <h4 className="font-bold uppercase tracking-wider mb-3 text-slate-800">Details</h4>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-slate-500">Category</span>
+                                        <Badge variant="secondary">{project.category}</Badge>
+                                    </div>
+                                     <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
+                                        <span className="text-slate-500 mr-2">Tags:</span>
+                                        {project.tags.map(tag => (
+                                            <Badge key={tag} variant="outline" className="font-normal">{tag}</Badge>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </ScrollArea>
+                    </ScrollArea>
+                </div>
                 <DialogFooter className="border-t pt-6 flex items-center justify-between sm:justify-between mt-auto">
                     <span className="text-2xl font-extrabold text-slate-900">₹{project.price.toFixed(2)}</span>
                     <Button size="lg" onClick={handleAddToCart}>
@@ -136,3 +138,5 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
 };
 
 export default ProjectCard;
+
+    

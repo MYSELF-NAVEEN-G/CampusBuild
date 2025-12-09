@@ -209,7 +209,7 @@ export default function ScheduleMeetingPage() {
                            Schedule a one-hour session with our R&D team to discuss your project for just ₹100.
                         </p>
                     </div>
-                    <Card className="p-6 sm:p-8 shadow-xl">
+                    <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl">
                         <form onSubmit={handleFormSubmit} className="space-y-6">
                             <div>
                                 <Label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</Label>
@@ -241,16 +241,11 @@ export default function ScheduleMeetingPage() {
                                 {!isSubmitting && !isAdminField && <Send className="ml-2 h-4 w-4" />}
                             </Button>
                         </form>
-                    </Card>
+                    </div>
                 </div>
             </main>
         </div>
     );
 }
 
-const Card = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div
-      className={`bg-white rounded-2xl border border-slate-200 ${className}`}
-      {...props}
-    />
-);
+    
