@@ -105,7 +105,9 @@ export default function FinancialManagementPage() {
   const completedOrders = orders.filter(order => order.status === 'Completed');
   const totalRevenue = completedOrders.reduce((acc, order) => acc + (order.total || 0), 0);
   const totalComponentCost = completedOrders.reduce((acc, order) => acc + (order.componentCost || 0), 0);
-  const totalHandlerFees = completedOrders.reduce((acc, order) => acc + (order.handlerFee ?? 300), 0);
+  const totalHandlerFees = completedOrders
+    .filter(order => order.handlerFeeStatus === 'Sent')
+    .reduce((acc, order) => acc + (order.handlerFee ?? 300), 0);
   const totalSalaryCost = employees.reduce((acc, emp) => acc + (emp.salary || 0), 0);
   const netProfit = totalRevenue - totalComponentCost - totalSalaryCost - totalHandlerFees;
 
