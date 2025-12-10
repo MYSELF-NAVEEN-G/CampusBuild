@@ -16,6 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 
 interface OrderItem {
@@ -191,7 +192,7 @@ export default function AdminOrderPage() {
               <TableHead>Customer</TableHead>
               <TableHead>Contact</TableHead>
               <TableHead>Order Type</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead>Component Cost</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Delivery</TableHead>
               <TableHead>Assigned To</TableHead>
@@ -214,7 +215,19 @@ export default function AdminOrderPage() {
                     <span className="font-semibold text-blue-600">Catalog</span>
                   )}
                 </TableCell>
-                <TableCell>{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                <TableCell>
+                    {canManageCosts ? (
+                        <Input
+                            type="number"
+                            placeholder="Cost"
+                            className="w-24"
+                            defaultValue={order.componentCost}
+                            onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
+                        />
+                    ) : (
+                       <span>₹{order.componentCost?.toFixed(2) || 'N/A'}</span>
+                    )}
+                </TableCell>
                 <TableCell>
                   <Select value={order.status} onValueChange={(value: 'Completed' | 'Not Completed') => handleUpdateOrder(order.id, { status: value })}>
                     <SelectTrigger>
@@ -287,7 +300,7 @@ export default function AdminOrderPage() {
                             <p><strong>Domain:</strong> {order.domain}</p>
                             <div>
                               <strong>Detailed Requirements:</strong>
-                              <p className="p-2 mt-1 bg-slate-50 border rounded-md whitespace-pre-wrap">{order.detailedRequirements}</p>
+                              <Textarea readOnly value={order.detailedRequirements} className="p-2 mt-1 bg-slate-50 border rounded-md whitespace-pre-wrap h-32" />
                             </div>
                           </>
                         ) : (
@@ -309,9 +322,9 @@ export default function AdminOrderPage() {
                          <div className="space-y-4 pt-4 border-t">
                             {canManageCosts && (
                                 <div className="space-y-2">
-                                    <Label htmlFor={`componentCost-${order.id}`} className="font-semibold">Component Cost</Label>
+                                    <Label htmlFor={`componentCost-${order.id}-dialog`} className="font-semibold">Component Cost</Label>
                                     <Input
-                                        id={`componentCost-${order.id}`}
+                                        id={`componentCost-${order.id}-dialog`}
                                         type="number"
                                         placeholder="Enter component cost"
                                         defaultValue={order.componentCost}
