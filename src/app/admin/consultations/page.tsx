@@ -170,10 +170,42 @@ export default function ConsultationManagementPage() {
           <TableBody>
             {consultations.map((consultation) => (
               <TableRow key={consultation.id}>
-                <TableCell className="font-medium">{consultation.customerName}</TableCell>
-                <TableCell>{consultation.customerEmail}</TableCell>
-                <TableCell>{consultation.projectTopic}</TableCell>
-                <TableCell>{consultation.preferredTime}</TableCell>
+                <TableCell>
+                    <Input
+                        type="text"
+                        defaultValue={consultation.customerName}
+                        onBlur={(e) => handleUpdateConsultation(consultation.id, { customerName: e.target.value })}
+                        className="w-[180px]"
+                        disabled={!canManageConsultations}
+                    />
+                </TableCell>
+                <TableCell>
+                    <Input
+                        type="text"
+                        defaultValue={consultation.customerEmail}
+                        onBlur={(e) => handleUpdateConsultation(consultation.id, { customerEmail: e.target.value })}
+                        className="w-[180px]"
+                        disabled={!canManageConsultations}
+                    />
+                </TableCell>
+                <TableCell>
+                    <Input
+                        type="text"
+                        defaultValue={consultation.projectTopic}
+                        onBlur={(e) => handleUpdateConsultation(consultation.id, { projectTopic: e.target.value })}
+                        className="w-[180px]"
+                        disabled={!canManageConsultations}
+                    />
+                </TableCell>
+                <TableCell>
+                    <Input
+                        type="text"
+                        defaultValue={consultation.preferredTime}
+                        onBlur={(e) => handleUpdateConsultation(consultation.id, { preferredTime: e.target.value })}
+                        className="w-[180px]"
+                        disabled={!canManageConsultations}
+                    />
+                </TableCell>
                 <TableCell>
                   {canAssignConsultants ? (
                     <Select
