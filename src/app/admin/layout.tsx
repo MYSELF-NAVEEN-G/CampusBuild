@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban } from 'lucide-react';
+import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -54,6 +54,7 @@ export default function AdminLayout({
   const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
   const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
   const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
+  const canManageFinancials = isSuperAdmin;
 
   // Redirect non-admins immediately
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function AdminLayout({
 
   const getNavItems = () => [
     { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders },
+    { href: '/admin/financials', label: 'Financial Management', icon: DollarSign, visible: canManageFinancials },
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects },
@@ -168,3 +170,5 @@ export default function AdminLayout({
     </div>
   );
 }
+
+    
