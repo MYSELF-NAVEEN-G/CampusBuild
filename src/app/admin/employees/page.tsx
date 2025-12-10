@@ -51,6 +51,7 @@ interface Employee {
   age: number;
   position: string;
   specialization: string;
+  salary?: number;
 }
 
 export default function EmployeeManagementPage() {
@@ -67,6 +68,7 @@ export default function EmployeeManagementPage() {
     age: 0,
     position: '',
     specialization: '',
+    salary: 0,
   });
 
   const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
@@ -111,6 +113,7 @@ export default function EmployeeManagementPage() {
         age: employee.age,
         position: employee.position,
         specialization: employee.specialization,
+        salary: employee.salary || 0,
       });
     } else {
       setEditingEmployee(null);
@@ -119,6 +122,7 @@ export default function EmployeeManagementPage() {
         age: 0,
         position: '',
         specialization: '',
+        salary: 0,
       });
     }
     setIsFormOpen(true);
@@ -128,7 +132,7 @@ export default function EmployeeManagementPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({
         ...prev,
-        [name]: name === 'age' ? parseInt(value, 10) || 0 : value,
+        [name]: name === 'age' || name === 'salary' ? parseInt(value, 10) || 0 : value,
     }));
   };
 
@@ -196,6 +200,7 @@ export default function EmployeeManagementPage() {
               <TableHead>Age</TableHead>
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
+              <TableHead>Monthly Salary</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -206,6 +211,7 @@ export default function EmployeeManagementPage() {
                 <TableCell>{employee.age}</TableCell>
                 <TableCell>{employee.position}</TableCell>
                 <TableCell>{employee.specialization}</TableCell>
+                <TableCell>₹{employee.salary?.toFixed(2) || '0.00'}</TableCell>
                 <TableCell className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
                     <Edit className="mr-2 h-4 w-4" /> Edit
@@ -243,6 +249,7 @@ export default function EmployeeManagementPage() {
                 <Input name="age" type="number" value={formData.age} onChange={handleFormChange} placeholder="Age" required />
                 <Input name="position" value={formData.position} onChange={handleFormChange} placeholder="Position (e.g., Lead Engineer)" required />
                 <Input name="specialization" value={formData.specialization} onChange={handleFormChange} placeholder="Specialization (e.g., IoT)" required />
+                <Input name="salary" type="number" value={formData.salary} onChange={handleFormChange} placeholder="Monthly Salary" required />
                 <DialogFooter>
                     <DialogClose asChild>
                         <Button type="button" variant="outline">Cancel</Button>

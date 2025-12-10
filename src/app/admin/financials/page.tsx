@@ -8,14 +8,20 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, PackageCheck } from 'lucide-react';
+import { DollarSign, PackageCheck, Wrench, Users, LineChart } from 'lucide-react';
 
 interface Order {
   id: string;
   customerName: string;
   total?: number;
+  componentCost?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
+}
+
+interface Employee {
+    id: string;
+    salary?: number;
 }
 
 export default function FinancialManagementPage() {
@@ -23,6 +29,7 @@ export default function FinancialManagementPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -46,7 +53,7 @@ export default function FinancialManagementPage() {
     }
 
     const ordersCollection = collection(firestore, 'orders');
-    const unsubscribe = onSnapshot(ordersCollection, (snapshot) => {
+    const unsubscribeOrders = onSnapshot(ordersCollection, (snapshot) => {
       const fetchedOrders = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -59,11 +66,29 @@ export default function FinancialManagementPage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    const employeesCollection = collection(firestore, 'employees');
+    const unsubscribeEmployees = onSnapshot(employeesCollection, (snapshot) => {
+        const fetchedEmployees = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        } as Employee));
+        setEmployees(fetchedEmployees);
+    }, (error) => {
+        console.error("Error fetching employees:", error);
+        toast({ title: 'Error', description: 'Could not fetch employee salary data.', variant: 'destructive'});
+    });
+
+    return () => {
+        unsubscribeOrders();
+        unsubscribeEmployees();
+    };
   }, [firestore, toast, isSuperAdmin]);
 
   const completedOrders = orders.filter(order => order.status === 'Completed');
   const totalRevenue = completedOrders.reduce((acc, order) => acc + (order.total || 0), 0);
+  const totalComponentCost = completedOrders.reduce((acc, order) => acc + (order.componentCost || 0), 0);
+  const totalSalaryCost = employees.reduce((acc, emp) => acc + (emp.salary || 0), 0);
+  const netProfit = totalRevenue - totalComponentCost - totalSalaryCost;
 
   if (isUserLoading || loading) {
     return <div>Loading Financial Data...</div>;
@@ -77,7 +102,7 @@ export default function FinancialManagementPage() {
     <>
       <h1 className="text-3xl font-bold mb-6 font-headline">Financial Overview</h1>
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 mb-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -85,17 +110,37 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">From all completed orders</p>
+            <p className="text-xs text-muted-foreground">From {completedOrders.length} completed orders</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed Orders</CardTitle>
-            <PackageCheck className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Component Costs</CardTitle>
+            <Wrench className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{completedOrders.length}</div>
-            <p className="text-xs text-muted-foreground">Total orders marked as completed</p>
+            <div className="text-2xl font-bold">₹{totalComponentCost.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Expenses for parts on completed orders</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Salary Payouts</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalSalaryCost.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Total monthly salaries for {employees.length} employees</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-primary text-primary-foreground">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
+            <LineChart className="h-4 w-4 text-primary-foreground/70" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{netProfit.toFixed(2)}</div>
+            <p className="text-xs text-primary-foreground/70">Total Revenue - Costs - Salaries</p>
           </CardContent>
         </Card>
       </div>
@@ -108,18 +153,24 @@ export default function FinancialManagementPage() {
               <TableHead>Order ID</TableHead>
               <TableHead>Customer</TableHead>
               <TableHead>Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="text-right">Sale Amount</TableHead>
+              <TableHead className="text-right">Component Cost</TableHead>
+              <TableHead className="text-right">Profit</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {completedOrders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map((order) => (
+            {completedOrders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map((order) => {
+              const profit = (order.total || 0) - (order.componentCost || 0);
+              return (
               <TableRow key={order.id}>
                 <TableCell className="font-mono text-xs">{order.id}</TableCell>
                 <TableCell>{order.customerName}</TableCell>
                 <TableCell>{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right font-medium">₹{order.total?.toFixed(2) || '0.00'}</TableCell>
+                <TableCell className="text-right text-orange-600">₹{order.componentCost?.toFixed(2) || '0.00'}</TableCell>
+                <TableCell className={`text-right font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{profit.toFixed(2)}</TableCell>
               </TableRow>
-            ))}
+            )})}
           </TableBody>
         </Table>
         {completedOrders.length === 0 && (
@@ -131,5 +182,3 @@ export default function FinancialManagementPage() {
     </>
   );
 }
-
-    

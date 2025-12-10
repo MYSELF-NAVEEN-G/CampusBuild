@@ -14,6 +14,8 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 
 interface OrderItem {
@@ -29,6 +31,7 @@ interface Order {
   customerPhone: string;
   items?: OrderItem[]; // For catalog orders
   total?: number;
+  componentCost?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
   deliveryStatus: 'Delivered' | 'Not Delivered';
@@ -59,6 +62,7 @@ export default function AdminOrderPage() {
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
   const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
   const canManageDelivery = isSuperAdmin;
+  const canManageCosts = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
 
   // Security check: Redirect if the user doesn't have permission.
   useEffect(() => {
@@ -300,6 +304,18 @@ export default function AdminOrderPage() {
                               </div>
                           </>
                         )}
+                         {canManageCosts && (
+                            <div className="space-y-2 pt-4 border-t">
+                                <Label htmlFor={`componentCost-${order.id}`} className="font-semibold">Component Cost</Label>
+                                <Input
+                                    id={`componentCost-${order.id}`}
+                                    type="number"
+                                    placeholder="Enter component cost"
+                                    defaultValue={order.componentCost}
+                                    onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
+                                />
+                            </div>
+                        )}
                       </div>
                       <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
                           <AlertDialog>
@@ -340,7 +356,3 @@ export default function AdminOrderPage() {
     </>
   );
 }
-
-    
-
-    

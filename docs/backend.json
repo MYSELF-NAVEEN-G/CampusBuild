@@ -95,6 +95,14 @@
         "detailedRequirements": {
           "type": "string",
           "description": "A detailed description of the project requirements and specifications."
+        },
+        "componentCost": {
+          "type": "number",
+          "description": "The cost of components for the order."
+        },
+        "profit": {
+          "type": "number",
+          "description": "The profit made from the order."
         }
       },
       "required": [
@@ -127,6 +135,10 @@
         "specialization": {
           "type": "string",
           "description": "The primary area of expertise or specialization."
+        },
+        "salary": {
+          "type": "number",
+          "description": "Monthly salary of the employee."
         }
       },
       "required": [
