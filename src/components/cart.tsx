@@ -51,6 +51,7 @@ const Cart = () => {
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             deliveryStatus: 'Not Delivered',
+            paymentStatus: 'Unpaid',
             assigned: 'Not Assigned',
             deadline: customerDetails.deadline,
         };

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -68,6 +69,7 @@ const CustomOrder = () => {
             createdAt: serverTimestamp(),
             status: 'Not Completed',
             deliveryStatus: 'Not Delivered',
+            paymentStatus: 'Unpaid',
             assigned: 'Not Assigned',
         };
 

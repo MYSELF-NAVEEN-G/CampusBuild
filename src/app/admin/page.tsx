@@ -37,6 +37,7 @@ interface Order {
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
   deliveryStatus: 'Delivered' | 'Not Delivered';
+  paymentStatus: 'Paid' | 'Unpaid';
   assigned: string;
   deadline: string;
   // Fields for custom orders
@@ -65,6 +66,7 @@ export default function AdminOrderPage() {
   const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
   const canManageDelivery = isSuperAdmin;
   const canManageCosts = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
+  const canManagePayment = isSuperAdmin;
 
   // Security check: Redirect if the user doesn't have permission.
   useEffect(() => {
@@ -195,6 +197,7 @@ export default function AdminOrderPage() {
               <TableHead>Component Cost</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Delivery</TableHead>
+              <TableHead>Payment</TableHead>
               <TableHead>Assigned To</TableHead>
               <TableHead>Deadline</TableHead>
               <TableHead>Details</TableHead>
@@ -251,6 +254,21 @@ export default function AdminOrderPage() {
                       <SelectContent>
                         <SelectItem value="Delivered">Delivered</SelectItem>
                         <SelectItem value="Not Delivered">Not Delivered</SelectItem>
+                      </SelectContent>
+                    </Select>
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={order.paymentStatus || 'Unpaid'}
+                    onValueChange={(value: 'Paid' | 'Unpaid') => handleUpdateOrder(order.id, { paymentStatus: value })}
+                    disabled={!canManagePayment}
+                  >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Paid">Paid</SelectItem>
+                        <SelectItem value="Unpaid">Unpaid</SelectItem>
                       </SelectContent>
                     </Select>
                 </TableCell>

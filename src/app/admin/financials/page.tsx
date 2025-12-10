@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DollarSign, PackageCheck, Wrench, Users, LineChart, HandCoins } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface Order {
   id: string;
@@ -18,6 +19,8 @@ interface Order {
   handlerFee?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
+  assigned: string;
+  paymentStatus: 'Paid' | 'Unpaid';
 }
 
 interface Employee {
@@ -164,7 +167,9 @@ export default function FinancialManagementPage() {
             <TableRow>
               <TableHead>Order ID</TableHead>
               <TableHead>Customer</TableHead>
+              <TableHead>Handled By</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead>Payment</TableHead>
               <TableHead className="text-right">Sale Amount</TableHead>
               <TableHead className="text-right">Component Cost</TableHead>
               <TableHead className="text-right">Handler Fee</TableHead>
@@ -179,7 +184,13 @@ export default function FinancialManagementPage() {
               <TableRow key={order.id}>
                 <TableCell className="font-mono text-xs">{order.id}</TableCell>
                 <TableCell>{order.customerName}</TableCell>
+                <TableCell>{order.assigned || 'Not Assigned'}</TableCell>
                 <TableCell>{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  <Badge variant={order.paymentStatus === 'Paid' ? 'default' : 'destructive'}>
+                    {order.paymentStatus || 'Unpaid'}
+                  </Badge>
+                </TableCell>
                 <TableCell className="text-right font-medium">₹{order.total?.toFixed(2) || '0.00'}</TableCell>
                 <TableCell className="text-right text-orange-600">₹{order.componentCost?.toFixed(2) || '0.00'}</TableCell>
                 <TableCell className="text-right text-blue-600">₹{handlerFee.toFixed(2)}</TableCell>

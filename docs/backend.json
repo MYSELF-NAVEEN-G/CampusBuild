@@ -107,6 +107,10 @@
         "handlerFee": {
           "type": "number",
           "description": "The fee paid to the person handling the order."
+        },
+        "paymentStatus": {
+          "type": "string",
+          "description": "The payment status of the order (e.g., Paid, Unpaid)."
         }
       },
       "required": [
