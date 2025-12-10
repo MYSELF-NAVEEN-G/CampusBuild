@@ -258,14 +258,20 @@ export default function FinancialManagementPage() {
                     />
                 </TableCell>
                 <TableCell className="text-right">
-                    <Input
-                        type="number"
-                        defaultValue={order.handlerFee}
-                        onBlur={(e) => handleUpdateOrder(order.id, { handlerFee: parseFloat(e.target.value) || 0 })}
-                        className="w-32 ml-auto"
-                        placeholder="Handler Fee"
+                    <Select
+                        value={String(order.handlerFee ?? 300)}
+                        onValueChange={(value) => handleUpdateOrder(order.id, { handlerFee: parseInt(value, 10) })}
                         disabled={!isSuperAdmin}
-                    />
+                    >
+                        <SelectTrigger className="w-32 ml-auto">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="300">₹300</SelectItem>
+                            <SelectItem value="500">₹500</SelectItem>
+                            <SelectItem value="600">₹600</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </TableCell>
                 <TableCell className={`text-right font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{profit.toFixed(2)}</TableCell>
               </TableRow>

@@ -187,30 +187,6 @@ export default function AdminOrderPage() {
     return <div className="flex justify-center items-center h-screen">Redirecting...</div>
   }
   
-  // A helper component to manage the local state of the handler fee slider
-  const HandlerFeeSlider = ({ order }: { order: Order }) => {
-    const [fee, setFee] = useState(order.handlerFee === undefined ? 300 : order.handlerFee);
-
-    return (
-        <div className="space-y-2">
-            <div className="flex justify-between items-center">
-                <Label htmlFor={`handlerFee-${order.id}`} className="font-semibold">Handler Fee</Label>
-                <span className="text-sm font-medium">₹{fee.toFixed(2)}</span>
-            </div>
-            <Slider
-                id={`handlerFee-${order.id}`}
-                min={100}
-                max={500}
-                step={10}
-                value={[fee]}
-                onValueChange={(value) => setFee(value[0])}
-                onValueCommit={(value) => handleUpdateOrder(order.id, { handlerFee: value[0] })}
-            />
-        </div>
-    );
-};
-
-
   return (
     <>
       <h1 className="text-3xl font-bold mb-6 font-headline">Order Management</h1>
@@ -373,7 +349,24 @@ export default function AdminOrderPage() {
                                     />
                                 </div>
                             )}
-                            {isSuperAdmin && <HandlerFeeSlider order={order} />}
+                            {isSuperAdmin && (
+                                <div className="space-y-2">
+                                    <Label className="font-semibold">Handler Fee</Label>
+                                    <Select
+                                        value={String(order.handlerFee ?? 300)}
+                                        onValueChange={(value) => handleUpdateOrder(order.id, { handlerFee: parseInt(value, 10) })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="300">₹300</SelectItem>
+                                            <SelectItem value="500">₹500</SelectItem>
+                                            <SelectItem value="600">₹600</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                         </div>
                       </div>
                       <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
