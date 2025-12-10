@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DollarSign, PackageCheck, Wrench, Users, LineChart, HandCoins } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 interface Order {
   id: string;
@@ -236,9 +237,36 @@ export default function FinancialManagementPage() {
                       </SelectContent>
                     </Select>
                 </TableCell>
-                <TableCell className="text-right font-medium">₹{order.total?.toFixed(2) || '0.00'}</TableCell>
-                <TableCell className="text-right text-orange-600">₹{order.componentCost?.toFixed(2) || '0.00'}</TableCell>
-                <TableCell className="text-right text-blue-600">₹{handlerFee.toFixed(2)}</TableCell>
+                <TableCell className="text-right">
+                    <Input
+                        type="number"
+                        defaultValue={order.total}
+                        onBlur={(e) => handleUpdateOrder(order.id, { total: parseFloat(e.target.value) || 0 })}
+                        className="w-32 ml-auto"
+                        placeholder="Sale Amount"
+                        disabled={!isSuperAdmin}
+                    />
+                </TableCell>
+                <TableCell className="text-right">
+                    <Input
+                        type="number"
+                        defaultValue={order.componentCost}
+                        onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
+                        className="w-32 ml-auto"
+                        placeholder="Component Cost"
+                        disabled={!isSuperAdmin}
+                    />
+                </TableCell>
+                <TableCell className="text-right">
+                    <Input
+                        type="number"
+                        defaultValue={order.handlerFee}
+                        onBlur={(e) => handleUpdateOrder(order.id, { handlerFee: parseFloat(e.target.value) || 0 })}
+                        className="w-32 ml-auto"
+                        placeholder="Handler Fee"
+                        disabled={!isSuperAdmin}
+                    />
+                </TableCell>
                 <TableCell className={`text-right font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{profit.toFixed(2)}</TableCell>
               </TableRow>
             )})}
@@ -253,5 +281,3 @@ export default function FinancialManagementPage() {
     </>
   );
 }
-
-    
