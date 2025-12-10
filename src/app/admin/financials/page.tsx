@@ -21,6 +21,7 @@ interface Order {
   status: 'Completed' | 'Not Completed';
   assigned: string;
   paymentStatus: 'Paid' | 'Unpaid';
+  handlerFeeStatus?: 'Sent' | 'Not Sent';
 }
 
 interface Employee {
@@ -170,6 +171,7 @@ export default function FinancialManagementPage() {
               <TableHead>Handled By</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Payment</TableHead>
+              <TableHead>Handler Fee Status</TableHead>
               <TableHead className="text-right">Sale Amount</TableHead>
               <TableHead className="text-right">Component Cost</TableHead>
               <TableHead className="text-right">Handler Fee</TableHead>
@@ -189,6 +191,11 @@ export default function FinancialManagementPage() {
                 <TableCell>
                   <Badge variant={order.paymentStatus === 'Paid' ? 'default' : 'destructive'}>
                     {order.paymentStatus || 'Unpaid'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={order.handlerFeeStatus === 'Sent' ? 'secondary' : 'outline'}>
+                    {order.handlerFeeStatus || 'Not Sent'}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right font-medium">₹{order.total?.toFixed(2) || '0.00'}</TableCell>

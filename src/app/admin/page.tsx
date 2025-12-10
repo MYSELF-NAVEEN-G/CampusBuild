@@ -38,6 +38,7 @@ interface Order {
   status: 'Completed' | 'Not Completed';
   deliveryStatus: 'Delivered' | 'Not Delivered';
   paymentStatus: 'Paid' | 'Unpaid';
+  handlerFeeStatus?: 'Sent' | 'Not Sent';
   assigned: string;
   deadline: string;
   // Fields for custom orders
@@ -198,6 +199,7 @@ export default function AdminOrderPage() {
               <TableHead>Status</TableHead>
               <TableHead>Delivery</TableHead>
               <TableHead>Payment</TableHead>
+              <TableHead>Handler Fee Status</TableHead>
               <TableHead>Assigned To</TableHead>
               <TableHead>Deadline</TableHead>
               <TableHead>Details</TableHead>
@@ -269,6 +271,21 @@ export default function AdminOrderPage() {
                       <SelectContent>
                         <SelectItem value="Paid">Paid</SelectItem>
                         <SelectItem value="Unpaid">Unpaid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={order.handlerFeeStatus || 'Not Sent'}
+                    onValueChange={(value: 'Sent' | 'Not Sent') => handleUpdateOrder(order.id, { handlerFeeStatus: value })}
+                    disabled={!isSuperAdmin}
+                  >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sent">Sent</SelectItem>
+                        <SelectItem value="Not Sent">Not Sent</SelectItem>
                       </SelectContent>
                     </Select>
                 </TableCell>

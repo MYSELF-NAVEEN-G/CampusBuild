@@ -111,6 +111,10 @@
         "paymentStatus": {
           "type": "string",
           "description": "The payment status of the order (e.g., Paid, Unpaid)."
+        },
+        "handlerFeeStatus": {
+          "type": "string",
+          "description": "The payment status of the handler fee (e.g., Sent, Not Sent)."
         }
       },
       "required": [
