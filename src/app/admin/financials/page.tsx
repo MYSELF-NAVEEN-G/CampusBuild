@@ -103,9 +103,11 @@ export default function FinancialManagementPage() {
   };
 
   const completedOrders = orders.filter(order => order.status === 'Completed');
-  const totalRevenue = completedOrders.reduce((acc, order) => acc + (order.total || 0), 0);
-  const totalComponentCost = completedOrders.reduce((acc, order) => acc + (order.componentCost || 0), 0);
-  const totalHandlerFees = completedOrders
+  const paidAndCompletedOrders = completedOrders.filter(order => order.paymentStatus === 'Paid');
+
+  const totalRevenue = paidAndCompletedOrders.reduce((acc, order) => acc + (order.total || 0), 0);
+  const totalComponentCost = paidAndCompletedOrders.reduce((acc, order) => acc + (order.componentCost || 0), 0);
+  const totalHandlerFees = paidAndCompletedOrders
     .filter(order => order.handlerFeeStatus === 'Sent')
     .reduce((acc, order) => acc + (order.handlerFee ?? 300), 0);
   const totalSalaryCost = employees.reduce((acc, emp) => acc + (emp.salary || 0), 0);
@@ -131,7 +133,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">From {completedOrders.length} completed orders</p>
+            <p className="text-xs text-muted-foreground">From {paidAndCompletedOrders.length} paid orders</p>
           </CardContent>
         </Card>
         <Card>
@@ -141,7 +143,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalComponentCost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Expenses for parts</p>
+            <p className="text-xs text-muted-foreground">For paid orders</p>
           </CardContent>
         </Card>
         <Card>
@@ -151,7 +153,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalHandlerFees.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Fees for order handlers</p>
+            <p className="text-xs text-muted-foreground">Sent for paid orders</p>
           </CardContent>
         </Card>
         <Card>
@@ -171,7 +173,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{netProfit.toFixed(2)}</div>
-            <p className="text-xs text-primary-foreground/70">Revenue - All Costs</p>
+            <p className="text-xs text-primary-foreground/70">From paid orders</p>
           </CardContent>
         </Card>
       </div>
