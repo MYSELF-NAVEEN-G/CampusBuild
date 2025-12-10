@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
 
 
 interface OrderItem {
@@ -185,6 +186,30 @@ export default function AdminOrderPage() {
   if (!canManageOrders) {
     return <div className="flex justify-center items-center h-screen">Redirecting...</div>
   }
+  
+  // A helper component to manage the local state of the handler fee slider
+  const HandlerFeeSlider = ({ order }: { order: Order }) => {
+    const [fee, setFee] = useState(order.handlerFee === undefined ? 300 : order.handlerFee);
+
+    return (
+        <div className="space-y-2">
+            <div className="flex justify-between items-center">
+                <Label htmlFor={`handlerFee-${order.id}`} className="font-semibold">Handler Fee</Label>
+                <span className="text-sm font-medium">₹{fee.toFixed(2)}</span>
+            </div>
+            <Slider
+                id={`handlerFee-${order.id}`}
+                min={100}
+                max={500}
+                step={10}
+                value={[fee]}
+                onValueChange={(value) => setFee(value[0])}
+                onValueCommit={(value) => handleUpdateOrder(order.id, { handlerFee: value[0] })}
+            />
+        </div>
+    );
+};
+
 
   return (
     <>
@@ -348,18 +373,7 @@ export default function AdminOrderPage() {
                                     />
                                 </div>
                             )}
-                            {isSuperAdmin && (
-                                <div className="space-y-2">
-                                    <Label htmlFor={`handlerFee-${order.id}`} className="font-semibold">Handler Fee</Label>
-                                    <Input
-                                        id={`handlerFee-${order.id}`}
-                                        type="number"
-                                        placeholder="Enter handler fee"
-                                        defaultValue={order.handlerFee === undefined ? 300 : order.handlerFee}
-                                        onBlur={(e) => handleUpdateOrder(order.id, { handlerFee: parseFloat(e.target.value) || 0 })}
-                                    />
-                                </div>
-                            )}
+                            {isSuperAdmin && <HandlerFeeSlider order={order} />}
                         </div>
                       </div>
                       <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
