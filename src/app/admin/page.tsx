@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
 
 interface OrderItem {
@@ -260,34 +261,14 @@ export default function AdminOrderPage() {
                     </Select>
                 </TableCell>
                 <TableCell>
-                  <Select
-                    value={order.paymentStatus || 'Unpaid'}
-                    onValueChange={(value: 'Paid' | 'Unpaid') => handleUpdateOrder(order.id, { paymentStatus: value })}
-                    disabled={!canManagePayment}
-                  >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Paid">Paid</SelectItem>
-                        <SelectItem value="Unpaid">Unpaid</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <Badge variant={order.paymentStatus === 'Paid' ? 'default' : 'destructive'}>
+                    {order.paymentStatus || 'Unpaid'}
+                  </Badge>
                 </TableCell>
                 <TableCell>
-                  <Select
-                    value={order.handlerFeeStatus || 'Not Sent'}
-                    onValueChange={(value: 'Sent' | 'Not Sent') => handleUpdateOrder(order.id, { handlerFeeStatus: value })}
-                    disabled={!isSuperAdmin}
-                  >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Sent">Sent</SelectItem>
-                        <SelectItem value="Not Sent">Not Sent</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <Badge variant={order.handlerFeeStatus === 'Sent' ? 'secondary' : 'outline'}>
+                    {order.handlerFeeStatus || 'Not Sent'}
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   {isSuperAdmin ? (

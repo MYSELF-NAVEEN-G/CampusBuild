@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useFirebase, useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DollarSign, PackageCheck, Wrench, Users, LineChart, HandCoins } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Order {
   id: string;
@@ -88,6 +89,18 @@ export default function FinancialManagementPage() {
         unsubscribeEmployees();
     };
   }, [firestore, toast, isSuperAdmin]);
+
+  const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
+    if (!firestore || !isSuperAdmin) return;
+    const orderRef = doc(firestore, 'orders', orderId);
+    try {
+      await updateDoc(orderRef, updates);
+      toast({ title: 'Success', description: 'Order status updated.' });
+    } catch (error) {
+      console.error('Error updating order:', error);
+      toast({ title: 'Error', description: 'Failed to update order.', variant: 'destructive' });
+    }
+  };
 
   const completedOrders = orders.filter(order => order.status === 'Completed');
   const totalRevenue = completedOrders.reduce((acc, order) => acc + (order.total || 0), 0);
@@ -189,14 +202,34 @@ export default function FinancialManagementPage() {
                 <TableCell>{order.assigned || 'Not Assigned'}</TableCell>
                 <TableCell>{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Badge variant={order.paymentStatus === 'Paid' ? 'default' : 'destructive'}>
-                    {order.paymentStatus || 'Unpaid'}
-                  </Badge>
+                  <Select
+                    value={order.paymentStatus || 'Unpaid'}
+                    onValueChange={(value: 'Paid' | 'Unpaid') => handleUpdateOrder(order.id, { paymentStatus: value })}
+                    disabled={!isSuperAdmin}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Paid">Paid</SelectItem>
+                      <SelectItem value="Unpaid">Unpaid</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={order.handlerFeeStatus === 'Sent' ? 'secondary' : 'outline'}>
-                    {order.handlerFeeStatus || 'Not Sent'}
-                  </Badge>
+                   <Select
+                    value={order.handlerFeeStatus || 'Not Sent'}
+                    onValueChange={(value: 'Sent' | 'Not Sent') => handleUpdateOrder(order.id, { handlerFeeStatus: value })}
+                    disabled={!isSuperAdmin}
+                  >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sent">Sent</SelectItem>
+                        <SelectItem value="Not Sent">Not Sent</SelectItem>
+                      </SelectContent>
+                    </Select>
                 </TableCell>
                 <TableCell className="text-right font-medium">₹{order.total?.toFixed(2) || '0.00'}</TableCell>
                 <TableCell className="text-right text-orange-600">₹{order.componentCost?.toFixed(2) || '0.00'}</TableCell>
