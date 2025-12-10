@@ -173,7 +173,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{netProfit.toFixed(2)}</div>
-            <p className="text-xs text-primary-foreground/70">From paid orders</p>
+            <p className="text-xs text-primary-foreground/70">Revenue - All Costs</p>
           </CardContent>
         </Card>
       </div>
@@ -198,7 +198,8 @@ export default function FinancialManagementPage() {
           <TableBody>
             {completedOrders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map((order) => {
               const handlerFee = order.handlerFee ?? 300;
-              const profit = (order.total || 0) - (order.componentCost || 0) - handlerFee;
+              const calculatedProfit = (order.total || 0) - (order.componentCost || 0) - handlerFee;
+              const profit = order.paymentStatus === 'Paid' ? calculatedProfit : 0;
               return (
               <TableRow key={order.id}>
                 <TableCell className="font-mono text-xs">{order.id}</TableCell>
@@ -252,3 +253,5 @@ export default function FinancialManagementPage() {
     </>
   );
 }
+
+    
