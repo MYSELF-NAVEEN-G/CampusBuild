@@ -103,6 +103,10 @@
         "profit": {
           "type": "number",
           "description": "The profit made from the order."
+        },
+        "handlerFee": {
+          "type": "number",
+          "description": "The fee paid to the person handling the order."
         }
       },
       "required": [

@@ -8,13 +8,14 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, PackageCheck, Wrench, Users, LineChart } from 'lucide-react';
+import { DollarSign, PackageCheck, Wrench, Users, LineChart, HandCoins } from 'lucide-react';
 
 interface Order {
   id: string;
   customerName: string;
   total?: number;
   componentCost?: number;
+  handlerFee?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
 }
@@ -87,8 +88,9 @@ export default function FinancialManagementPage() {
   const completedOrders = orders.filter(order => order.status === 'Completed');
   const totalRevenue = completedOrders.reduce((acc, order) => acc + (order.total || 0), 0);
   const totalComponentCost = completedOrders.reduce((acc, order) => acc + (order.componentCost || 0), 0);
+  const totalHandlerFees = completedOrders.reduce((acc, order) => acc + (order.handlerFee ?? 300), 0);
   const totalSalaryCost = employees.reduce((acc, emp) => acc + (emp.salary || 0), 0);
-  const netProfit = totalRevenue - totalComponentCost - totalSalaryCost;
+  const netProfit = totalRevenue - totalComponentCost - totalSalaryCost - totalHandlerFees;
 
   if (isUserLoading || loading) {
     return <div>Loading Financial Data...</div>;
@@ -102,7 +104,7 @@ export default function FinancialManagementPage() {
     <>
       <h1 className="text-3xl font-bold mb-6 font-headline">Financial Overview</h1>
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -120,7 +122,17 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalComponentCost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Expenses for parts on completed orders</p>
+            <p className="text-xs text-muted-foreground">Expenses for parts</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Handler Fees</CardTitle>
+            <HandCoins className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalHandlerFees.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Fees for order handlers</p>
           </CardContent>
         </Card>
         <Card>
@@ -130,7 +142,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{totalSalaryCost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Total monthly salaries for {employees.length} employees</p>
+            <p className="text-xs text-muted-foreground">For {employees.length} employees</p>
           </CardContent>
         </Card>
         <Card className="bg-primary text-primary-foreground">
@@ -140,7 +152,7 @@ export default function FinancialManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{netProfit.toFixed(2)}</div>
-            <p className="text-xs text-primary-foreground/70">Total Revenue - Costs - Salaries</p>
+            <p className="text-xs text-primary-foreground/70">Revenue - All Costs</p>
           </CardContent>
         </Card>
       </div>
@@ -155,12 +167,14 @@ export default function FinancialManagementPage() {
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Sale Amount</TableHead>
               <TableHead className="text-right">Component Cost</TableHead>
+              <TableHead className="text-right">Handler Fee</TableHead>
               <TableHead className="text-right">Profit</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {completedOrders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map((order) => {
-              const profit = (order.total || 0) - (order.componentCost || 0);
+              const handlerFee = order.handlerFee ?? 300;
+              const profit = (order.total || 0) - (order.componentCost || 0) - handlerFee;
               return (
               <TableRow key={order.id}>
                 <TableCell className="font-mono text-xs">{order.id}</TableCell>
@@ -168,6 +182,7 @@ export default function FinancialManagementPage() {
                 <TableCell>{new Date(order.createdAt.seconds * 1000).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right font-medium">₹{order.total?.toFixed(2) || '0.00'}</TableCell>
                 <TableCell className="text-right text-orange-600">₹{order.componentCost?.toFixed(2) || '0.00'}</TableCell>
+                <TableCell className="text-right text-blue-600">₹{handlerFee.toFixed(2)}</TableCell>
                 <TableCell className={`text-right font-bold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>₹{profit.toFixed(2)}</TableCell>
               </TableRow>
             )})}

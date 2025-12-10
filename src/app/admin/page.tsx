@@ -32,6 +32,7 @@ interface Order {
   items?: OrderItem[]; // For catalog orders
   total?: number;
   componentCost?: number;
+  handlerFee?: number;
   createdAt: Timestamp;
   status: 'Completed' | 'Not Completed';
   deliveryStatus: 'Delivered' | 'Not Delivered';
@@ -279,6 +280,7 @@ export default function AdminOrderPage() {
                       </DialogHeader>
                       <div className="mt-4 space-y-4 text-sm">
                           <p><strong>Deadline:</strong> {formatDate(order.deadline)}</p>
+                          <p><strong>Assigned To:</strong> {order.assigned || 'Not Assigned'}</p>
                         {order.isCustomOrder ? (
                           <>
                             <div className="font-semibold text-base">Custom Project: {order.projectTitle}</div>
@@ -304,18 +306,32 @@ export default function AdminOrderPage() {
                               </div>
                           </>
                         )}
-                         {canManageCosts && (
-                            <div className="space-y-2 pt-4 border-t">
-                                <Label htmlFor={`componentCost-${order.id}`} className="font-semibold">Component Cost</Label>
-                                <Input
-                                    id={`componentCost-${order.id}`}
-                                    type="number"
-                                    placeholder="Enter component cost"
-                                    defaultValue={order.componentCost}
-                                    onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
-                                />
-                            </div>
-                        )}
+                         <div className="space-y-4 pt-4 border-t">
+                            {canManageCosts && (
+                                <div className="space-y-2">
+                                    <Label htmlFor={`componentCost-${order.id}`} className="font-semibold">Component Cost</Label>
+                                    <Input
+                                        id={`componentCost-${order.id}`}
+                                        type="number"
+                                        placeholder="Enter component cost"
+                                        defaultValue={order.componentCost}
+                                        onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
+                                    />
+                                </div>
+                            )}
+                            {isSuperAdmin && (
+                                <div className="space-y-2">
+                                    <Label htmlFor={`handlerFee-${order.id}`} className="font-semibold">Handler Fee</Label>
+                                    <Input
+                                        id={`handlerFee-${order.id}`}
+                                        type="number"
+                                        placeholder="Enter handler fee"
+                                        defaultValue={order.handlerFee === undefined ? 300 : order.handlerFee}
+                                        onBlur={(e) => handleUpdateOrder(order.id, { handlerFee: parseFloat(e.target.value) || 0 })}
+                                    />
+                                </div>
+                            )}
+                        </div>
                       </div>
                       <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
                           <AlertDialog>
