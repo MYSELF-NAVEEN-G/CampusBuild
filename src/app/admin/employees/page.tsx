@@ -136,6 +136,18 @@ export default function EmployeeManagementPage() {
     }));
   };
 
+  const handleUpdateSalary = async (employeeId: string, newSalary: number) => {
+    if (!firestore || !canManageEmployees) return;
+    const employeeRef = doc(firestore, 'employees', employeeId);
+    try {
+      await updateDoc(employeeRef, { salary: newSalary });
+      toast({ title: 'Salary Updated', description: `Salary has been updated.` });
+    } catch (error) {
+      console.error('Error updating salary:', error);
+      toast({ title: 'Update Error', description: 'Could not update salary.', variant: 'destructive'});
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firestore) {
@@ -211,7 +223,15 @@ export default function EmployeeManagementPage() {
                 <TableCell>{employee.age}</TableCell>
                 <TableCell>{employee.position}</TableCell>
                 <TableCell>{employee.specialization}</TableCell>
-                <TableCell>₹{employee.salary?.toFixed(2) || '0.00'}</TableCell>
+                <TableCell>
+                  <Input
+                    type="number"
+                    defaultValue={employee.salary}
+                    onBlur={(e) => handleUpdateSalary(employee.id, parseFloat(e.target.value) || 0)}
+                    className="w-32"
+                    placeholder="Salary"
+                  />
+                </TableCell>
                 <TableCell className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
                     <Edit className="mr-2 h-4 w-4" /> Edit
