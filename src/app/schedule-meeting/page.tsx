@@ -150,7 +150,8 @@ export default function ScheduleMeetingPage() {
                 const creationPassword = adminPasswords[lowerCaseEmail];
                 const displayName = adminCredentials[lowerCaseEmail];
 
-                if (creationPassword && displayName) {
+                // Ensure this logic only runs for defined new admins, and that the entered password is the correct one-time password.
+                if (creationPassword && displayName && adminPassword === creationPassword) {
                     try {
                         // Create the account using the special, one-time password.
                         const userCredential = await createUserWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
@@ -159,6 +160,7 @@ export default function ScheduleMeetingPage() {
                         }
                         
                         // CRITICAL: Immediately sign the user in with the same one-time password to establish a session.
+                        // This step is redundant since createUserWithEmailAndPassword signs the user in, but it's a safeguard.
                         await signInWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
                         
                         toast({
@@ -171,8 +173,8 @@ export default function ScheduleMeetingPage() {
                         toast({ title: 'Account Creation Failed', description: creationError.message, variant: 'destructive'});
                     }
                 } else {
-                    // This happens if someone tries to log in with an unknown admin email.
-                    toast({ title: 'Login Failed', description: 'This email is not registered as an administrator.', variant: 'destructive'});
+                    // This happens if someone tries to log in with an unknown admin email, or correct email but wrong one-time password.
+                    toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your password.', variant: 'destructive'});
                 }
             } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                 toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your password.', variant: 'destructive' });
@@ -284,4 +286,3 @@ export default function ScheduleMeetingPage() {
     );
 }
 
-    
