@@ -58,7 +58,7 @@ export default function AdminLayout({
   const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in', 'lekshmi.06@nafon.in'].includes(userEmail);
   const canManageConsultations = isAdmin; // Simplified: All admins can manage consultations.
   const canManageFinancials = isSuperAdmin || userEmail === 'lekshmi.06@nafon.in';
-  const canManageSalaries = isSuperAdmin || canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
+  const canManageSalaries = isSuperAdmin || userEmail === 'john.04@nafon.in' || userEmail === 'lekshmi.06@nafon.in';
   
   // Redirect non-admins immediately
   useEffect(() => {
@@ -180,3 +180,5 @@ export default function AdminLayout({
     </div>
   );
 }
+
+    
