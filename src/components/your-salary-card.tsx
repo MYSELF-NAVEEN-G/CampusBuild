@@ -80,3 +80,5 @@ const YourSalaryCard = () => {
 };
 
 export default YourSalaryCard;
+
+    
