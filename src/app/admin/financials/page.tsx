@@ -262,14 +262,9 @@ export default function FinancialManagementPage() {
                     />
                 </TableCell>
                 <TableCell className="text-right">
-                    <Input
-                        type="number"
-                        defaultValue={order.componentCost}
-                        onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
-                        className="w-32 ml-auto"
-                        placeholder="Component Cost"
-                        disabled={!canManageFinancials}
-                    />
+                    <span className="w-32 text-right">
+                        ₹{(order.componentCost || 0).toFixed(2)}
+                    </span>
                 </TableCell>
                 <TableCell className="text-right">
                     <Select
@@ -331,5 +326,3 @@ export default function FinancialManagementPage() {
     </>
   );
 }
-
-    
