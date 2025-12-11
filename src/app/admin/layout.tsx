@@ -1,4 +1,3 @@
-
 'use client';
 
 import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban, DollarSign } from 'lucide-react';
