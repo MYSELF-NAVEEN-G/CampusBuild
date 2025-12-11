@@ -74,21 +74,22 @@ export default function EmployeeManagementPage() {
 
   const userEmail = user?.email || '';
   const canManageEmployees = userEmail === 'naveen.01@nafon.in' || userEmail === 'john.04@nafon.in';
+  const canViewPage = canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
   
   // Security check
   useEffect(() => {
-    if (!isUserLoading && !canManageEmployees) {
+    if (!isUserLoading && !canViewPage) {
       toast({
         title: 'Access Denied',
-        description: 'You do not have permission to manage employees.',
+        description: 'You do not have permission to view this page.',
         variant: 'destructive',
       });
       router.push('/admin');
     }
-  }, [user, isUserLoading, router, toast, canManageEmployees]);
+  }, [user, isUserLoading, router, toast, canViewPage]);
 
   useEffect(() => {
-    if (!firestore || !canManageEmployees) {
+    if (!firestore || !canViewPage) {
       setLoading(false);
       return;
     }
@@ -108,7 +109,7 @@ export default function EmployeeManagementPage() {
     });
 
     return () => unsubscribe();
-  }, [firestore, toast, canManageEmployees]);
+  }, [firestore, toast, canViewPage]);
 
   const openForm = (employee: Employee | null = null) => {
     if (employee) {
@@ -184,7 +185,7 @@ export default function EmployeeManagementPage() {
     return <div>Loading Employee Data...</div>;
   }
   
-  if (!canManageEmployees) {
+  if (!canViewPage) {
       return <div>Redirecting...</div>
   }
 

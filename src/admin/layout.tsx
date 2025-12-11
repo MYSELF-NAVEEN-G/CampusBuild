@@ -59,6 +59,7 @@ export default function AdminLayout({
   const canManageConsultations = isAdmin; // Simplified: All admins can manage consultations.
   const canManageFinancials = isSuperAdmin || userEmail === 'lekshmi.06@nafon.in';
   const canManageSalaries = isSuperAdmin || userEmail === 'john.04@nafon.in' || userEmail === 'lekshmi.06@nafon.in';
+  const canViewEmployeePage = canManageEmployees || canManageSalaries;
   
   // Redirect non-admins immediately
   useEffect(() => {
@@ -98,7 +99,7 @@ export default function AdminLayout({
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects },
-    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },
+    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canViewEmployeePage },
   ];
   
   const navItems = getNavItems();
