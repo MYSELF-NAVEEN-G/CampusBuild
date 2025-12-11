@@ -1,12 +1,14 @@
 
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { useFirebase, useUser } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { Button } from './ui/button';
 
 interface Employee {
   id: string;
@@ -43,11 +45,6 @@ const YourSalaryCard = () => {
         setLoading(false);
     }, (error) => {
         console.error("Failed to fetch salary:", error);
-        toast({
-            title: "Salary Error",
-            description: "Could not fetch your salary information.",
-            variant: "destructive"
-        });
         setLoading(false);
     });
 
@@ -57,33 +54,26 @@ const YourSalaryCard = () => {
 
   if (loading) {
     return (
-      <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Your Monthly Salary</CardTitle>
-          <Wallet className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-8 w-1/3" />
-          <Skeleton className="h-4 w-1/2 mt-1" />
-        </CardContent>
-      </Card>
+      <div className="w-full p-2 border rounded-lg bg-white shadow-sm mb-2">
+        <Skeleton className="h-6 w-3/4" />
+      </div>
     );
   }
 
   if (!employeeData || employeeData.salary === undefined) {
-    // Don't show the card if there's no salary data for this user
     return null;
   }
 
   return (
-    <Card className="mb-6 border-primary/20 bg-primary/5">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Your Monthly Salary</CardTitle>
-        <Wallet className="h-4 w-4 text-muted-foreground" />
+    <Card className="mb-2 border-primary/20 bg-primary/5">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
+        <CardTitle className="text-xs font-medium">Your Monthly Salary</CardTitle>
+        <Button asChild variant="link" size="sm" className="p-0 h-auto text-xs">
+            <Link href="/admin/salary">View All</Link>
+        </Button>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-primary">₹{employeeData.salary.toFixed(2)}</div>
-        <p className="text-xs text-muted-foreground">This is your recorded salary for the current month.</p>
+      <CardContent className="p-3 pt-0">
+        <div className="text-xl font-bold text-primary">₹{employeeData.salary.toFixed(2)}</div>
       </CardContent>
     </Card>
   );

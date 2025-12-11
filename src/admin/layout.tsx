@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban, DollarSign } from 'lucide-react';
+import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban, DollarSign, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -94,6 +94,7 @@ export default function AdminLayout({
   const getNavItems = () => [
     { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders },
     { href: '/admin/financials', label: 'Financial Management', icon: DollarSign, visible: canManageFinancials },
+    { href: '/admin/salary', label: 'Monthly Salary', icon: Wallet, visible: canManageSalaries },
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects },
@@ -148,7 +149,8 @@ export default function AdminLayout({
             </ul>
         </nav>
         <div className="p-4 border-t">
-          <Button asChild variant="outline" className="w-full justify-start mb-2">
+          <YourSalaryCard />
+          <Button asChild variant="outline" className="w-full justify-start mb-2 mt-2">
             <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
@@ -170,7 +172,6 @@ export default function AdminLayout({
             </div>
         </header>        
         <main className="flex-1 p-6 overflow-y-auto bg-slate-50">
-          <YourSalaryCard />
           {children}
         </main>
       </div>
