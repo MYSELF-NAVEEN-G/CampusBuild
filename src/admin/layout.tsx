@@ -112,7 +112,7 @@ export default function AdminLayout({
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const displayName = adminDisplayNames[userEmail] || user?.displayName || 'Admin';
   const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
-  const isTeamMember = adminEmails.slice(1).includes(userEmail);
+  const isTeamMember = adminEmails.includes(userEmail) && userEmail !== 'nafonstudios@gmail.com';
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
