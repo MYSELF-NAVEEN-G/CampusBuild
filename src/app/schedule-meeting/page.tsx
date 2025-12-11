@@ -5,24 +5,58 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, User } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
+
+
+const adminPasswords: Record<string, string> = {
+    'naveen.01@nafon.in': 'naveen0101',
+    'john.04@nafon.in': 'johnlee2322',
+    'karthick.02@nafon.in': 'karthick232223',
+    'thamizh.03@nafon.in': 'thamizh232258',
+    'jed.05@nafon.in': 'jed232211',
+    'gershon.05@nafon.in': 'gershon232211',
+    'laksh06@nafon.in': 'lekshmi232225',
+};
+
+const adminDisplayNames: Record<string, string> = {
+    'nafonstudios@gmail.com': 'Admin',
+    'naveen.01@nafon.in': 'NAVEEN',
+    'john.04@nafon.in': 'John Lee',
+    'karthick.02@nafon.in': 'Karthick',
+    'thamizh.03@nafon.in': 'Thamizh',
+    'jed.05@nafon.in': 'JED',
+    'gershon.05@nafon.in': 'Gershon',
+    'laksh06@nafon.in': 'Lekshmi',
+};
+
 
 export default function ScheduleMeetingPage() {
     const { toast } = useToast();
-    const { firestore } = useFirebase();
+    const { firestore, auth } = useFirebase();
+    const router = useRouter();
 
+    // State for consultation form
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [projectTopic, setProjectTopic] = useState('');
     const [preferredTime, setPreferredTime] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmittingConsultation, setIsSubmittingConsultation] = useState(false);
+    
+    // State for admin login modal
+    const [adminEmail, setAdminEmail] = useState('');
+    const [adminPassword, setAdminPassword] = useState('');
+    const [isSubmittingAdminLogin, setIsSubmittingAdminLogin] = useState(false);
+    const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
 
     const handleConsultationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -32,7 +66,7 @@ export default function ScheduleMeetingPage() {
             return;
         }
         
-        setIsSubmitting(true);
+        setIsSubmittingConsultation(true);
 
         const consultationData = {
             customerName: fullName,
@@ -54,7 +88,6 @@ export default function ScheduleMeetingPage() {
                 description: "We've received your request. We'll contact you shortly to confirm the meeting time.",
             });
             
-            // Reset form
             setFullName('');
             setEmail('');
             setProjectTopic('');
@@ -73,7 +106,62 @@ export default function ScheduleMeetingPage() {
                 variant: "destructive",
             });
         } finally {
-            setIsSubmitting(false);
+            setIsSubmittingConsultation(false);
+        }
+    };
+    
+    const handleAdminLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!auth) {
+            toast({ title: 'Error', description: 'Authentication service not available.', variant: 'destructive' });
+            return;
+        }
+
+        setIsSubmittingAdminLogin(true);
+        const lowerCaseEmail = adminEmail.toLowerCase();
+        
+        try {
+            await signInWithEmailAndPassword(auth, lowerCaseEmail, adminPassword);
+            toast({
+                title: 'Login Successful',
+                description: 'Redirecting to the admin dashboard.',
+            });
+            router.push('/admin');
+        } catch (error: any) {
+            if (error.code === 'auth/user-not-found') {
+                const creationPassword = adminPasswords[lowerCaseEmail];
+                const displayName = adminDisplayNames[lowerCaseEmail];
+
+                if (creationPassword && displayName) {
+                    try {
+                        const userCredential = await createUserWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
+                        if (userCredential.user) {
+                           await updateProfile(userCredential.user, { displayName: displayName });
+                        }
+                        await signInWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
+                        
+                        toast({
+                            title: 'Admin Account Created & Logged In',
+                            description: 'Welcome! Redirecting to the admin dashboard.',
+                        });
+                        router.push('/admin');
+
+                    } catch (creationError: any) {
+                        toast({ title: 'Account Creation Failed', description: creationError.message, variant: 'destructive'});
+                    }
+                } else {
+                    toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your email and password.', variant: 'destructive'});
+                }
+            } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+                toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your email and password.', variant: 'destructive' });
+            } else if (error.code === 'auth/too-many-requests') {
+                 toast({ title: 'Login Blocked', description: 'Too many failed attempts. Please reset your password or wait a few minutes.', variant: 'destructive' });
+            } else {
+                toast({ title: 'Login Failed', description: error.message, variant: 'destructive' });
+            }
+        } finally {
+            setIsSubmittingAdminLogin(false);
         }
     };
 
@@ -92,12 +180,55 @@ export default function ScheduleMeetingPage() {
                                 <p className="text-xs font-bold font-code tracking-widest text-accent -mt-1">SOLUTION</p>
                             </div>
                         </Link>
-                        <Button asChild variant="outline">
-                            <Link href="/">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Home
-                            </Link>
-                        </Button>
+                        <div className="flex items-center gap-2">
+                             <Dialog open={isAdminLoginOpen} onOpenChange={setIsAdminLoginOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                        <User className="mr-2 h-4 w-4" />
+                                        Admin Login
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle className="font-headline text-2xl">Admin Portal</DialogTitle>
+                                        <DialogDescription>Enter your credentials to access the dashboard.</DialogDescription>
+                                    </DialogHeader>
+                                    <form onSubmit={handleAdminLogin} className="space-y-4 pt-4">
+                                        <div className="space-y-1">
+                                            <Label htmlFor="admin-email">Email</Label>
+                                            <Input
+                                                id="admin-email"
+                                                type="email"
+                                                placeholder="admin@nafon.in"
+                                                required
+                                                value={adminEmail}
+                                                onChange={(e) => setAdminEmail(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label htmlFor="admin-password">Password</Label>
+                                            <Input
+                                                id="admin-password"
+                                                type="password"
+                                                required
+                                                placeholder="••••••••"
+                                                value={adminPassword}
+                                                onChange={(e) => setAdminPassword(e.target.value)}
+                                            />
+                                        </div>
+                                        <Button type="submit" disabled={isSubmittingAdminLogin} className="w-full">
+                                            {isSubmittingAdminLogin ? 'Signing In...' : 'Sign In'}
+                                        </Button>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                            <Button asChild variant="outline">
+                                <Link href="/">
+                                    <ArrowLeft className="mr-2 h-4 w-4" />
+                                    Back to Home
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -127,9 +258,9 @@ export default function ScheduleMeetingPage() {
                                 <Label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</Label>
                                 <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
                             </div>
-                            <Button type="submit" disabled={isSubmitting} className="w-full">
-                                {isSubmitting ? 'Submitting...' : 'Book'}
-                                {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
+                            <Button type="submit" disabled={isSubmittingConsultation} className="w-full">
+                                {isSubmittingConsultation ? 'Submitting...' : 'Book'}
+                                {!isSubmittingConsultation && <Send className="ml-2 h-4 w-4" />}
                             </Button>
                         </form>
                     </div>
@@ -138,3 +269,4 @@ export default function ScheduleMeetingPage() {
         </div>
     );
 }
+
