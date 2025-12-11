@@ -21,7 +21,7 @@ const adminEmails = [
   'thamizh.03@nafon.in',
   'jed.05@nafon.in',
   'gershon.05@nafon.in',
-  'lux',
+  'lux05@nafon.in',
 ];
 
 const adminDisplayNames: Record<string, string> = {
@@ -32,7 +32,7 @@ const adminDisplayNames: Record<string, string> = {
     'thamizh.03@nafon.in': 'Thamizh',
     'jed.05@nafon.in': 'JED',
     'gershon.05@nafon.in': 'Gershon',
-    'lux': 'Lekshmi',
+    'lux05@nafon.in': 'Lekshmi',
 };
 
 
