@@ -96,7 +96,7 @@ export default function ProjectManagementPage() {
 
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
-  const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
+  const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in', 'lekshmi.06@nafon.in'].includes(userEmail);
 
   // Security check
   useEffect(() => {
