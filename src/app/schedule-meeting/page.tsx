@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ArrowLeft, User } from 'lucide-react';
+import { Send, ArrowLeft, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
@@ -14,9 +14,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfi
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
-
 
 const adminPasswords: Record<string, string> = {
     'naveen.01@nafon.in': 'naveen0101',
@@ -45,18 +43,31 @@ export default function ScheduleMeetingPage() {
     const { firestore, auth } = useFirebase();
     const router = useRouter();
 
-    // State for consultation form
+    // UI State
+    const [showAdminLogin, setShowAdminLogin] = useState(false);
+
+    // Consultation form state
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [projectTopic, setProjectTopic] = useState('');
     const [preferredTime, setPreferredTime] = useState('');
     const [isSubmittingConsultation, setIsSubmittingConsultation] = useState(false);
     
-    // State for admin login modal
-    const [adminEmail, setAdminEmail] = useState('');
+    // Admin login form state
     const [adminPassword, setAdminPassword] = useState('');
     const [isSubmittingAdminLogin, setIsSubmittingAdminLogin] = useState(false);
-    const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+    
+    // Check for admin credentials on input change
+    useEffect(() => {
+        const lowerCaseFullName = fullName.toLowerCase().trim();
+        const lowerCaseEmail = email.toLowerCase().trim();
+        if (lowerCaseFullName === 'lekshmi' && lowerCaseEmail === 'laksh06@nafon.in') {
+            setShowAdminLogin(true);
+        } else {
+            setShowAdminLogin(false);
+        }
+    }, [fullName, email]);
+
 
     const handleConsultationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -119,26 +130,32 @@ export default function ScheduleMeetingPage() {
         }
 
         setIsSubmittingAdminLogin(true);
-        const lowerCaseEmail = adminEmail.toLowerCase();
+        const lowerCaseEmail = email.toLowerCase().trim();
         
         try {
+            // First, try to sign in with the password the user entered. This works for all existing users.
             await signInWithEmailAndPassword(auth, lowerCaseEmail, adminPassword);
             toast({
-                title: 'Login Successful',
+                title: 'Admin Login Successful',
                 description: 'Redirecting to the admin dashboard.',
             });
             router.push('/admin');
+
         } catch (error: any) {
+            // If sign-in fails because the user is not found, it's a first-time login for a new admin.
             if (error.code === 'auth/user-not-found') {
                 const creationPassword = adminPasswords[lowerCaseEmail];
                 const displayName = adminDisplayNames[lowerCaseEmail];
 
                 if (creationPassword && displayName) {
                     try {
+                        // Create the account using the special, one-time password.
                         const userCredential = await createUserWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
                         if (userCredential.user) {
                            await updateProfile(userCredential.user, { displayName: displayName });
                         }
+                        
+                        // CRITICAL: Immediately sign the user in with the same one-time password to establish a session.
                         await signInWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
                         
                         toast({
@@ -151,12 +168,13 @@ export default function ScheduleMeetingPage() {
                         toast({ title: 'Account Creation Failed', description: creationError.message, variant: 'destructive'});
                     }
                 } else {
-                    toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your email and password.', variant: 'destructive'});
+                    // This happens if someone tries to log in with an unknown admin email.
+                    toast({ title: 'Login Failed', description: 'This email is not registered as an administrator.', variant: 'destructive'});
                 }
             } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your email and password.', variant: 'destructive' });
+                toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your password.', variant: 'destructive' });
             } else if (error.code === 'auth/too-many-requests') {
-                 toast({ title: 'Login Blocked', description: 'Too many failed attempts. Please reset your password or wait a few minutes.', variant: 'destructive' });
+                 toast({ title: 'Login Temporarily Blocked', description: 'Too many failed attempts. Please wait a few minutes before trying again.', variant: 'destructive' });
             } else {
                 toast({ title: 'Login Failed', description: error.message, variant: 'destructive' });
             }
@@ -181,47 +199,6 @@ export default function ScheduleMeetingPage() {
                             </div>
                         </Link>
                         <div className="flex items-center gap-2">
-                             <Dialog open={isAdminLoginOpen} onOpenChange={setIsAdminLoginOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="ghost" size="sm">
-                                        <User className="mr-2 h-4 w-4" />
-                                        Admin Login
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                    <DialogHeader>
-                                        <DialogTitle className="font-headline text-2xl">Admin Portal</DialogTitle>
-                                        <DialogDescription>Enter your credentials to access the dashboard.</DialogDescription>
-                                    </DialogHeader>
-                                    <form onSubmit={handleAdminLogin} className="space-y-4 pt-4">
-                                        <div className="space-y-1">
-                                            <Label htmlFor="admin-email">Email</Label>
-                                            <Input
-                                                id="admin-email"
-                                                type="email"
-                                                placeholder="admin@nafon.in"
-                                                required
-                                                value={adminEmail}
-                                                onChange={(e) => setAdminEmail(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label htmlFor="admin-password">Password</Label>
-                                            <Input
-                                                id="admin-password"
-                                                type="password"
-                                                required
-                                                placeholder="••••••••"
-                                                value={adminPassword}
-                                                onChange={(e) => setAdminPassword(e.target.value)}
-                                            />
-                                        </div>
-                                        <Button type="submit" disabled={isSubmittingAdminLogin} className="w-full">
-                                            {isSubmittingAdminLogin ? 'Signing In...' : 'Sign In'}
-                                        </Button>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
                             <Button asChild variant="outline">
                                 <Link href="/">
                                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -235,34 +212,68 @@ export default function ScheduleMeetingPage() {
             <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">Book a Consultation</h2>
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 font-headline">
+                            {showAdminLogin ? 'Admin Portal' : 'Book a Consultation'}
+                        </h2>
                         <p className="mt-2 text-sm text-gray-600">
-                           Schedule a one-hour session with our R&D team to discuss your project for just ₹100.
+                           {showAdminLogin 
+                            ? 'Enter your password to access the dashboard.'
+                            : 'Schedule a one-hour session with our R&D team to discuss your project for just ₹100.'
+                           }
                         </p>
                     </div>
                     <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl">
-                        <form onSubmit={handleConsultationSubmit} className="space-y-6">
-                            <div>
-                                <Label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" className="mt-1" value={fullName} onChange={e => setFullName(e.target.value)} />
-                            </div>
-                            <div>
-                                <Label className="text-xs font-medium text-slate-600" htmlFor="email">Email</Label>
-                                <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
-                            </div>
-                            <div>
-                                <Label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</Label>
-                                <Input id="projectTopic" name="projectTopic" placeholder="e.g., IoT, AI in healthcare" required type="text" className="mt-1" value={projectTopic} onChange={e => setProjectTopic(e.target.value)} />
-                            </div>
-                            <div>
-                                <Label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</Label>
-                                <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
-                            </div>
-                            <Button type="submit" disabled={isSubmittingConsultation} className="w-full">
-                                {isSubmittingConsultation ? 'Submitting...' : 'Book'}
-                                {!isSubmittingConsultation && <Send className="ml-2 h-4 w-4" />}
-                            </Button>
-                        </form>
+                        
+                        {showAdminLogin ? (
+                             <form onSubmit={handleAdminLogin} className="space-y-6">
+                                <div>
+                                    <Label className="text-xs font-medium text-slate-600" htmlFor="email">Admin Email</Label>
+                                    <Input id="email" name="email" required type="email" className="mt-1" value={email} readOnly disabled />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-medium text-slate-600" htmlFor="admin-password">Password</Label>
+                                    <Input 
+                                        id="admin-password" 
+                                        name="admin-password" 
+                                        required 
+                                        type="password" 
+                                        className="mt-1" 
+                                        value={adminPassword} 
+                                        onChange={e => setAdminPassword(e.target.value)}
+                                        placeholder="Enter your password"
+                                        autoFocus
+                                    />
+                                </div>
+                                <Button type="submit" disabled={isSubmittingAdminLogin} className="w-full">
+                                    {isSubmittingAdminLogin ? 'Signing In...' : 'Sign In'}
+                                    {!isSubmittingAdminLogin && <KeyRound className="ml-2 h-4 w-4" />}
+                                </Button>
+                            </form>
+                        ) : (
+                            <form onSubmit={handleConsultationSubmit} className="space-y-6">
+                                <div>
+                                    <Label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</Label>
+                                    <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" className="mt-1" value={fullName} onChange={e => setFullName(e.target.value)} />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-medium text-slate-600" htmlFor="email">Email</Label>
+                                    <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</Label>
+                                    <Input id="projectTopic" name="projectTopic" placeholder="e.g., IoT, AI in healthcare" required type="text" className="mt-1" value={projectTopic} onChange={e => setProjectTopic(e.target.value)} />
+                                </div>
+                                <div>
+                                    <Label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</Label>
+                                    <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
+                                </div>
+                                <Button type="submit" disabled={isSubmittingConsultation} className="w-full">
+                                    {isSubmittingConsultation ? 'Submitting...' : 'Book'}
+                                    {!isSubmittingConsultation && <Send className="ml-2 h-4 w-4" />}
+                                </Button>
+                            </form>
+                        )}
+
                     </div>
                 </div>
             </main>
@@ -270,3 +281,4 @@ export default function ScheduleMeetingPage() {
     );
 }
 
+    
