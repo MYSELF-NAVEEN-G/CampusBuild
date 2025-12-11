@@ -3,7 +3,7 @@
 
 import { useAppContext } from '@/context/app-context';
 import { cn } from '@/lib/utils';
-import { ShoppingCart, Menu, X, MessageSquare, User } from 'lucide-react';
+import { ShoppingCart, Menu, X, MessageSquare } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -65,12 +65,6 @@ const Header = () => {
                     Get Idea
                 </Link>
             </Button>
-             <Link href="/admin/login" className="hidden sm:inline-flex">
-                <Button variant="outline" size="sm">
-                  <User className="mr-2 h-4 w-4"/>
-                  Admin
-                </Button>
-              </Link>
             <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-primary" onClick={toggleCart}>
               <ShoppingCart />
               {cart.length > 0 && (
@@ -101,12 +95,6 @@ const Header = () => {
                 Get Idea
               </Link>
             </Button>
-             <Link href="/admin/login" className="w-4/5" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  <User className="mr-2 h-4 w-4"/>
-                  Admin Login
-                </Button>
-              </Link>
           </nav>
         </div>
       )}
