@@ -61,7 +61,6 @@ export default function ScheduleMeetingPage() {
         setIsSubmitting(true);
         const lowerCaseEmail = email.toLowerCase();
         
-        // Special passwords provided for one-time creation
         const adminPasswords: Record<string, string> = {
             'karthick.02@nafon.in': 'karthick232223',
             'thamizh.03@nafon.in': 'thamizh232258',
@@ -73,7 +72,7 @@ export default function ScheduleMeetingPage() {
         const adminName = adminDisplayNames[lowerCaseEmail] || adminUsers[lowerCaseEmail];
 
         try {
-            // First, just try to sign in with the user-provided password.
+            // First, try to sign in with the password the user entered. This works for all existing users.
             await signInWithEmailAndPassword(auth, email, password);
             toast({
                 title: 'Admin Login Successful',
@@ -81,15 +80,15 @@ export default function ScheduleMeetingPage() {
             });
             router.push('/admin');
         } catch (error: any) {
-            // If sign-in fails because the user doesn't exist, and it's a designated admin with a creation password,
-            // we attempt to create the account with the predefined password.
+            // If sign-in fails because the user doesn't exist, try to create the account.
             if (error.code === 'auth/user-not-found' && creationPassword) {
                 try {
+                    // Create the user with the predefined one-time password
                     const userCredential = await createUserWithEmailAndPassword(auth, email, creationPassword);
                     if (userCredential.user) {
                         await updateProfile(userCredential.user, { displayName: adminName });
                     }
-                    // After creating, sign them in to establish the session.
+                    // IMPORTANT: After creating, immediately sign them in with the creation password to establish the session.
                     await signInWithEmailAndPassword(auth, email, creationPassword);
                     toast({
                         title: 'Admin Account Created',
@@ -97,46 +96,30 @@ export default function ScheduleMeetingPage() {
                     });
                     router.push('/admin');
                 } catch (creationError: any) {
-                    // This will catch errors during creation itself, like 'email-already-in-use'.
-                    // This can happen if the user was created but the first sign-in attempt failed.
-                    // We'll try to sign in with the creation password just in case.
-                    if (creationError.code === 'auth/email-already-exists') {
+                    // This handles cases where creation fails (e.g., email already exists but initial sign-in failed)
+                     if (creationError.code === 'auth/email-already-exists') {
                          try {
+                            // Try signing in with the creation password as a fallback.
                             await signInWithEmailAndPassword(auth, email, creationPassword);
-                            toast({
-                                title: 'Admin Login Successful',
-                                description: 'Redirecting to the admin dashboard.',
-                            });
+                            toast({ title: 'Admin Login Successful', description: 'Redirecting to dashboard.' });
                             router.push('/admin');
-                         } catch (finalSignInError) {
-                             console.error("Final sign-in attempt failed:", finalSignInError);
-                             toast({ title: 'Login Failed', description: 'Your account exists, but the password was incorrect.', variant: 'destructive'});
+                         } catch (fallbackError) {
+                             toast({ title: 'Login Failed', description: 'Your account exists, but the provided password was incorrect.', variant: 'destructive'});
                          }
                     } else {
                         console.error("Admin account creation failed:", creationError);
-                        toast({
-                            title: 'Admin Creation Failed',
-                            description: creationError.message || 'Could not create the admin account.',
-                            variant: 'destructive',
-                        });
+                        toast({ title: 'Admin Creation Failed', description: creationError.message, variant: 'destructive'});
                     }
                 }
             } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                // This handles the case where the user exists but the password is wrong.
-                 toast({
-                    title: 'Admin Login Failed',
-                    description: 'Invalid credentials. Please check your password.',
-                    variant: 'destructive',
-                });
-            }
-            else {
-                // Catch-all for other login errors.
-                console.error("Admin login failed:", error);
                 toast({
                     title: 'Admin Login Failed',
-                    description: error.message || 'An unknown error occurred.',
+                    description: 'Invalid credentials. Please check your email and password.',
                     variant: 'destructive',
                 });
+            } else {
+                console.error("Admin login failed:", error);
+                toast({ title: 'Admin Login Failed', description: error.message, variant: 'destructive' });
             }
         } finally {
             setIsSubmitting(false);
@@ -158,6 +141,8 @@ export default function ScheduleMeetingPage() {
             preferredTime,
             assignedTo: 'Not Assigned',
             createdAt: serverTimestamp(),
+            meetingStatus: 'Pending',
+            linkSentStatus: 'Not Sent'
         };
 
         try {
