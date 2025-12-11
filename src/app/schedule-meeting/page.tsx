@@ -27,6 +27,18 @@ const adminUsers: Record<string, string> = {
     'lux05@nafon.in': 'lekshmi',
 };
 
+const adminDisplayNames: Record<string, string> = {
+    'nafonstudios@gmail.com': 'Admin',
+    'naveen.01@nafon.in': 'Naveen Kumar',
+    'john.04@nafon.in': 'John Lee',
+    'karthick.02@nafon.in': 'Karthick',
+    'thamizh.03@nafon.in': 'Thamizh',
+    'jed.05@nafon.in': 'JED',
+    'gershon.05@nafon.in': 'Gershon',
+    'lux05@nafon.in': 'Lekshmi',
+};
+
+
 export default function ScheduleMeetingPage() {
     const { toast } = useToast();
     const router = useRouter();
@@ -47,6 +59,8 @@ export default function ScheduleMeetingPage() {
         }
 
         setIsSubmitting(true);
+        const lowerCaseEmail = email.toLowerCase();
+        
         // Special passwords provided for one-time creation
         const adminPasswords: Record<string, string> = {
             'karthick.02@nafon.in': 'karthick232223',
@@ -55,11 +69,11 @@ export default function ScheduleMeetingPage() {
             'gershon.05@nafon.in': 'gershon232211',
             'lux05@nafon.in': 'lux232225',
         }
-        const creationPassword = adminPasswords[email.toLowerCase()];
-        const adminName = adminDisplayNames[email.toLowerCase()] || adminUsers[email.toLowerCase()];
+        const creationPassword = adminPasswords[lowerCaseEmail];
+        const adminName = adminDisplayNames[lowerCaseEmail] || adminUsers[lowerCaseEmail];
 
         try {
-            // First, just try to sign in.
+            // First, just try to sign in with the user-provided password.
             await signInWithEmailAndPassword(auth, email, password);
             toast({
                 title: 'Admin Login Successful',
@@ -67,7 +81,8 @@ export default function ScheduleMeetingPage() {
             });
             router.push('/admin');
         } catch (error: any) {
-            // If sign-in fails because the user doesn't exist, and it's a designated admin, create the account.
+            // If sign-in fails because the user doesn't exist, and it's a designated admin with a creation password,
+            // we attempt to create the account with the predefined password.
             if (error.code === 'auth/user-not-found' && creationPassword) {
                 try {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, creationPassword);
@@ -82,13 +97,29 @@ export default function ScheduleMeetingPage() {
                     });
                     router.push('/admin');
                 } catch (creationError: any) {
-                    // This will catch errors during creation itself, like 'email-already-in-use' if there's a race condition.
-                    console.error("Admin account creation failed:", creationError);
-                    toast({
-                        title: 'Admin Creation Failed',
-                        description: creationError.message || 'Could not create the admin account.',
-                        variant: 'destructive',
-                    });
+                    // This will catch errors during creation itself, like 'email-already-in-use'.
+                    // This can happen if the user was created but the first sign-in attempt failed.
+                    // We'll try to sign in with the creation password just in case.
+                    if (creationError.code === 'auth/email-already-exists') {
+                         try {
+                            await signInWithEmailAndPassword(auth, email, creationPassword);
+                            toast({
+                                title: 'Admin Login Successful',
+                                description: 'Redirecting to the admin dashboard.',
+                            });
+                            router.push('/admin');
+                         } catch (finalSignInError) {
+                             console.error("Final sign-in attempt failed:", finalSignInError);
+                             toast({ title: 'Login Failed', description: 'Your account exists, but the password was incorrect.', variant: 'destructive'});
+                         }
+                    } else {
+                        console.error("Admin account creation failed:", creationError);
+                        toast({
+                            title: 'Admin Creation Failed',
+                            description: creationError.message || 'Could not create the admin account.',
+                            variant: 'destructive',
+                        });
+                    }
                 }
             } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                 // This handles the case where the user exists but the password is wrong.
@@ -182,17 +213,6 @@ export default function ScheduleMeetingPage() {
     const isAdminField = Object.keys(adminUsers).some(
         adminEmail => adminEmail.toLowerCase() === lowerCaseEmail && adminUsers[adminEmail].toLowerCase() === fullName.toLowerCase()
     );
-    
-    const adminDisplayNames: Record<string, string> = {
-        'nafonstudios@gmail.com': 'Admin',
-        'naveen.01@nafon.in': 'Naveen Kumar',
-        'john.04@nafon.in': 'John Lee',
-        'karthick.02@nafon.in': 'Karthick',
-        'thamizh.03@nafon.in': 'Thamizh',
-        'jed.05@nafon.in': 'JED',
-        'gershon.05@nafon.in': 'Gershon',
-        'lux05@nafon.in': 'Lekshmi',
-    };
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -263,3 +283,5 @@ export default function ScheduleMeetingPage() {
         </div>
     );
 }
+
+    
