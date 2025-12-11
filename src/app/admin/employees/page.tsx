@@ -48,6 +48,7 @@ import { useRouter } from 'next/navigation';
 interface Employee {
   id: string;
   name: string;
+  email: string;
   age: number;
   position: string;
   specialization: string;
@@ -65,6 +66,7 @@ export default function EmployeeManagementPage() {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     age: 0,
     position: '',
     specialization: '',
@@ -73,11 +75,10 @@ export default function EmployeeManagementPage() {
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
   const canManageEmployees = userEmail === 'naveen.01@nafon.in' || userEmail === 'john.04@nafon.in';
-  const canManageSalaries = canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
-
+  
   // Security check
   useEffect(() => {
-    if (!isUserLoading && !canManageEmployees && !canManageSalaries) {
+    if (!isUserLoading && !canManageEmployees) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to manage employees.',
@@ -85,10 +86,13 @@ export default function EmployeeManagementPage() {
       });
       router.push('/admin');
     }
-  }, [user, isUserLoading, router, toast, canManageEmployees, canManageSalaries]);
+  }, [user, isUserLoading, router, toast, canManageEmployees]);
 
   useEffect(() => {
-    if (!firestore) return;
+    if (!firestore || !canManageEmployees) {
+      setLoading(false);
+      return;
+    }
 
     const employeesCollection = collection(firestore, 'employees');
     const unsubscribe = onSnapshot(employeesCollection, (snapshot) => {
@@ -105,13 +109,14 @@ export default function EmployeeManagementPage() {
     });
 
     return () => unsubscribe();
-  }, [firestore, toast]);
+  }, [firestore, toast, canManageEmployees]);
 
   const openForm = (employee: Employee | null = null) => {
     if (employee) {
       setEditingEmployee(employee);
       setFormData({
         name: employee.name,
+        email: employee.email,
         age: employee.age,
         position: employee.position,
         specialization: employee.specialization,
@@ -120,6 +125,7 @@ export default function EmployeeManagementPage() {
       setEditingEmployee(null);
       setFormData({
         name: '',
+        email: '',
         age: 0,
         position: '',
         specialization: '',
@@ -179,7 +185,7 @@ export default function EmployeeManagementPage() {
     return <div>Loading Employee Data...</div>;
   }
   
-  if (!canManageEmployees && !canManageSalaries) {
+  if (!canManageEmployees) {
       return <div>Redirecting...</div>
   }
 
@@ -199,6 +205,7 @@ export default function EmployeeManagementPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead>Age</TableHead>
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
@@ -209,6 +216,7 @@ export default function EmployeeManagementPage() {
             {employees.map((employee) => (
               <TableRow key={employee.id}>
                 <TableCell className="font-medium">{employee.name}</TableCell>
+                <TableCell>{employee.email}</TableCell>
                 <TableCell>{employee.age}</TableCell>
                 <TableCell>{employee.position}</TableCell>
                 <TableCell>{employee.specialization}</TableCell>
@@ -253,6 +261,7 @@ export default function EmployeeManagementPage() {
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                   <Input name="name" value={formData.name} onChange={handleFormChange} placeholder="Full Name" required />
+                  <Input name="email" value={formData.email} onChange={handleFormChange} placeholder="Login Email" required type="email" />
                   <Input name="age" type="number" value={formData.age} onChange={handleFormChange} placeholder="Age" required />
                   <Input name="position" value={formData.position} onChange={handleFormChange} placeholder="Position (e.g., Lead Engineer)" required />
                   <Input name="specialization" value={formData.specialization} onChange={handleFormChange} placeholder="Specialization (e.g., IoT)" required />

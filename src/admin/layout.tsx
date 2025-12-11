@@ -11,6 +11,7 @@ import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import YourSalaryCard from '@/components/your-salary-card';
 
 // Central source of truth for admin roles
 const adminEmails = [
@@ -96,7 +97,7 @@ export default function AdminLayout({
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects },
-    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees || canManageSalaries },
+    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },
   ];
   
   const navItems = getNavItems();
@@ -112,6 +113,7 @@ export default function AdminLayout({
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const displayName = adminDisplayNames[userEmail] || user?.displayName || 'Admin';
   const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
+  const isTeamMember = adminEmails.slice(1).includes(userEmail);
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -167,12 +169,12 @@ export default function AdminLayout({
                 </h1>
                 <p className="text-sm text-slate-500">{currentPageLabel}</p>
             </div>
-        </header>        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+        </header>        
+        <main className="flex-1 p-6 overflow-y-auto">
+          {isTeamMember && <YourSalaryCard />}
+          {children}
+        </main>
       </div>
     </div>
   );
 }
-    
-    
-
-    

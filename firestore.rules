@@ -35,6 +35,10 @@ service cloud.firestore {
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
+    
+    function isReadingOwnEmployeeRecord(employeeId) {
+    	return isSignedIn() && exists(/databases/$(database)/documents/employees/$(employeeId)) && resource.data.email == request.auth.token.email;
+    }
 
     match /projects/{projectId} {
       allow get, list: if true;
@@ -62,11 +66,10 @@ service cloud.firestore {
     }
 
     match /employees/{employeeId} {
-        allow read, list: if true;
+        allow get: if isReadingOwnEmployeeRecord(employeeId) || canManageSalaries();
+        allow list: if true;
         allow create, delete: if canManageEmployees();
         allow update: if canManageSalaries();
     }
   }
 }
-
-    

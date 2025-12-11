@@ -136,6 +136,11 @@
           "type": "string",
           "description": "Full name of the employee."
         },
+        "email": {
+          "type": "string",
+          "description": "The employee's login email address.",
+          "format": "email"
+        },
         "age": {
           "type": "number",
           "description": "Age of the employee."
@@ -155,6 +160,7 @@
       },
       "required": [
         "name",
+        "email",
         "age",
         "position",
         "specialization"
