@@ -113,7 +113,7 @@ export default function FinancialManagementPage() {
   const totalComponentCost = paidAndCompletedOrders.reduce((acc, order) => acc + (order.componentCost || 0), 0);
   const totalHandlerFees = paidAndCompletedOrders
     .filter(order => order.handlerFeeStatus === 'Sent')
-    .reduce((acc, order) => acc + (order.handlerFee ?? 300), 0);
+    .reduce((acc, order) => acc + (order.handlerFee ?? 0), 0);
   const totalSalaryCost = employees.reduce((acc, emp) => acc + (emp.salary || 0), 0);
   const netProfit = totalRevenue - totalComponentCost - totalSalaryCost - totalHandlerFees;
 
@@ -152,7 +152,7 @@ export default function FinancialManagementPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Salary</CardTitle>
+            <CardTitle className="text-sm font-medium">Handler Fees</CardTitle>
             <HandCoins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -223,7 +223,7 @@ export default function FinancialManagementPage() {
           </TableHeader>
           <TableBody>
             {completedOrders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()).map((order) => {
-              const handlerFee = order.handlerFee ?? 300;
+              const handlerFee = order.handlerFee ?? 0;
               const calculatedProfit = (order.total || 0) - (order.componentCost || 0) - handlerFee;
               const profit = order.paymentStatus === 'Paid' ? calculatedProfit : 0;
               return (
@@ -269,7 +269,7 @@ export default function FinancialManagementPage() {
                         onBlur={(e) => handleUpdateOrder(order.id, { total: parseFloat(e.target.value) || 0 })}
                         className="w-32 ml-auto"
                         placeholder="Sale Amount"
-                        disabled={!isSuperAdmin}
+                        disabled={!canManageFinancials}
                     />
                 </TableCell>
                 <TableCell className="text-right">
@@ -279,14 +279,14 @@ export default function FinancialManagementPage() {
                         onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
                         className="w-32 ml-auto"
                         placeholder="Component Cost"
-                        disabled={!isSuperAdmin}
+                        disabled={!canManageFinancials}
                     />
                 </TableCell>
                 <TableCell className="text-right">
                     <Select
-                        value={String(order.handlerFee ?? 300)}
+                        value={String(order.handlerFee ?? 0)}
                         onValueChange={(value) => handleUpdateOrder(order.id, { handlerFee: parseInt(value, 10) })}
-                        disabled={!isSuperAdmin}
+                        disabled={!canManageFinancials}
                     >
                         <SelectTrigger className="w-32 ml-auto">
                             <SelectValue />

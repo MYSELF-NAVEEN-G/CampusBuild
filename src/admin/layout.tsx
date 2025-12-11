@@ -58,6 +58,7 @@ export default function AdminLayout({
   const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
   const canManageFinancials = isSuperAdmin || userEmail === 'laksh06@nafon.in';
   const canViewAllSections = userEmail === 'laksh06@nafon.in'; // Lekshmi can view all sections
+  const canManageSalaries = canManageEmployees || userEmail === 'laksh06@nafon.in';
 
   // Redirect non-admins immediately
   useEffect(() => {
@@ -96,7 +97,7 @@ export default function AdminLayout({
     { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations || canViewAllSections },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
     { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects || canViewAllSections },
-    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees || canViewAllSections || canManageFinancials },
+    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees || canViewAllSections || canManageSalaries },
   ];
   
   const navItems = getNavItems();

@@ -158,10 +158,17 @@ export default function EmployeeManagementPage() {
       return;
     }
 
-    const employeeData = {
-      ...formData,
+    const { salary, ...employeeDetails } = formData;
+    const employeeData: any = {
+      ...employeeDetails,
       updatedAt: serverTimestamp(),
     };
+    
+    // Only include salary if the user has permission to manage it
+    if (canManageSalaries) {
+        employeeData.salary = salary;
+    }
+
 
     try {
       if (editingEmployee) {
@@ -218,7 +225,7 @@ export default function EmployeeManagementPage() {
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
               <TableHead>Monthly Salary</TableHead>
-              {(canManageEmployees || (isSuperAdmin && canManageSalaries)) && <TableHead>Actions</TableHead>}
+              {(canManageEmployees || isSuperAdmin) && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -238,7 +245,7 @@ export default function EmployeeManagementPage() {
                     disabled={!canManageSalaries}
                   />
                 </TableCell>
-                {(canManageEmployees || (isSuperAdmin && canManageSalaries)) && (
+                {(canManageEmployees || isSuperAdmin) && (
                   <TableCell className="flex gap-2">
                     {canManageEmployees && (
                         <>
@@ -282,7 +289,9 @@ export default function EmployeeManagementPage() {
                   <Input name="age" type="number" value={formData.age} onChange={handleFormChange} placeholder="Age" required />
                   <Input name="position" value={formData.position} onChange={handleFormChange} placeholder="Position (e.g., Lead Engineer)" required />
                   <Input name="specialization" value={formData.specialization} onChange={handleFormChange} placeholder="Specialization (e.g., IoT)" required />
-                  <Input name="salary" type="number" value={formData.salary} onChange={handleFormChange} placeholder="Monthly Salary" required />
+                  {canManageSalaries && (
+                    <Input name="salary" type="number" value={formData.salary} onChange={handleFormChange} placeholder="Monthly Salary" required />
+                  )}
                   <DialogFooter>
                       <DialogClose asChild>
                           <Button type="button" variant="outline">Cancel</Button>
