@@ -353,16 +353,15 @@ export default function AdminOrderPage() {
                                 <div className="space-y-2">
                                     <Label className="font-semibold">Handler Fee</Label>
                                     <Select
-                                        value={String(order.handlerFee ?? 300)}
+                                        value={String(order.handlerFee ?? 100)}
                                         onValueChange={(value) => handleUpdateOrder(order.id, { handlerFee: parseInt(value, 10) })}
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="300">₹300</SelectItem>
-                                            <SelectItem value="500">₹500</SelectItem>
-                                            <SelectItem value="600">₹600</SelectItem>
+                                            <SelectItem value="100">₹100</SelectItem>
+                                            <SelectItem value="200">₹200</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

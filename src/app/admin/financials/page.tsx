@@ -194,7 +194,6 @@ export default function FinancialManagementPage() {
         </Card>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4 font-headline">Completed Orders Log</h2>
       <div className="bg-white rounded-lg shadow-md border mb-6">
         <Table>
           <TableHeader>
@@ -282,9 +281,8 @@ export default function FinancialManagementPage() {
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="300">₹300</SelectItem>
-                            <SelectItem value="500">₹500</SelectItem>
-                            <SelectItem value="600">₹600</SelectItem>
+                            <SelectItem value="100">₹100</SelectItem>
+                            <SelectItem value="200">₹200</SelectItem>
                         </SelectContent>
                     </Select>
                 </TableCell>
@@ -333,3 +331,5 @@ export default function FinancialManagementPage() {
     </>
   );
 }
+
+    
