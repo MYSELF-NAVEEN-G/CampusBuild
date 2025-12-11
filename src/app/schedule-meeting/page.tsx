@@ -10,123 +10,24 @@ import { Send, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Label } from '@/components/ui/label';
 
-const adminUsers: Record<string, string> = {
-    'nafonstudios@gmail.com': 'admin',
-    'naveen.01@nafon.in': 'naveen',
-    'john.04@nafon.in': 'johnlee',
-    'karthick.02@nafon.in': 'karthick',
-    'thamizh.03@nafon.in': 'thamizh',
-    'jed.05@nafon.in': 'jed',
-    'gershon.05@nafon.in': 'gershon',
-    'laksh06@nafon.in': 'lekshmi',
-};
-
-const adminDisplayNames: Record<string, string> = {
-    'nafonstudios@gmail.com': 'Admin',
-    'naveen.01@nafon.in': 'NAVEEN',
-    'john.04@nafon.in': 'John Lee',
-    'karthick.02@nafon.in': 'Karthick',
-    'thamizh.03@nafon.in': 'Thamizh',
-    'jed.05@nafon.in': 'JED',
-    'gershon.05@nafon.in': 'Gershon',
-    'laksh06@nafon.in': 'Lekshmi',
-};
-
-
 export default function ScheduleMeetingPage() {
     const { toast } = useToast();
-    const router = useRouter();
-    const { auth, firestore } = useFirebase();
+    const { firestore } = useFirebase();
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [projectTopic, setProjectTopic] = useState('');
-    const [password, setPassword] = useState('');
     const [preferredTime, setPreferredTime] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const handleConsultationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    const handleAdminLogin = async () => {
-        if (!auth) {
-            toast({ title: 'Error', description: 'Authentication service is not available.', variant: 'destructive' });
-            return;
-        }
-
-        setIsSubmitting(true);
-        const lowerCaseEmail = email.toLowerCase();
-        
-        const adminPasswords: Record<string, string> = {
-            'karthick.02@nafon.in': 'karthick232223',
-            'thamizh.03@nafon.in': 'thamizh232258',
-            'jed.05@nafon.in': 'jed232211',
-            'gershon.05@nafon.in': 'gershon232211',
-            'laksh06@nafon.in': 'lekshmi232225',
-        };
-        const creationPassword = adminPasswords[lowerCaseEmail];
-        const adminName = adminDisplayNames[lowerCaseEmail] || adminUsers[lowerCaseEmail];
-
-        try {
-            // First, try to sign in with the password the user entered. This works for all existing users.
-            await signInWithEmailAndPassword(auth, email, password);
-            toast({
-                title: 'Admin Login Successful',
-                description: 'Redirecting to the admin dashboard.',
-            });
-            router.push('/admin');
-        } catch (error: any) {
-            // If sign-in fails because the user doesn't exist, try to create the account.
-            if (error.code === 'auth/user-not-found' && creationPassword) {
-                try {
-                    // Create the user with the predefined one-time password
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, creationPassword);
-                    if (userCredential.user) {
-                        await updateProfile(userCredential.user, { displayName: adminName });
-                    }
-                    // IMPORTANT: After creating, immediately sign them in with the creation password to establish the session.
-                    await signInWithEmailAndPassword(auth, email, creationPassword);
-                    toast({
-                        title: 'Admin Account Created & Logged In',
-                        description: 'Redirecting to the admin dashboard.',
-                    });
-                    router.push('/admin');
-                } catch (creationError: any) {
-                    // This handles cases where creation fails (e.g., email already exists but initial sign-in failed)
-                     if (creationError.code === 'auth/email-already-exists') {
-                         try {
-                            // Try signing in with the creation password as a fallback.
-                            await signInWithEmailAndPassword(auth, email, creationPassword);
-                            toast({ title: 'Admin Login Successful', description: 'Redirecting to dashboard.' });
-                            router.push('/admin');
-                         } catch (fallbackError) {
-                             toast({ title: 'Login Failed', description: 'Your account exists, but the provided password was incorrect.', variant: 'destructive'});
-                         }
-                    } else {
-                        console.error("Admin account creation failed:", creationError);
-                        toast({ title: 'Admin Creation Failed', description: creationError.message, variant: 'destructive'});
-                    }
-                }
-            } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                toast({
-                    title: 'Admin Login Failed',
-                    description: 'Invalid credentials. Please check your email and password.',
-                    variant: 'destructive',
-                });
-            } else {
-                console.error("Admin login failed:", error);
-                toast({ title: 'Admin Login Failed', description: error.message, variant: 'destructive' });
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-    
-    const handleConsultationSubmit = async () => {
         if (!firestore) {
             toast({ title: 'Error', description: 'Database service is not available.', variant: 'destructive' });
             return;
@@ -177,27 +78,6 @@ export default function ScheduleMeetingPage() {
         }
     };
 
-    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        
-        const lowerCaseEmail = email.toLowerCase();
-        
-        // Use a case-insensitive check for admin login
-        const isAdminLogin = Object.keys(adminUsers).some(
-            adminEmail => adminEmail.toLowerCase() === lowerCaseEmail && adminUsers[adminEmail].toLowerCase() === fullName.toLowerCase()
-        );
-
-        if (isAdminLogin) {
-            await handleAdminLogin();
-        } else {
-            await handleConsultationSubmit();
-        }
-    };
-
-    const lowerCaseEmail = email.toLowerCase();
-    const isAdminField = Object.keys(adminUsers).some(
-        adminEmail => adminEmail.toLowerCase() === lowerCaseEmail && adminUsers[adminEmail].toLowerCase() === fullName.toLowerCase()
-    );
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -231,7 +111,7 @@ export default function ScheduleMeetingPage() {
                         </p>
                     </div>
                     <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xl">
-                        <form onSubmit={handleFormSubmit} className="space-y-6">
+                        <form onSubmit={handleConsultationSubmit} className="space-y-6">
                             <div>
                                 <Label className="text-xs font-medium text-slate-600" htmlFor="fullName">Full Name</Label>
                                 <Input id="fullName" name="fullName" placeholder="Your Name" required type="text" className="mt-1" value={fullName} onChange={e => setFullName(e.target.value)} />
@@ -240,26 +120,17 @@ export default function ScheduleMeetingPage() {
                                 <Label className="text-xs font-medium text-slate-600" htmlFor="email">Email</Label>
                                 <Input id="email" name="email" placeholder="email@university.edu" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
                             </div>
-                             {isAdminField ? (
-                              <div>
-                                <Label className="text-xs font-medium text-slate-600" htmlFor="password">Admin Password</Label>
-                                <Input id="password" name="password" required type="password" placeholder="Enter admin password" className="mt-1" value={password} onChange={e => setPassword(e.target.value)} />
-                              </div>
-                            ) : (
-                                <>
-                                    <div>
-                                        <Label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</Label>
-                                        <Input id="projectTopic" name="projectTopic" placeholder="e.g., IoT, AI in healthcare" required type="text" className="mt-1" value={projectTopic} onChange={e => setProjectTopic(e.target.value)} />
-                                    </div>
-                                    <div>
-                                        <Label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</Label>
-                                        <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
-                                    </div>
-                                </>
-                            )}
+                            <div>
+                                <Label className="text-xs font-medium text-slate-600" htmlFor="projectTopic">Project Topic</Label>
+                                <Input id="projectTopic" name="projectTopic" placeholder="e.g., IoT, AI in healthcare" required type="text" className="mt-1" value={projectTopic} onChange={e => setProjectTopic(e.target.value)} />
+                            </div>
+                            <div>
+                                <Label className="text-xs font-medium text-slate-600" htmlFor="preferredTime">Preferred Google Meet Time</Label>
+                                <Input id="preferredTime" name="preferredTime" required type="text" placeholder="e.g., Tomorrow at 2 PM" className="mt-1" value={preferredTime} onChange={(e) => setPreferredTime(e.target.value)} />
+                            </div>
                             <Button type="submit" disabled={isSubmitting} className="w-full">
-                                {isSubmitting ? 'Submitting...' : isAdminField ? 'Admin Login' : 'Book'}
-                                {!isSubmitting && !isAdminField && <Send className="ml-2 h-4 w-4" />}
+                                {isSubmitting ? 'Submitting...' : 'Book'}
+                                {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
                             </Button>
                         </form>
                     </div>

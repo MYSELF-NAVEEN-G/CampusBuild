@@ -68,7 +68,7 @@ export default function AdminLayout({
         description: 'You must be an admin to view this page.',
         variant: 'destructive',
       });
-      router.replace('/');
+      router.replace('/admin/login');
     }
   }, [user, isUserLoading, router, toast, isAdmin]);
   
@@ -80,7 +80,7 @@ export default function AdminLayout({
         title: 'Logged Out',
         description: 'You have been successfully logged out.',
       });
-      router.push('/');
+      router.push('/admin/login');
     } catch (error) {
       console.error('Logout failed:', error);
       toast({
