@@ -194,39 +194,8 @@ export default function FinancialManagementPage() {
         </Card>
       </div>
 
-       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-4 font-headline">Employee Salaries</h2>
-        <div className="bg-white rounded-lg shadow-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Employee Name</TableHead>
-                <TableHead className="text-right">Monthly Salary</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {employees.map(emp => (
-                <TableRow key={emp.id}>
-                  <TableCell>{emp.name}</TableCell>
-                  <TableCell className="text-right">
-                    <Input
-                        type="number"
-                        defaultValue={emp.salary}
-                        onBlur={(e) => handleUpdateSalary(emp.id, parseFloat(e.target.value) || 0)}
-                        className="w-32 ml-auto"
-                        placeholder="Salary"
-                        disabled={!canManageFinancials}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
       <h2 className="text-2xl font-bold mb-4 font-headline">Completed Orders Log</h2>
-      <div className="bg-white rounded-lg shadow-md border">
+      <div className="bg-white rounded-lg shadow-md border mb-6">
         <Table>
           <TableHeader>
             <TableRow>
@@ -329,6 +298,37 @@ export default function FinancialManagementPage() {
                 No completed orders to display.
             </div>
         )}
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-bold mb-4 font-headline">Employee Salaries</h2>
+        <div className="bg-white rounded-lg shadow-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Employee Name</TableHead>
+                <TableHead className="text-right">Monthly Salary</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {employees.map(emp => (
+                <TableRow key={emp.id}>
+                  <TableCell>{emp.name}</TableCell>
+                  <TableCell className="text-right">
+                    <Input
+                        type="number"
+                        defaultValue={emp.salary}
+                        onBlur={(e) => handleUpdateSalary(emp.id, parseFloat(e.target.value) || 0)}
+                        className="w-32 ml-auto"
+                        placeholder="Salary"
+                        disabled={!canManageFinancials}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </>
   );
