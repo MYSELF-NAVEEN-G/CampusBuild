@@ -73,7 +73,6 @@ export default function EmployeeManagementPage() {
   });
 
   const userEmail = user?.email || '';
-  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
   const canManageEmployees = userEmail === 'naveen.01@nafon.in' || userEmail === 'john.04@nafon.in';
   
   // Security check
@@ -209,7 +208,7 @@ export default function EmployeeManagementPage() {
               <TableHead>Age</TableHead>
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
-              {(canManageEmployees || isSuperAdmin) && <TableHead>Actions</TableHead>}
+              {canManageEmployees && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -220,30 +219,26 @@ export default function EmployeeManagementPage() {
                 <TableCell>{employee.age}</TableCell>
                 <TableCell>{employee.position}</TableCell>
                 <TableCell>{employee.specialization}</TableCell>
-                {(canManageEmployees || isSuperAdmin) && (
+                {canManageEmployees && (
                   <TableCell className="flex gap-2">
-                    {canManageEmployees && (
-                        <>
-                        <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
-                        </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                 <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>This will permanently delete the employee's record. This action cannot be undone.</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDelete(employee.id)}>Confirm</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                        </>
-                    )}
+                    <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
+                      <Edit className="mr-2 h-4 w-4" /> Edit
+                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                             <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>This will permanently delete the employee's record. This action cannot be undone.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(employee.id)}>Confirm</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 )}
               </TableRow>
