@@ -54,31 +54,27 @@ const YourSalaryCard = () => {
 
   if (loading) {
     return (
-      <div className="w-full p-2 border rounded-lg bg-white shadow-sm mb-2">
-        <Skeleton className="h-6 w-3/4" />
+      <div className="p-2 border rounded-lg bg-white shadow-sm">
+        <Skeleton className="h-10 w-48" />
       </div>
     );
   }
 
   if (!employeeData || employeeData.salary === undefined) {
-    return null;
+    return null; // Don't render anything if there's no salary data
   }
 
   return (
-    <Card className="mb-2 border-primary/20 bg-primary/5">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
-        <CardTitle className="text-xs font-medium">Your Monthly Salary</CardTitle>
-        <Button asChild variant="link" size="sm" className="p-0 h-auto text-xs">
-            <Link href="/admin/salary">View All</Link>
-        </Button>
-      </CardHeader>
-      <CardContent className="p-3 pt-0">
-        <div className="text-xl font-bold text-primary">₹{employeeData.salary.toFixed(2)}</div>
-      </CardContent>
-    </Card>
+    <div className="bg-white p-3 rounded-lg shadow-sm border flex items-center gap-3">
+        <div className="bg-primary/10 text-primary p-2 rounded-full">
+            <Wallet className="h-5 w-5" />
+        </div>
+        <div>
+            <div className="text-xs text-muted-foreground">Your Monthly Salary</div>
+            <div className="text-lg font-bold">₹{employeeData.salary.toFixed(2)}</div>
+        </div>
+    </div>
   );
 };
 
 export default YourSalaryCard;
-
-    

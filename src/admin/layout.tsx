@@ -56,9 +56,9 @@ export default function AdminLayout({
   const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
   const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
   const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in', 'lekshmi.06@nafon.in'].includes(userEmail);
-  const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in', 'lekshmi.06@nafon.in'].includes(userEmail);
+  const canManageConsultations = isAdmin; // Simplified: All admins can manage consultations.
   const canManageFinancials = isSuperAdmin || userEmail === 'lekshmi.06@nafon.in';
-  const canManageSalaries = canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
+  const canManageSalaries = isSuperAdmin || canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
   
   // Redirect non-admins immediately
   useEffect(() => {
@@ -149,8 +149,7 @@ export default function AdminLayout({
             </ul>
         </nav>
         <div className="p-4 border-t">
-          <YourSalaryCard />
-          <Button asChild variant="outline" className="w-full justify-start mb-2 mt-2">
+          <Button asChild variant="outline" className="w-full justify-start mb-2">
             <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
@@ -170,6 +169,9 @@ export default function AdminLayout({
                 </h1>
                 <p className="text-sm text-slate-500">{currentPageLabel}</p>
             </div>
+            <div className="flex-shrink-0">
+              <YourSalaryCard />
+            </div>
         </header>        
         <main className="flex-1 p-6 overflow-y-auto bg-slate-50">
           {children}
@@ -178,5 +180,3 @@ export default function AdminLayout({
     </div>
   );
 }
-
-    
