@@ -68,7 +68,6 @@ export default function EmployeeManagementPage() {
     age: 0,
     position: '',
     specialization: '',
-    salary: 0,
   });
 
   const userEmail = user?.email || '';
@@ -116,7 +115,6 @@ export default function EmployeeManagementPage() {
         age: employee.age,
         position: employee.position,
         specialization: employee.specialization,
-        salary: employee.salary || 0,
       });
     } else {
       setEditingEmployee(null);
@@ -125,7 +123,6 @@ export default function EmployeeManagementPage() {
         age: 0,
         position: '',
         specialization: '',
-        salary: 0,
       });
     }
     setIsFormOpen(true);
@@ -135,20 +132,8 @@ export default function EmployeeManagementPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({
         ...prev,
-        [name]: name === 'age' || name === 'salary' ? parseInt(value, 10) || 0 : value,
+        [name]: name === 'age' ? parseInt(value, 10) || 0 : value,
     }));
-  };
-
-  const handleUpdateSalary = async (employeeId: string, newSalary: number) => {
-    if (!firestore || !canManageSalaries) return;
-    const employeeRef = doc(firestore, 'employees', employeeId);
-    try {
-      await updateDoc(employeeRef, { salary: newSalary });
-      toast({ title: 'Salary Updated', description: `Salary has been updated.` });
-    } catch (error) {
-      console.error('Error updating salary:', error);
-      toast({ title: 'Update Error', description: 'Could not update salary.', variant: 'destructive'});
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -158,18 +143,11 @@ export default function EmployeeManagementPage() {
       return;
     }
 
-    const { salary, ...employeeDetails } = formData;
     const employeeData: any = {
-      ...employeeDetails,
+      ...formData,
       updatedAt: serverTimestamp(),
     };
     
-    // Only include salary if the user has permission to manage it
-    if (canManageSalaries) {
-        employeeData.salary = salary;
-    }
-
-
     try {
       if (editingEmployee) {
         const employeeRef = doc(firestore, 'employees', editingEmployee.id);
@@ -224,7 +202,6 @@ export default function EmployeeManagementPage() {
               <TableHead>Age</TableHead>
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
-              <TableHead>Monthly Salary</TableHead>
               {(canManageEmployees || isSuperAdmin) && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
@@ -235,16 +212,6 @@ export default function EmployeeManagementPage() {
                 <TableCell>{employee.age}</TableCell>
                 <TableCell>{employee.position}</TableCell>
                 <TableCell>{employee.specialization}</TableCell>
-                <TableCell>
-                  <Input
-                    type="number"
-                    defaultValue={employee.salary}
-                    onBlur={(e) => handleUpdateSalary(employee.id, parseFloat(e.target.value) || 0)}
-                    className="w-32"
-                    placeholder="Salary"
-                    disabled={!canManageSalaries}
-                  />
-                </TableCell>
                 {(canManageEmployees || isSuperAdmin) && (
                   <TableCell className="flex gap-2">
                     {canManageEmployees && (
@@ -289,9 +256,6 @@ export default function EmployeeManagementPage() {
                   <Input name="age" type="number" value={formData.age} onChange={handleFormChange} placeholder="Age" required />
                   <Input name="position" value={formData.position} onChange={handleFormChange} placeholder="Position (e.g., Lead Engineer)" required />
                   <Input name="specialization" value={formData.specialization} onChange={handleFormChange} placeholder="Specialization (e.g., IoT)" required />
-                  {canManageSalaries && (
-                    <Input name="salary" type="number" value={formData.salary} onChange={handleFormChange} placeholder="Monthly Salary" required />
-                  )}
                   <DialogFooter>
                       <DialogClose asChild>
                           <Button type="button" variant="outline">Cancel</Button>
@@ -305,5 +269,3 @@ export default function EmployeeManagementPage() {
     </>
   );
 }
-
-    

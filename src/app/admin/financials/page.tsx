@@ -106,6 +106,18 @@ export default function FinancialManagementPage() {
     }
   };
 
+  const handleUpdateSalary = async (employeeId: string, newSalary: number) => {
+    if (!firestore || !canManageFinancials) return;
+    const employeeRef = doc(firestore, 'employees', employeeId);
+    try {
+      await updateDoc(employeeRef, { salary: newSalary });
+      toast({ title: 'Salary Updated', description: `Salary has been updated.` });
+    } catch (error) {
+      console.error('Error updating salary:', error);
+      toast({ title: 'Update Error', description: 'Could not update salary.', variant: 'destructive'});
+    }
+  };
+
   const completedOrders = orders.filter(order => order.status === 'Completed');
   const paidAndCompletedOrders = completedOrders.filter(order => order.paymentStatus === 'Paid');
 
@@ -196,7 +208,16 @@ export default function FinancialManagementPage() {
               {employees.map(emp => (
                 <TableRow key={emp.id}>
                   <TableCell>{emp.name}</TableCell>
-                  <TableCell className="text-right">₹{(emp.salary || 0).toFixed(2)}</TableCell>
+                  <TableCell className="text-right">
+                    <Input
+                        type="number"
+                        defaultValue={emp.salary}
+                        onBlur={(e) => handleUpdateSalary(emp.id, parseFloat(e.target.value) || 0)}
+                        className="w-32 ml-auto"
+                        placeholder="Salary"
+                        disabled={!canManageFinancials}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -312,5 +333,3 @@ export default function FinancialManagementPage() {
     </>
   );
 }
-
-    
