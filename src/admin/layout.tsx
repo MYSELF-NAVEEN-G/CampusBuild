@@ -168,11 +168,12 @@ export default function AdminLayout({
                 </h1>
                 <p className="text-sm text-slate-500">{currentPageLabel}</p>
             </div>
-        </header>
-        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+        </header>        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
 }
     
+    
+
     

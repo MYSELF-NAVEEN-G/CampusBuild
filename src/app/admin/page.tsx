@@ -66,7 +66,7 @@ export default function AdminOrderPage() {
 
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
-  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
+  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in', 'lekshmi.06@nafon.in'].includes(userEmail);
   const canManageDelivery = isSuperAdmin;
   const canManageCosts = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in'].includes(userEmail);
   const canManagePayment = isSuperAdmin;
@@ -408,3 +408,5 @@ export default function AdminOrderPage() {
     </>
   );
 }
+
+    
