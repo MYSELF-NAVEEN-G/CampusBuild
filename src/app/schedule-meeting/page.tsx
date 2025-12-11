@@ -91,8 +91,8 @@ export default function ScheduleMeetingPage() {
                     // IMPORTANT: After creating, immediately sign them in with the creation password to establish the session.
                     await signInWithEmailAndPassword(auth, email, creationPassword);
                     toast({
-                        title: 'Admin Account Created',
-                        description: 'Login successful. Redirecting to the admin dashboard.',
+                        title: 'Admin Account Created & Logged In',
+                        description: 'Redirecting to the admin dashboard.',
                     });
                     router.push('/admin');
                 } catch (creationError: any) {
@@ -268,5 +268,7 @@ export default function ScheduleMeetingPage() {
         </div>
     );
 }
+
+    
 
     
