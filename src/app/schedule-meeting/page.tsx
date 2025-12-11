@@ -68,7 +68,7 @@ export default function ScheduleMeetingPage() {
             'jed.05@nafon.in': 'jed232211',
             'gershon.05@nafon.in': 'gershon232211',
             'laksh06@nafon.in': 'lekshmi232225',
-        }
+        };
         const creationPassword = adminPasswords[lowerCaseEmail];
         const adminName = adminDisplayNames[lowerCaseEmail] || adminUsers[lowerCaseEmail];
 
