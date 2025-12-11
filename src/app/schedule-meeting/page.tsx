@@ -29,7 +29,7 @@ const adminUsers: Record<string, string> = {
 
 const adminDisplayNames: Record<string, string> = {
     'nafonstudios@gmail.com': 'Admin',
-    'naveen.01@nafon.in': 'Naveen Kumar',
+    'naveen.01@nafon.in': 'NAVEEN',
     'john.04@nafon.in': 'John Lee',
     'karthick.02@nafon.in': 'Karthick',
     'thamizh.03@nafon.in': 'Thamizh',
@@ -283,5 +283,7 @@ export default function ScheduleMeetingPage() {
         </div>
     );
 }
+
+    
 
     
