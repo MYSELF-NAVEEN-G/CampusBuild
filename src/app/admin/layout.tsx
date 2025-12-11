@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ArrowLeft, LogOut, Briefcase, Users, MessageSquare, FolderKanban, DollarSign } from 'lucide-react';
@@ -173,3 +174,4 @@ export default function AdminLayout({
     </div>
   );
 }
+    

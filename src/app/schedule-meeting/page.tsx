@@ -136,7 +136,7 @@ export default function ScheduleMeetingPage() {
         const lowerCaseEmail = email.toLowerCase().trim();
         
         try {
-            // First, try to sign in with the password the user entered. This works for all existing users.
+            // First, try to sign in. This works for all existing users.
             await signInWithEmailAndPassword(auth, lowerCaseEmail, adminPassword);
             toast({
                 title: 'Admin Login Successful',
@@ -155,13 +155,11 @@ export default function ScheduleMeetingPage() {
                     try {
                         // Create the account using the special, one-time password.
                         const userCredential = await createUserWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
+                        
+                        // Set the display name for the new user.
                         if (userCredential.user) {
                            await updateProfile(userCredential.user, { displayName: displayName });
                         }
-                        
-                        // CRITICAL: Immediately sign the user in with the same one-time password to establish a session.
-                        // This step is redundant since createUserWithEmailAndPassword signs the user in, but it's a safeguard.
-                        await signInWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
                         
                         toast({
                             title: 'Admin Account Created & Logged In',
@@ -196,7 +194,7 @@ export default function ScheduleMeetingPage() {
                     <div className="flex justify-between h-20 items-center">
                         <Link href="/" className="flex items-center cursor-pointer group">
                             <div className="relative w-10 h-10 flex items-center justify-center mr-3">
-                                <Image src="https://image2url.com/images/1765187580651-fb73fec6-2402-4429-bd8f-dff67a1e4edc.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
+                                <Image src="https://image2url.com/images/1765187653532-73c5f0ac-c1ed-4b37-8f1d-587411f599df.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
                             </div>
                              <div>
                                 <span className="font-bold text-xl font-headline text-slate-800 leading-none">CampusBuild</span>
