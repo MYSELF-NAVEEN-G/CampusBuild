@@ -25,7 +25,7 @@ service cloud.firestore {
     }
 
     function canManageSalaries() {
-      return canManageEmployees() || (isSignedIn() && request.auth.token.email == 'lux05@nafon.in');
+      return canManageEmployees() || (isSignedIn() && request.auth.token.email == 'laksh06@nafon.in');
     }
     
     function canManageOrders() {
@@ -46,15 +46,15 @@ service cloud.firestore {
     }
     
     match /orders/{orderId} {
-      allow list, read: if canManageOrders() || (isSignedIn() && request.auth.token.email == 'lux05@nafon.in');
+      allow list, read: if canManageOrders() || (isSignedIn() && request.auth.token.email == 'laksh06@nafon.in');
       allow create: if isSignedIn();
-      allow update: if canManageOrders() || (isSignedIn() && request.auth.token.email == 'lux05@nafon.in');
+      allow update: if canManageOrders() || (isSignedIn() && request.auth.token.email == 'laksh06@nafon.in');
       allow delete: if canManageOrders();
     }
     
     match /consultations/{consultationId} {
       allow create: if true;
-      allow read, list, write: if isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'lux05@nafon.in'));
+      allow read, list, write: if isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'laksh06@nafon.in'));
     }
 
     match /users/{userId}/customOrders/{customOrderId} {

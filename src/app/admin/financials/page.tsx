@@ -42,7 +42,8 @@ export default function FinancialManagementPage() {
   const { toast } = useToast();
 
   const userEmail = user?.email || '';
-  const canManageFinancials = userEmail === 'naveen.01@nafon.in' || userEmail === 'lux05@nafon.in';
+  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
+  const canManageFinancials = userEmail === 'naveen.01@nafon.in' || userEmail === 'laksh06@nafon.in';
 
   useEffect(() => {
     if (!isUserLoading && !canManageFinancials) {
@@ -268,7 +269,7 @@ export default function FinancialManagementPage() {
                         onBlur={(e) => handleUpdateOrder(order.id, { total: parseFloat(e.target.value) || 0 })}
                         className="w-32 ml-auto"
                         placeholder="Sale Amount"
-                        disabled={!canManageFinancials}
+                        disabled={!isSuperAdmin}
                     />
                 </TableCell>
                 <TableCell className="text-right">
@@ -278,14 +279,14 @@ export default function FinancialManagementPage() {
                         onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
                         className="w-32 ml-auto"
                         placeholder="Component Cost"
-                        disabled={!canManageFinancials}
+                        disabled={!isSuperAdmin}
                     />
                 </TableCell>
                 <TableCell className="text-right">
                     <Select
                         value={String(order.handlerFee ?? 300)}
                         onValueChange={(value) => handleUpdateOrder(order.id, { handlerFee: parseInt(value, 10) })}
-                        disabled={!canManageFinancials}
+                        disabled={!isSuperAdmin}
                     >
                         <SelectTrigger className="w-32 ml-auto">
                             <SelectValue />

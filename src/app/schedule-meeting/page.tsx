@@ -24,7 +24,7 @@ const adminUsers: Record<string, string> = {
     'thamizh.03@nafon.in': 'thamizh',
     'jed.05@nafon.in': 'jed',
     'gershon.05@nafon.in': 'gershon',
-    'lux05@nafon.in': 'lekshmi',
+    'laksh06@nafon.in': 'lekshmi',
 };
 
 const adminDisplayNames: Record<string, string> = {
@@ -35,7 +35,7 @@ const adminDisplayNames: Record<string, string> = {
     'thamizh.03@nafon.in': 'Thamizh',
     'jed.05@nafon.in': 'JED',
     'gershon.05@nafon.in': 'Gershon',
-    'lux05@nafon.in': 'Lekshmi',
+    'laksh06@nafon.in': 'Lekshmi',
 };
 
 
@@ -67,7 +67,7 @@ export default function ScheduleMeetingPage() {
             'thamizh.03@nafon.in': 'thamizh232258',
             'jed.05@nafon.in': 'jed232211',
             'gershon.05@nafon.in': 'gershon232211',
-            'lux05@nafon.in': 'lux232225',
+            'laksh06@nafon.in': 'lekshmi232225',
         }
         const creationPassword = adminPasswords[lowerCaseEmail];
         const adminName = adminDisplayNames[lowerCaseEmail] || adminUsers[lowerCaseEmail];

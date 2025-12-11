@@ -72,8 +72,9 @@ export default function EmployeeManagementPage() {
   });
 
   const userEmail = user?.email || '';
+  const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
   const canManageEmployees = userEmail === 'naveen.01@nafon.in' || userEmail === 'john.04@nafon.in';
-  const canManageSalaries = canManageEmployees || userEmail === 'lux05@nafon.in';
+  const canManageSalaries = canManageEmployees || userEmail === 'laksh06@nafon.in';
 
   // Security check
   useEffect(() => {
@@ -217,7 +218,7 @@ export default function EmployeeManagementPage() {
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
               <TableHead>Monthly Salary</TableHead>
-              {canManageEmployees && <TableHead>Actions</TableHead>}
+              {(canManageEmployees || (isSuperAdmin && canManageSalaries)) && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -237,26 +238,30 @@ export default function EmployeeManagementPage() {
                     disabled={!canManageSalaries}
                   />
                 </TableCell>
-                {canManageEmployees && (
+                {(canManageEmployees || (isSuperAdmin && canManageSalaries)) && (
                   <TableCell className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                             <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>This will permanently delete the employee's record. This action cannot be undone.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(employee.id)}>Confirm</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    {canManageEmployees && (
+                        <>
+                        <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                 <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>This will permanently delete the employee's record. This action cannot be undone.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(employee.id)}>Confirm</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        </>
+                    )}
                   </TableCell>
                 )}
               </TableRow>
