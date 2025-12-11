@@ -59,7 +59,7 @@ export default function AdminLayout({
   const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in', 'lekshmi.06@nafon.in'].includes(userEmail);
   const canManageFinancials = isSuperAdmin || userEmail === 'lekshmi.06@nafon.in';
   const canManageSalaries = canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
-
+  
   // Redirect non-admins immediately
   useEffect(() => {
     if (!isUserLoading && !isAdmin) {
