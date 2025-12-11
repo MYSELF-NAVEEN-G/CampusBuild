@@ -13,11 +13,11 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in'|| request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'laksh06@nafon.in' || isSuperAdmin());
+      return isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in'|| request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'lekshmi.06@nafon.in' || isSuperAdmin());
     }
 
     function canManageProjects() {
-        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'laksh06@nafon.in'));
+        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'lekshmi.06@nafon.in'));
     }
 
     function canManageEmployees() {
@@ -25,11 +25,11 @@ service cloud.firestore {
     }
 
     function canManageSalaries() {
-      return canManageEmployees() || (isSignedIn() && request.auth.token.email == 'laksh06@nafon.in');
+      return canManageEmployees() || (isSignedIn() && request.auth.token.email == 'lekshmi.06@nafon.in');
     }
     
     function canManageOrders() {
-      return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'laksh06@nafon.in'));
+      return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'lekshmi.06@nafon.in'));
     }
 
     function isOwner(userId) {

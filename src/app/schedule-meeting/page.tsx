@@ -23,7 +23,7 @@ const adminPasswords: Record<string, string> = {
     'thamizh.03@nafon.in': 'thamizh232258',
     'jed.05@nafon.in': 'jed232211',
     'gershon.05@nafon.in': 'gershon232211',
-    'laksh06@nafon.in': 'lekshmi232225',
+    'lekshmi.06@nafon.in': 'lekshmi232225',
 };
 
 const adminCredentials: Record<string, string> = {
@@ -34,7 +34,7 @@ const adminCredentials: Record<string, string> = {
     'thamizh.03@nafon.in': 'Thamizh',
     'jed.05@nafon.in': 'JED',
     'gershon.05@nafon.in': 'Gershon',
-    'laksh06@nafon.in': 'Lekshmi',
+    'lekshmi.06@nafon.in': 'Lekshmi',
 };
 
 
