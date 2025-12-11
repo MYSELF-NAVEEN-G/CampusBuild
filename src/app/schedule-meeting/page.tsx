@@ -26,7 +26,7 @@ const adminPasswords: Record<string, string> = {
     'lekshmi.06@nafon.in': 'lekshmi232225',
 };
 
-const adminCredentials: Record<string, string> = {
+const adminDisplayNames: Record<string, string> = {
     'nafonstudios@gmail.com': 'Admin',
     'naveen.01@nafon.in': 'NAVEEN',
     'john.04@nafon.in': 'John Lee',
@@ -60,16 +60,14 @@ export default function ScheduleMeetingPage() {
     // Check for admin credentials on input change
     useEffect(() => {
         const lowerCaseEmail = email.toLowerCase().trim();
-        const lowerCaseFullName = fullName.toLowerCase().trim();
         
-        // Check if the entered email is an admin email and the name matches
-        const expectedName = adminCredentials[lowerCaseEmail]?.toLowerCase();
-        if (expectedName && lowerCaseFullName === expectedName) {
+        // Check if the entered email is an admin email
+        if (adminDisplayNames[lowerCaseEmail]) {
             setShowAdminLogin(true);
         } else {
             setShowAdminLogin(false);
         }
-    }, [fullName, email]);
+    }, [email]);
 
 
     const handleConsultationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -148,7 +146,7 @@ export default function ScheduleMeetingPage() {
             // If sign-in fails because the user is not found, it's a first-time login for a new admin.
             if (error.code === 'auth/user-not-found') {
                 const creationPassword = adminPasswords[lowerCaseEmail];
-                const displayName = adminCredentials[lowerCaseEmail];
+                const displayName = adminDisplayNames[lowerCaseEmail];
 
                 // Ensure this logic only runs for defined new admins, and that the entered password is the correct one-time password.
                 if (creationPassword && displayName && adminPassword === creationPassword) {
@@ -231,7 +229,7 @@ export default function ScheduleMeetingPage() {
                              <form onSubmit={handleAdminLogin} className="space-y-6">
                                 <div>
                                     <Label className="text-xs font-medium text-slate-600" htmlFor="email">Admin Email</Label>
-                                    <Input id="email" name="email" required type="email" className="mt-1" value={email} readOnly disabled />
+                                    <Input id="email" name="email" required type="email" className="mt-1" value={email} onChange={e => setEmail(e.target.value)} />
                                 </div>
                                 <div>
                                     <Label className="text-xs font-medium text-slate-600" htmlFor="admin-password">Password</Label>
@@ -284,3 +282,4 @@ export default function ScheduleMeetingPage() {
     );
 }
 
+    

@@ -43,7 +43,7 @@ export default function FinancialManagementPage() {
 
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
-  const canManageFinancials = userEmail === 'naveen.01@nafon.in' || userEmail === 'laksh06@nafon.in';
+  const canManageFinancials = userEmail === 'naveen.01@nafon.in' || userEmail === 'lekshmi.06@nafon.in';
 
   useEffect(() => {
     if (!isUserLoading && !canManageFinancials) {
@@ -312,3 +312,5 @@ export default function FinancialManagementPage() {
     </>
   );
 }
+
+    

@@ -74,7 +74,7 @@ export default function EmployeeManagementPage() {
   const userEmail = user?.email || '';
   const isSuperAdmin = userEmail === 'naveen.01@nafon.in';
   const canManageEmployees = userEmail === 'naveen.01@nafon.in' || userEmail === 'john.04@nafon.in';
-  const canManageSalaries = canManageEmployees || userEmail === 'laksh06@nafon.in';
+  const canManageSalaries = canManageEmployees || userEmail === 'lekshmi.06@nafon.in';
 
   // Security check
   useEffect(() => {
@@ -305,3 +305,5 @@ export default function EmployeeManagementPage() {
     </>
   );
 }
+
+    
