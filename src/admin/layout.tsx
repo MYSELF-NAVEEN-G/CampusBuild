@@ -113,7 +113,6 @@ export default function AdminLayout({
   const currentPageLabel = navItems.find(item => item.href === pathname)?.label || 'Dashboard';
   const displayName = adminDisplayNames[userEmail] || user?.displayName || 'Admin';
   const brandingSubtitle = isSuperAdmin ? 'CEO' : 'Admin';
-  const isTeamMember = adminEmails.includes(userEmail) && userEmail !== 'nafonstudios@gmail.com';
 
   return (
     <div className="min-h-screen bg-slate-100 flex">
@@ -171,7 +170,7 @@ export default function AdminLayout({
             </div>
         </header>        
         <main className="flex-1 p-6 overflow-y-auto bg-slate-50">
-          {isTeamMember && <YourSalaryCard />}
+          <YourSalaryCard />
           {children}
         </main>
       </div>
