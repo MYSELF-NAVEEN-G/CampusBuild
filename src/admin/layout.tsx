@@ -115,7 +115,7 @@ export default function AdminLayout({
   const isTeamMember = adminEmails.includes(userEmail) && userEmail !== 'nafonstudios@gmail.com';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-100 flex">
       <aside className="w-64 bg-white border-r flex flex-col">
         <div className="flex items-center h-20 px-6 border-b">
           <div className="flex items-center cursor-pointer group" onClick={() => router.push('/')}>
@@ -169,7 +169,7 @@ export default function AdminLayout({
                 <p className="text-sm text-slate-500">{currentPageLabel}</p>
             </div>
         </header>        
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto bg-slate-50">
           {isTeamMember && <YourSalaryCard />}
           {children}
         </main>
