@@ -17,7 +17,7 @@ service cloud.firestore {
     }
 
     function canManageProjects() {
-        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'lekshmi.06@nafon.in'));
+        return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in'));
     }
 
     function canManageEmployees() {
@@ -62,7 +62,7 @@ service cloud.firestore {
     }
 
     match /employees/{employeeId} {
-        allow read: if true;
+        allow read, list: if true;
         allow create, delete: if canManageEmployees();
         allow update: if canManageSalaries();
     }
