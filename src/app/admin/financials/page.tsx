@@ -28,6 +28,7 @@ interface Order {
 
 interface Employee {
     id: string;
+    name: string;
     salary?: number;
 }
 
@@ -40,10 +41,11 @@ export default function FinancialManagementPage() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const isSuperAdmin = user?.email === 'naveen.01@nafon.in';
+  const userEmail = user?.email || '';
+  const canManageFinancials = userEmail === 'naveen.01@nafon.in' || userEmail === 'lux05@nafon.in';
 
   useEffect(() => {
-    if (!isUserLoading && !isSuperAdmin) {
+    if (!isUserLoading && !canManageFinancials) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to view this page.',
@@ -51,10 +53,10 @@ export default function FinancialManagementPage() {
       });
       router.replace('/admin');
     }
-  }, [user, isUserLoading, router, toast, isSuperAdmin]);
+  }, [user, isUserLoading, router, toast, canManageFinancials]);
 
   useEffect(() => {
-    if (!firestore || !isSuperAdmin) {
+    if (!firestore || !canManageFinancials) {
       setLoading(false);
       return;
     }
@@ -89,10 +91,10 @@ export default function FinancialManagementPage() {
         unsubscribeOrders();
         unsubscribeEmployees();
     };
-  }, [firestore, toast, isSuperAdmin]);
+  }, [firestore, toast, canManageFinancials]);
 
   const handleUpdateOrder = async (orderId: string, updates: Partial<Order>) => {
-    if (!firestore || !isSuperAdmin) return;
+    if (!firestore || !canManageFinancials) return;
     const orderRef = doc(firestore, 'orders', orderId);
     try {
       await updateDoc(orderRef, updates);
@@ -118,7 +120,7 @@ export default function FinancialManagementPage() {
     return <div>Loading Financial Data...</div>;
   }
 
-  if (!isSuperAdmin) {
+  if (!canManageFinancials) {
     return <div>Redirecting...</div>;
   }
 
@@ -179,6 +181,28 @@ export default function FinancialManagementPage() {
         </Card>
       </div>
 
+       <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-4 font-headline">Employee Salaries</h2>
+        <div className="bg-white rounded-lg shadow-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Employee Name</TableHead>
+                <TableHead className="text-right">Monthly Salary</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {employees.map(emp => (
+                <TableRow key={emp.id}>
+                  <TableCell>{emp.name}</TableCell>
+                  <TableCell className="text-right">₹{(emp.salary || 0).toFixed(2)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
       <h2 className="text-2xl font-bold mb-4 font-headline">Completed Orders Log</h2>
       <div className="bg-white rounded-lg shadow-md border">
         <Table>
@@ -211,7 +235,7 @@ export default function FinancialManagementPage() {
                   <Select
                     value={order.paymentStatus || 'Unpaid'}
                     onValueChange={(value: 'Paid' | 'Unpaid') => handleUpdateOrder(order.id, { paymentStatus: value })}
-                    disabled={!isSuperAdmin}
+                    disabled={!canManageFinancials}
                   >
                     <SelectTrigger className="w-[120px]">
                       <SelectValue />
@@ -226,7 +250,7 @@ export default function FinancialManagementPage() {
                    <Select
                     value={order.handlerFeeStatus || 'Not Sent'}
                     onValueChange={(value: 'Sent' | 'Not Sent') => handleUpdateOrder(order.id, { handlerFeeStatus: value })}
-                    disabled={!isSuperAdmin}
+                    disabled={!canManageFinancials}
                   >
                       <SelectTrigger className="w-[120px]">
                         <SelectValue />
@@ -244,7 +268,7 @@ export default function FinancialManagementPage() {
                         onBlur={(e) => handleUpdateOrder(order.id, { total: parseFloat(e.target.value) || 0 })}
                         className="w-32 ml-auto"
                         placeholder="Sale Amount"
-                        disabled={!isSuperAdmin}
+                        disabled={!canManageFinancials}
                     />
                 </TableCell>
                 <TableCell className="text-right">
@@ -254,14 +278,14 @@ export default function FinancialManagementPage() {
                         onBlur={(e) => handleUpdateOrder(order.id, { componentCost: parseFloat(e.target.value) || 0 })}
                         className="w-32 ml-auto"
                         placeholder="Component Cost"
-                        disabled={!isSuperAdmin}
+                        disabled={!canManageFinancials}
                     />
                 </TableCell>
                 <TableCell className="text-right">
                     <Select
                         value={String(order.handlerFee ?? 300)}
                         onValueChange={(value) => handleUpdateOrder(order.id, { handlerFee: parseInt(value, 10) })}
-                        disabled={!isSuperAdmin}
+                        disabled={!canManageFinancials}
                     >
                         <SelectTrigger className="w-32 ml-auto">
                             <SelectValue />

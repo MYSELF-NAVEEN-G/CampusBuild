@@ -56,7 +56,8 @@ export default function AdminLayout({
   const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
   const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
   const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
-  const canManageFinancials = isSuperAdmin;
+  const canManageFinancials = isSuperAdmin || userEmail === 'lux05@nafon.in';
+  const canViewAllSections = userEmail === 'lux05@nafon.in';
 
   // Redirect non-admins immediately
   useEffect(() => {
@@ -90,12 +91,12 @@ export default function AdminLayout({
   };
 
   const getNavItems = () => [
-    { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders },
-    { href: '/admin/financials', label: 'Financial Management', icon: DollarSign, visible: canManageFinancials },
-    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations },
+    { href: '/admin', label: 'Order Management', icon: Briefcase, visible: canManageOrders || canViewAllSections },
+    { href: '/admin/financials', label: 'Financial Management', icon: DollarSign, visible: canManageFinancials || canViewAllSections },
+    { href: '/admin/consultations', label: 'Consultation Management', icon: MessageSquare, visible: canManageConsultations || canViewAllSections },
     { href: '/admin/team', label: 'Our Team', icon: Users, visible: true },
-    { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects },
-    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees },
+    { href: '/admin/projects', label: 'Project Management', icon: FolderKanban, visible: canManageProjects || canViewAllSections },
+    { href: '/admin/employees', label: 'Employee Management', icon: Users, visible: canManageEmployees || canViewAllSections },
   ];
   
   const navItems = getNavItems();

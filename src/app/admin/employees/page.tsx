@@ -71,11 +71,13 @@ export default function EmployeeManagementPage() {
     salary: 0,
   });
 
-  const canManageEmployees = user?.email === 'naveen.01@nafon.in' || user?.email === 'john.04@nafon.in';
+  const userEmail = user?.email || '';
+  const canManageEmployees = userEmail === 'naveen.01@nafon.in' || userEmail === 'john.04@nafon.in';
+  const canManageSalaries = canManageEmployees || userEmail === 'lux05@nafon.in';
 
   // Security check
   useEffect(() => {
-    if (!isUserLoading && !canManageEmployees) {
+    if (!isUserLoading && !canManageEmployees && !canManageSalaries) {
       toast({
         title: 'Access Denied',
         description: 'You do not have permission to manage employees.',
@@ -83,7 +85,7 @@ export default function EmployeeManagementPage() {
       });
       router.push('/admin');
     }
-  }, [user, isUserLoading, router, toast, canManageEmployees]);
+  }, [user, isUserLoading, router, toast, canManageEmployees, canManageSalaries]);
 
   useEffect(() => {
     if (!firestore) return;
@@ -137,7 +139,7 @@ export default function EmployeeManagementPage() {
   };
 
   const handleUpdateSalary = async (employeeId: string, newSalary: number) => {
-    if (!firestore || !canManageEmployees) return;
+    if (!firestore || !canManageSalaries) return;
     const employeeRef = doc(firestore, 'employees', employeeId);
     try {
       await updateDoc(employeeRef, { salary: newSalary });
@@ -150,8 +152,8 @@ export default function EmployeeManagementPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firestore) {
-      toast({ title: 'Error', description: 'Database not ready.', variant: 'destructive'});
+    if (!firestore || !canManageEmployees) {
+      toast({ title: 'Error', description: 'Database not ready or insufficient permissions.', variant: 'destructive'});
       return;
     }
 
@@ -177,7 +179,7 @@ export default function EmployeeManagementPage() {
   };
   
   const handleDelete = async (employeeId: string) => {
-      if (!firestore) return;
+      if (!firestore || !canManageEmployees) return;
       try {
           await deleteDoc(doc(firestore, 'employees', employeeId));
           toast({title: 'Employee Removed', description: 'The employee has been removed from the list.'});
@@ -191,7 +193,7 @@ export default function EmployeeManagementPage() {
     return <div>Loading Employee Data...</div>;
   }
   
-  if (!canManageEmployees) {
+  if (!canManageEmployees && !canManageSalaries) {
       return <div>Redirecting...</div>
   }
 
@@ -199,9 +201,11 @@ export default function EmployeeManagementPage() {
     <>
       <div className="flex justify-between items-center mb-6">
         <p>Add, edit, or remove employee records from the company database.</p>
-        <Button onClick={() => openForm()}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Add New Employee
-        </Button>
+        {canManageEmployees && (
+          <Button onClick={() => openForm()}>
+            <PlusCircle className="mr-2 h-4 w-4" /> Add New Employee
+          </Button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md border">
@@ -213,7 +217,7 @@ export default function EmployeeManagementPage() {
               <TableHead>Position</TableHead>
               <TableHead>Specialization</TableHead>
               <TableHead>Monthly Salary</TableHead>
-              <TableHead>Actions</TableHead>
+              {canManageEmployees && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -230,55 +234,60 @@ export default function EmployeeManagementPage() {
                     onBlur={(e) => handleUpdateSalary(employee.id, parseFloat(e.target.value) || 0)}
                     className="w-32"
                     placeholder="Salary"
+                    disabled={!canManageSalaries}
                   />
                 </TableCell>
-                <TableCell className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
-                    <Edit className="mr-2 h-4 w-4" /> Edit
-                  </Button>
-                  <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                           <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                          <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>This will permanently delete the employee's record. This action cannot be undone.</AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(employee.id)}>Confirm</AlertDialogAction>
-                          </AlertDialogFooter>
-                      </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
+                {canManageEmployees && (
+                  <TableCell className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => openForm(employee)}>
+                      <Edit className="mr-2 h-4 w-4" /> Edit
+                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                             <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>This will permanently delete the employee's record. This action cannot be undone.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(employee.id)}>Confirm</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
       
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-                <DialogTitle className="font-headline text-2xl">{editingEmployee ? 'Edit Employee' : 'Add New Employee'}</DialogTitle>
-                <DialogDescription>{editingEmployee ? "Update the employee's details." : "Fill out the form to add a new employee."}</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-                <Input name="name" value={formData.name} onChange={handleFormChange} placeholder="Full Name" required />
-                <Input name="age" type="number" value={formData.age} onChange={handleFormChange} placeholder="Age" required />
-                <Input name="position" value={formData.position} onChange={handleFormChange} placeholder="Position (e.g., Lead Engineer)" required />
-                <Input name="specialization" value={formData.specialization} onChange={handleFormChange} placeholder="Specialization (e.g., IoT)" required />
-                <Input name="salary" type="number" value={formData.salary} onChange={handleFormChange} placeholder="Monthly Salary" required />
-                <DialogFooter>
-                    <DialogClose asChild>
-                        <Button type="button" variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button type="submit">Save Employee</Button>
-                </DialogFooter>
-            </form>
-        </DialogContent>
-      </Dialog>
+      {canManageEmployees && (
+        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+          <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                  <DialogTitle className="font-headline text-2xl">{editingEmployee ? 'Edit Employee' : 'Add New Employee'}</DialogTitle>
+                  <DialogDescription>{editingEmployee ? "Update the employee's details." : "Fill out the form to add a new employee."}</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                  <Input name="name" value={formData.name} onChange={handleFormChange} placeholder="Full Name" required />
+                  <Input name="age" type="number" value={formData.age} onChange={handleFormChange} placeholder="Age" required />
+                  <Input name="position" value={formData.position} onChange={handleFormChange} placeholder="Position (e.g., Lead Engineer)" required />
+                  <Input name="specialization" value={formData.specialization} onChange={handleFormChange} placeholder="Specialization (e.g., IoT)" required />
+                  <Input name="salary" type="number" value={formData.salary} onChange={handleFormChange} placeholder="Monthly Salary" required />
+                  <DialogFooter>
+                      <DialogClose asChild>
+                          <Button type="button" variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button type="submit">Save Employee</Button>
+                  </DialogFooter>
+              </form>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

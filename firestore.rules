@@ -23,6 +23,10 @@ service cloud.firestore {
     function canManageEmployees() {
         return isSuperAdmin() || (isSignedIn() && request.auth.token.email == 'john.04@nafon.in');
     }
+
+    function canManageSalaries() {
+      return canManageEmployees() || (isSignedIn() && request.auth.token.email == 'lux05@nafon.in');
+    }
     
     function canManageOrders() {
       return isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in'));
@@ -42,14 +46,15 @@ service cloud.firestore {
     }
     
     match /orders/{orderId} {
-      allow list, read: if canManageOrders();
+      allow list, read: if canManageOrders() || (isSignedIn() && request.auth.token.email == 'lux05@nafon.in');
       allow create: if isSignedIn();
-      allow update, delete: if canManageOrders();
+      allow update: if canManageOrders() || (isSignedIn() && request.auth.token.email == 'lux05@nafon.in');
+      allow delete: if canManageOrders();
     }
     
     match /consultations/{consultationId} {
       allow create: if true;
-      allow read, list, write: if isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in'));
+      allow read, list, write: if isSuperAdmin() || (isSignedIn() && (request.auth.token.email == 'nafonstudios@gmail.com' || request.auth.token.email == 'john.04@nafon.in' || request.auth.token.email == 'karthick.02@nafon.in' || request.auth.token.email == 'thamizh.03@nafon.in' || request.auth.token.email == 'jed.05@nafon.in' || request.auth.token.email == 'gershon.05@nafon.in' || request.auth.token.email == 'lux05@nafon.in'));
     }
 
     match /users/{userId}/customOrders/{customOrderId} {
@@ -58,7 +63,8 @@ service cloud.firestore {
 
     match /employees/{employeeId} {
         allow read: if true;
-        allow write: if canManageEmployees();
+        allow create, delete: if canManageEmployees();
+        allow update: if canManageSalaries();
     }
   }
 }
