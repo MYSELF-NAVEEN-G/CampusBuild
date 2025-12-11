@@ -176,7 +176,7 @@ export default function ConsultationManagementPage() {
                         defaultValue={consultation.customerName}
                         onBlur={(e) => handleUpdateConsultation(consultation.id, { customerName: e.target.value })}
                         className="w-[180px]"
-                        disabled={!canManageConsultations}
+                        disabled={!isSuperAdmin}
                     />
                 </TableCell>
                 <TableCell>
@@ -185,7 +185,7 @@ export default function ConsultationManagementPage() {
                         defaultValue={consultation.customerEmail}
                         onBlur={(e) => handleUpdateConsultation(consultation.id, { customerEmail: e.target.value })}
                         className="w-[180px]"
-                        disabled={!canManageConsultations}
+                        disabled={!isSuperAdmin}
                     />
                 </TableCell>
                 <TableCell>
@@ -194,7 +194,7 @@ export default function ConsultationManagementPage() {
                         defaultValue={consultation.projectTopic}
                         onBlur={(e) => handleUpdateConsultation(consultation.id, { projectTopic: e.target.value })}
                         className="w-[180px]"
-                        disabled={!canManageConsultations}
+                        disabled={!isSuperAdmin}
                     />
                 </TableCell>
                 <TableCell>
@@ -203,7 +203,7 @@ export default function ConsultationManagementPage() {
                         defaultValue={consultation.preferredTime}
                         onBlur={(e) => handleUpdateConsultation(consultation.id, { preferredTime: e.target.value })}
                         className="w-[180px]"
-                        disabled={!canManageConsultations}
+                        disabled={!isSuperAdmin}
                     />
                 </TableCell>
                 <TableCell>
@@ -302,5 +302,3 @@ export default function ConsultationManagementPage() {
     </>
   );
 }
-
-    
