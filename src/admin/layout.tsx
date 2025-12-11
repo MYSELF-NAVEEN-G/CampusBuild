@@ -52,9 +52,9 @@ export default function AdminLayout({
   const isAdmin = adminEmails.includes(userEmail);
   
   // Permissions based on roles defined in firestore.rules
-  const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
+  const canManageProjects = isSuperAdmin || ['karthick.02@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in', 'laksh06@nafon.in'].includes(userEmail);
   const canManageEmployees = isSuperAdmin || userEmail === 'john.04@nafon.in';
-  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in'].includes(userEmail);
+  const canManageOrders = isSuperAdmin || ['john.04@nafon.in', 'jed.05@nafon.in', 'karthick.02@nafon.in', 'gershon.05@nafon.in', 'laksh06@nafon.in'].includes(userEmail);
   const canManageConsultations = isSuperAdmin || ['nafonstudios@gmail.com', 'john.04@nafon.in', 'karthick.02@nafon.in', 'thamizh.03@nafon.in', 'jed.05@nafon.in', 'gershon.05@nafon.in', 'laksh06@nafon.in'].includes(userEmail);
   const canManageFinancials = isSuperAdmin || userEmail === 'laksh06@nafon.in';
   const canViewAllSections = userEmail === 'laksh06@nafon.in';
@@ -174,3 +174,5 @@ export default function AdminLayout({
     </div>
   );
 }
+
+    
