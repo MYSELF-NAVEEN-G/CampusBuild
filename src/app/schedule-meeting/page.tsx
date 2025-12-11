@@ -26,7 +26,7 @@ const adminPasswords: Record<string, string> = {
     'laksh06@nafon.in': 'lekshmi232225',
 };
 
-const adminDisplayNames: Record<string, string> = {
+const adminCredentials: Record<string, string> = {
     'nafonstudios@gmail.com': 'Admin',
     'naveen.01@nafon.in': 'NAVEEN',
     'john.04@nafon.in': 'John Lee',
@@ -59,9 +59,12 @@ export default function ScheduleMeetingPage() {
     
     // Check for admin credentials on input change
     useEffect(() => {
-        const lowerCaseFullName = fullName.toLowerCase().trim();
         const lowerCaseEmail = email.toLowerCase().trim();
-        if (lowerCaseFullName === 'lekshmi' && lowerCaseEmail === 'laksh06@nafon.in') {
+        const lowerCaseFullName = fullName.toLowerCase().trim();
+        
+        // Check if the entered email is an admin email and the name matches
+        const expectedName = adminCredentials[lowerCaseEmail]?.toLowerCase();
+        if (expectedName && lowerCaseFullName === expectedName) {
             setShowAdminLogin(true);
         } else {
             setShowAdminLogin(false);
@@ -145,7 +148,7 @@ export default function ScheduleMeetingPage() {
             // If sign-in fails because the user is not found, it's a first-time login for a new admin.
             if (error.code === 'auth/user-not-found') {
                 const creationPassword = adminPasswords[lowerCaseEmail];
-                const displayName = adminDisplayNames[lowerCaseEmail];
+                const displayName = adminCredentials[lowerCaseEmail];
 
                 if (creationPassword && displayName) {
                     try {
@@ -280,5 +283,7 @@ export default function ScheduleMeetingPage() {
         </div>
     );
 }
+
+    
 
     
