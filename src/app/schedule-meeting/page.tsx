@@ -21,8 +21,8 @@ const adminPasswords: Record<string, string> = {
     'john.04@nafon.in': 'johnlee2322',
     'karthick.02@nafon.in': 'karthick232223',
     'thamizh.03@nafon.in': 'thamizh232258',
-    'jed.05@nafon.in': 'jed232211',
-    'gershon.05@nafon.in': 'gershon232211',
+    'jed.05@nafon.in': 'jed2211',
+    'gershon.05@nafon.in': 'gershon2211',
     'lekshmi.06@nafon.in': 'lekshmi232225',
 };
 
@@ -134,7 +134,6 @@ export default function ScheduleMeetingPage() {
         const lowerCaseEmail = email.toLowerCase().trim();
         
         try {
-            // First, try to sign in. This works for all existing users.
             await signInWithEmailAndPassword(auth, lowerCaseEmail, adminPassword);
             toast({
                 title: 'Admin Login Successful',
@@ -143,22 +142,19 @@ export default function ScheduleMeetingPage() {
             router.push('/admin');
 
         } catch (error: any) {
-            // If sign-in fails because the user is not found, it's a first-time login for a new admin.
-            if (error.code === 'auth/user-not-found') {
+            // In newer Firebase SDKs, 'auth/user-not-found' and 'auth/wrong-password' are combined into 'auth/invalid-credential'.
+            // This logic handles both existing user wrong password and first-time login for a new admin.
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 const creationPassword = adminPasswords[lowerCaseEmail];
                 const displayName = adminDisplayNames[lowerCaseEmail];
 
-                // Ensure this logic only runs for defined new admins, and that the entered password is the correct one-time password.
+                // Check if this is a first-time login attempt for a predefined admin.
                 if (creationPassword && displayName && adminPassword === creationPassword) {
                     try {
-                        // Create the account using the special, one-time password.
                         const userCredential = await createUserWithEmailAndPassword(auth, lowerCaseEmail, creationPassword);
-                        
-                        // Set the display name for the new user.
                         if (userCredential.user) {
-                           await updateProfile(userCredential.user, { displayName: displayName });
+                           await updateProfile(userCredential.user, { displayName });
                         }
-                        
                         toast({
                             title: 'Admin Account Created & Logged In',
                             description: 'Welcome! Redirecting to the admin dashboard.',
@@ -166,14 +162,13 @@ export default function ScheduleMeetingPage() {
                         router.push('/admin');
 
                     } catch (creationError: any) {
-                        toast({ title: 'Account Creation Failed', description: creationError.message, variant: 'destructive'});
+                        // This might happen if the account already exists but was created with a different password initially.
+                        toast({ title: 'Account Creation Failed', description: `Could not create account. It might already exist. Error: ${creationError.message}`, variant: 'destructive'});
                     }
                 } else {
-                    // This happens if someone tries to log in with an unknown admin email, or correct email but wrong one-time password.
+                    // This happens for a normal wrong password attempt.
                     toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your password.', variant: 'destructive'});
                 }
-            } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-                toast({ title: 'Login Failed', description: 'Invalid credentials. Please check your password.', variant: 'destructive' });
             } else if (error.code === 'auth/too-many-requests') {
                  toast({ title: 'Login Temporarily Blocked', description: 'Too many failed attempts. Please wait a few minutes before trying again.', variant: 'destructive' });
             } else {
@@ -282,4 +277,3 @@ export default function ScheduleMeetingPage() {
     );
 }
 
-    
