@@ -35,7 +35,7 @@ const socialLinks = [
   {
     name: 'WhatsApp',
     icon: MessageSquare,
-    href: 'https://api.whatsapp.com/send?phone=919500782813',
+    href: 'https://chat.whatsapp.com/GB9OjwIE3kr0JlXGT6hsCd',
     bgColor: 'bg-green-500',
   },
   {
