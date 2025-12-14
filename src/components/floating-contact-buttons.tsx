@@ -11,25 +11,25 @@ const socialLinks = [
   {
     name: 'Instagram',
     icon: Instagram,
-    href: 'https://www.instagram.com/nafon_ai_lab/',
+    href: 'https://www.instagram.com/camp.usbuildsolution2322?igsh=MWw3MG1sejRvYWhjMg==',
     bgColor: 'bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500',
   },
   {
     name: 'Facebook',
     icon: Facebook,
-    href: '#',
+    href: 'https://www.facebook.com/profile.php?id=61585168707364&sfnsn=wa',
     bgColor: 'bg-blue-600',
   },
   {
     name: 'Gmail',
     icon: Mail,
-    href: 'mailto:solutionscloudbuild@gmail.com',
+    href: 'mailto:campusbuildsolution@gmail.com',
     bgColor: 'bg-red-500',
   },
   {
     name: 'LinkedIn',
     icon: Linkedin,
-    href: 'https://www.linkedin.com/company/nafon-ai-lab/',
+    href: 'https://www.linkedin.com/in/campusbuild-solutions-undefined-8b4279394',
     bgColor: 'bg-sky-700',
   },
   {
@@ -41,7 +41,7 @@ const socialLinks = [
   {
     name: 'X',
     icon: Twitter,
-    href: 'https://x.com/NafonAILab',
+    href: 'https://x.com/CampusbuildS',
     bgColor: 'bg-black',
   },
 ];
