@@ -126,11 +126,11 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                         </div>
                     </div>
                 </ScrollArea>
-                <DialogFooter className="flex-shrink-0 flex items-center justify-between sm:justify-between bg-background/95 backdrop-blur-sm pt-4 border-t">
-                    <span className="text-2xl font-extrabold text-slate-900">₹{project.price.toFixed(2)}</span>
-                    <Button size="lg" onClick={handleAddToCart}>
+                <DialogFooter className="flex-shrink-0 flex-col-reverse items-center justify-between sm:flex-col-reverse bg-background/95 backdrop-blur-sm pt-4 border-t gap-4">
+                    <Button size="lg" onClick={handleAddToCart} className="w-full sm:w-auto">
                         Add to Order <Plus className="ml-2 h-4 w-4" />
                     </Button>
+                    <span className="text-2xl font-extrabold text-slate-900">₹{project.price.toFixed(2)}</span>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
