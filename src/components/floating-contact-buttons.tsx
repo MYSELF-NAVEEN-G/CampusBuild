@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Instagram, Facebook, Mail, Linkedin, MessageSquare, Twitter, X, Plus } from 'lucide-react';
+import { Instagram, Facebook, Mail, Linkedin, MessageSquare, Twitter, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const socialLinks = [
@@ -64,20 +64,16 @@ const FloatingContactButtons = () => {
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
-  const handleScrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <div
       className={cn(
-        'fixed bottom-6 right-6 z-50 transition-opacity duration-300',
+        'fixed bottom-6 left-6 z-50 transition-opacity duration-300',
         isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
     >
-      <div className="relative flex flex-col items-center gap-3">
+      <div className="relative flex flex-col items-start gap-3">
         {isOpen && (
-          <div className="flex flex-col items-center gap-3 transition-all duration-300">
+          <div className="flex flex-col items-start gap-3 transition-all duration-300">
             {socialLinks.map((social, index) => (
               <a
                 key={social.name}
@@ -91,11 +87,11 @@ const FloatingContactButtons = () => {
                 style={{ transitionDelay: `${index * 50}ms` }}
               >
                 <Button
-                  size="icon"
-                  className={cn('rounded-full w-12 h-12 text-white shadow-lg', social.bgColor)}
+                  className={cn('rounded-full h-12 text-white shadow-lg justify-start w-40', social.bgColor)}
                   aria-label={social.name}
                 >
-                  <social.icon className="h-6 w-6" />
+                  <social.icon className="h-6 w-6 mr-4" />
+                  <span className="font-semibold">{social.name}</span>
                 </Button>
               </a>
             ))}
@@ -103,7 +99,7 @@ const FloatingContactButtons = () => {
         )}
         <Button
           size="lg"
-          className="rounded-full h-14 bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-bold"
+          className="rounded-full h-14 bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-bold w-40 justify-center"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X className="h-6 w-6" /> : 'Contact'}
