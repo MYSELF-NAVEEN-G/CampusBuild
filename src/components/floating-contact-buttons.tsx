@@ -23,7 +23,7 @@ const socialLinks = [
   {
     name: 'Gmail',
     icon: Mail,
-    href: 'https://mail.google.com/mail/?view=cm&fs=1&to=campusbuildsolution@gmail.com',
+    href: 'https://mail.google.com/mail/?view=cm&fs=1&to=campusbuildsolutions@gmail.com',
     bgColor: 'bg-red-500',
   },
   {
