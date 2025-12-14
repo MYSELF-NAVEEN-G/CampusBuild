@@ -102,11 +102,11 @@ const FloatingContactButtons = () => {
           </div>
         )}
         <Button
-          size="icon"
-          className="rounded-full w-14 h-14 bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          size="lg"
+          className="rounded-full h-14 bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-bold"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <Plus className={cn('h-7 w-7 transition-transform duration-300', isOpen && 'rotate-45')} />
+          {isOpen ? <X className="h-6 w-6" /> : 'Contact'}
         </Button>
       </div>
     </div>
