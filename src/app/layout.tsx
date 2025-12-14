@@ -4,6 +4,7 @@ import { AppProvider } from '@/context/app-context';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
+import FloatingContactButtons from '@/components/floating-contact-buttons';
 
 export const metadata: Metadata = {
   title: "CampusBuild Solutions – Student & College Project Services",
@@ -63,6 +64,7 @@ export default function RootLayout({
           <AppProvider>
             {children}
             <Toaster />
+            <FloatingContactButtons />
           </AppProvider>
         </FirebaseClientProvider>
       </body>
