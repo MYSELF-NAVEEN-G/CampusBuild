@@ -3,8 +3,9 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Instagram, Facebook, Mail, Linkedin, MessageSquare, Twitter, X } from 'lucide-react';
+import { Instagram, Facebook, Mail, Linkedin, MessageSquare, Twitter, X, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const socialLinks = [
   {
@@ -48,6 +49,7 @@ const socialLinks = [
 const FloatingContactButtons = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -98,11 +100,20 @@ const FloatingContactButtons = () => {
           </div>
         )}
         <Button
-          size="lg"
-          className="rounded-full h-14 bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-bold w-40 justify-center"
+          size={isMobile ? 'icon' : 'lg'}
+          className={cn(
+            'rounded-full h-14 bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 font-bold justify-center',
+            isMobile ? 'w-14' : 'w-40'
+          )}
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <X className="h-6 w-6" /> : 'Contact'}
+          {isOpen ? (
+            <X className="h-6 w-6" />
+          ) : isMobile ? (
+            <Phone className="h-6 w-6" />
+          ) : (
+            'Contact'
+          )}
         </Button>
       </div>
     </div>
