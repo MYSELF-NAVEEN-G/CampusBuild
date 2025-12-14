@@ -88,7 +88,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             </Card>
 
             <DialogContent className="sm:max-w-xl md:max-w-3xl max-h-[90vh] flex flex-col p-0">
-                <DialogHeader className="p-6 pb-0 pr-6">
+                <DialogHeader className="p-6 pb-4 border-b">
                     <DialogTitle className="text-3xl font-bold font-headline">{project.title}</DialogTitle>
                     <DialogDescription className="text-base text-slate-600 pt-2">{project.desc}</DialogDescription>
                 </DialogHeader>
@@ -126,7 +126,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
                         </div>
                     </div>
                 </ScrollArea>
-                <DialogFooter className="border-t p-6 flex items-center justify-between sm:justify-between sticky bottom-0 bg-background/95 backdrop-blur-sm">
+                <DialogFooter className="border-t p-6 flex items-center justify-between sm:justify-between bg-background/95 backdrop-blur-sm">
                     <span className="text-2xl font-extrabold text-slate-900">₹{project.price.toFixed(2)}</span>
                     <Button size="lg" onClick={handleAddToCart}>
                         Add to Order <Plus className="ml-2 h-4 w-4" />
