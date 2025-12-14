@@ -57,6 +57,7 @@ const Header = () => {
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer">Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover-text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
+            <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('footer')}>Contact</a>
           </nav>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Button asChild className="hidden sm:flex">
@@ -89,6 +90,7 @@ const Header = () => {
             <Link href="/our-team" className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>Our Team</Link>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('customOrder')}>Order Custom</a>
             <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('projectCatalog')}>Catalog</a>
+            <a className="text-sm font-medium text-slate-600 hover:text-primary transition-colors cursor-pointer" onClick={() => scrollToSection('footer')}>Contact</a>
             <Button asChild className="w-4/5">
               <Link href="/schedule-meeting" onClick={() => setIsMobileMenuOpen(false)}>
                 <MessageSquare className="mr-2 h-4 w-4" />
