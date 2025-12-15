@@ -21,9 +21,9 @@ const socialLinks = [
     bgColor: 'bg-blue-600',
   },
   {
-    name: 'Email',
+    name: 'Gmail',
     icon: Mail,
-    href: 'mailto:campusbuildsolutions@gmail.com',
+    href: 'https://mail.google.com/mail/?view=cm&fs=1&to=campusbuildsolutions@gmail.com',
     bgColor: 'bg-red-500',
   },
   {
