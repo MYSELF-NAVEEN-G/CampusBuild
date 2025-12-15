@@ -103,10 +103,6 @@ const CustomOrder = () => {
         }
     };
     
-    const openGoogleMaps = () => {
-        window.open('https://www.google.com/maps', '_blank', 'noopener,noreferrer');
-    };
-
 
     return (
         <section className="py-20 bg-background border-b border-border relative overflow-hidden" id="customOrder">
@@ -158,11 +154,7 @@ const CustomOrder = () => {
                         </div>
                          <div className="mb-6 space-y-2">
                             <label className="block text-xs font-bold text-slate-700 uppercase" htmlFor="address">Delivery Address</label>
-                            <Textarea id="address" name="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Paste your full delivery address here..." required />
-                             <Button type="button" variant="outline" size="sm" onClick={openGoogleMaps} className="w-full gap-2 mt-2">
-                                <Map className="h-4 w-4" />
-                                Set Delivery Address from Map
-                            </Button>
+                            <Textarea id="address" name="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Enter your full delivery address here..." required />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>

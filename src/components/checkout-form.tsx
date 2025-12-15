@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -42,10 +41,6 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
     onSubmit({ name, email, phone, deadline, address });
   };
 
-  const openGoogleMaps = () => {
-    window.open('https://www.google.com/maps', '_blank', 'noopener,noreferrer');
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -68,11 +63,7 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
           </div>
           <div className="space-y-2">
             <Label htmlFor="address">Delivery Address</Label>
-            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Paste your full delivery address here..." required />
-             <Button type="button" variant="outline" size="sm" onClick={openGoogleMaps} className="w-full gap-2 mt-2">
-                <Map className="h-4 w-4" />
-                Set Delivery Address from Map
-            </Button>
+            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Enter your full delivery address here..." required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="deadline">Requested Deadline</Label>
