@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Printer } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useParams } from 'next/navigation';
 
 interface OrderItem {
   id: string;
@@ -26,11 +27,12 @@ interface Order {
   isCustomOrder?: boolean;
 }
 
-export default function BillPage({ params }: { params: { orderId: string } }) {
+export default function BillPage() {
   const { firestore } = useFirebase();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const { orderId } = params;
+  const params = useParams();
+  const orderId = params.orderId as string;
 
   useEffect(() => {
     if (firestore && orderId) {
