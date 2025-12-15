@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Terminal, MapPin, Loader2 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 
 interface CheckoutFormProps {
   isOpen: boolean;
@@ -25,12 +26,49 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
   const [deadline, setDeadline] = useState('');
   const [address, setAddress] = useState('');
   const [error, setError] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
       setDeadline('');
     }
   }, [isOpen]);
+
+  const handleGetCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Geolocation Error", description: "Geolocation is not supported by your browser.", variant: "destructive" });
+      return;
+    }
+
+    setIsLocating(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // Using a free, public reverse geocoding service. No API key needed.
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          } else {
+            toast({ title: "Location Error", description: "Could not find address for your location.", variant: "destructive" });
+          }
+        } catch (error) {
+          console.error("Reverse geocoding error:", error);
+          toast({ title: "Location Error", description: "Failed to fetch address from coordinates.", variant: "destructive" });
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        toast({ title: "Geolocation Error", description: error.message, variant: "destructive" });
+        setIsLocating(false);
+      }
+    );
+  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +101,13 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
             <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Your Phone Number" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Delivery Address</Label>
+            <div className="flex justify-between items-center">
+                <Label htmlFor="address">Delivery Address</Label>
+                <Button type="button" variant="outline" size="sm" onClick={handleGetCurrentLocation} disabled={isLocating}>
+                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                    <span className="ml-2">{isLocating ? 'Locating...' : 'Use Current Location'}</span>
+                </Button>
+            </div>
             <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full delivery address" required />
           </div>
           <div className="space-y-2">
