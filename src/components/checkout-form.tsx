@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Terminal, MapPin } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 
 interface CheckoutFormProps {
@@ -42,6 +42,10 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
     onSubmit({ name, email, phone, deadline, address });
   };
 
+  const openGoogleMaps = () => {
+    window.open('https://www.google.com/maps', '_blank');
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -63,7 +67,13 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
             <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Your Phone Number" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Delivery Address</Label>
+            <div className="flex justify-between items-center">
+              <Label htmlFor="address">Delivery Address</Label>
+              <Button type="button" variant="outline" size="sm" onClick={openGoogleMaps} className="gap-1">
+                <MapPin className="h-3 w-3" />
+                Find on Map
+              </Button>
+            </div>
             <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full delivery address" required />
           </div>
           <div className="space-y-2">

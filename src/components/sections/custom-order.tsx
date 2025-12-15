@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from '@/components/ui/textarea';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, MapPin } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useFirebase, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -102,6 +102,10 @@ const CustomOrder = () => {
             setIsSubmitting(false);
         }
     };
+    
+    const openGoogleMaps = () => {
+        window.open('https://www.google.com/maps', '_blank');
+    };
 
 
     return (
@@ -153,7 +157,13 @@ const CustomOrder = () => {
                             </div>
                         </div>
                          <div className="mb-6 space-y-2">
-                            <label className="block text-xs font-bold text-slate-700 uppercase" htmlFor="address">Delivery Address</label>
+                            <div className="flex justify-between items-center">
+                                <label className="block text-xs font-bold text-slate-700 uppercase" htmlFor="address">Delivery Address</label>
+                                <Button type="button" variant="outline" size="sm" onClick={openGoogleMaps} className="gap-1">
+                                    <MapPin className="h-3 w-3" />
+                                    Find on Map
+                                </Button>
+                            </div>
                             <Textarea id="address" name="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full delivery address" required />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
