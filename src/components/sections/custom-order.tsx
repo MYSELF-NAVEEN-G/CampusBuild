@@ -44,14 +44,12 @@ const CustomOrder = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         
-        if (!firestore || !user) {
+        if (!firestore) {
             toast({
-                title: "Authentication Required",
-                description: "You must be signed in to submit a custom order. We've initiated a secure, anonymous session for you. Please try submitting again.",
+                title: "Database Error",
+                description: "Could not connect to the database. Please try again later.",
                 variant: "destructive",
             });
-            // The FirebaseProvider automatically handles anonymous sign-in,
-            // so the user just needs to retry.
             return;
         }
 
@@ -62,6 +60,8 @@ const CustomOrder = () => {
             isCustomOrder: true,
             customerName: formData.get("fullName") as string,
             customerEmail: formData.get("email") as string,
+            customerPhone: formData.get("phone") as string,
+            deliveryAddress: formData.get("address") as string,
             projectTitle: formData.get("projectTitle") as string,
             domain: formData.get("domain") as string,
             deadline: formData.get("deadline") as string || '',
@@ -141,10 +141,18 @@ const CustomOrder = () => {
                                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="email">Contact Email</label>
                                 <Input id="email" name="email" placeholder="email@university.edu" required type="email" />
                             </div>
+                             <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="phone">Phone Number</label>
+                                <Input id="phone" name="phone" placeholder="Your Phone Number" required type="tel" />
+                            </div>
+                             <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="projectTitle">Project Title / Concept</label>
+                                <Input id="projectTitle" name="projectTitle" placeholder="e.g. AI Traffic System" required type="text" />
+                            </div>
                         </div>
-                        <div className="mb-6">
-                            <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="projectTitle">Project Title / Concept</label>
-                            <Input id="projectTitle" name="projectTitle" placeholder="e.g. AI-Based Traffic Management System" required type="text" />
+                         <div className="mb-6">
+                            <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="address">Delivery Address</label>
+                            <Textarea id="address" name="address" placeholder="Your full delivery address" required />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>

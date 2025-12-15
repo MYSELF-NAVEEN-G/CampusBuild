@@ -34,7 +34,7 @@ const Cart = () => {
         return today.toISOString().split('T')[0];
     };
 
-    const onCheckout = async (customerDetails: { name: string; email: string; phone: string; deadline: string }) => {
+    const onCheckout = async (customerDetails: { name: string; email: string; phone: string; deadline: string; address: string; }) => {
         if (cart.length === 0 || !firestore) {
             toast({ title: "Error", description: "Cart is empty or database is not available.", variant: "destructive" });
             return;
@@ -46,6 +46,7 @@ const Cart = () => {
             customerName: customerDetails.name,
             customerEmail: customerDetails.email,
             customerPhone: customerDetails.phone,
+            deliveryAddress: customerDetails.address,
             items: cart.map(item => ({ id: item.id, title: item.title, price: item.price })),
             total,
             createdAt: serverTimestamp(),

@@ -8,11 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import { Textarea } from './ui/textarea';
 
 interface CheckoutFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (details: { name: string; email: string; phone: string; deadline: string }) => void;
+  onSubmit: (details: { name: string; email: string; phone: string; deadline: string; address: string; }) => void;
   isSubmitting: boolean;
   minDeadlineDate: string;
 }
@@ -22,6 +23,7 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [address, setAddress] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -32,12 +34,12 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !phone || !deadline) {
-      setError('Please fill out all fields, including the deadline.');
+    if (!name || !email || !phone || !deadline || !address) {
+      setError('Please fill out all fields, including the address and deadline.');
       return;
     }
     setError('');
-    onSubmit({ name, email, phone, deadline });
+    onSubmit({ name, email, phone, deadline, address });
   };
 
   return (
@@ -59,6 +61,10 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
           <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
             <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Your Phone Number" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="address">Delivery Address</Label>
+            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full delivery address" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="deadline">Requested Deadline</Label>

@@ -20,6 +20,7 @@ interface Order {
   id: string;
   customerName: string;
   customerEmail: string;
+  deliveryAddress?: string;
   items?: OrderItem[];
   total?: number;
   createdAt: Timestamp;
@@ -96,6 +97,7 @@ export default function BillPage() {
                     <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">Bill To</h3>
                     <p className="font-semibold text-slate-700">{order.customerName}</p>
                     <p className="text-slate-600">{order.customerEmail}</p>
+                    {order.deliveryAddress && <p className="text-slate-600 mt-1 whitespace-pre-wrap">{order.deliveryAddress}</p>}
                 </div>
                 <div className="text-right">
                     <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">Date</h3>
@@ -149,7 +151,3 @@ export default function BillPage() {
     </div>
   );
 }
-
-    
-
-    

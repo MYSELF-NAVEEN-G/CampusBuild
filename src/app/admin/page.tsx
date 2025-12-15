@@ -33,6 +33,7 @@ interface Order {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  deliveryAddress?: string;
   items?: OrderItem[]; // For catalog orders
   total?: number;
   componentCost?: number;
@@ -321,6 +322,10 @@ export default function AdminOrderPage() {
                       <div className="mt-4 space-y-4 text-sm">
                           <p><strong>Deadline:</strong> {formatDate(order.deadline)}</p>
                           <p><strong>Assigned To:</strong> {order.assigned || 'Not Assigned'}</p>
+                          <div>
+                            <strong>Delivery Address:</strong>
+                            <p className="p-2 mt-1 bg-slate-50 border rounded-md whitespace-pre-wrap">{order.deliveryAddress || 'Not Provided'}</p>
+                          </div>
                         {order.isCustomOrder ? (
                           <>
                             <div className="font-semibold text-base">Custom Project: {order.projectTitle}</div>
