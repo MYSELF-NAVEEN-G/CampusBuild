@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Terminal, Map } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 import { Textarea } from './ui/textarea';
+import { Checkbox } from './ui/checkbox';
+import Link from 'next/link';
 
 interface CheckoutFormProps {
   isOpen: boolean;
@@ -23,11 +25,13 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
   const [phone, setPhone] = useState('');
   const [deadline, setDeadline] = useState('');
   const [address, setAddress] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       setDeadline('');
+      setAgreedToTerms(false); // Reset on open
     }
   }, [isOpen]);
 
@@ -36,6 +40,10 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
     if (!name || !email || !phone || !deadline || !address) {
       setError('Please fill out all fields, including the address and deadline.');
       return;
+    }
+    if (!agreedToTerms) {
+        setError('You must agree to the Terms & Conditions to proceed.');
+        return;
     }
     setError('');
     onSubmit({ name, email, phone, deadline, address });
@@ -69,10 +77,19 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
             <Label htmlFor="deadline">Requested Deadline</Label>
             <Input id="deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} min={minDeadlineDate} required />
           </div>
+           <div className="flex items-center space-x-2">
+              <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+              <Label htmlFor="terms" className="text-sm font-normal text-slate-600">
+                I agree to the{' '}
+                <Link href="/terms" target="_blank" className="underline text-primary hover:text-primary/80">
+                  Terms & Conditions
+                </Link>
+              </Label>
+          </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !agreedToTerms}>
               {isSubmitting ? 'Placing Order...' : 'Confirm Order'}
             </Button>
           </DialogFooter>

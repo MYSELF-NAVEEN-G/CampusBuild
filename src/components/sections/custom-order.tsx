@@ -13,14 +13,17 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import Link from 'next/link';
+import { Checkbox } from '../ui/checkbox';
+import { Label } from '../ui/label';
 
 const CustomOrder = () => {
     const { toast } = useToast();
     const { firestore } = useFirebase();
     const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [domain, setDomain] = useState('iot');
+    const [domain, setDomain] = useState<'iot' | 'embedded' | 'software' | 'ai' | 'power'>('iot');
     const [address, setAddress] = useState('');
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
 
     const getMinDate = () => {
         let minDays;
@@ -44,6 +47,15 @@ const CustomOrder = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        if (!agreedToTerms) {
+            toast({
+                title: "Agreement Required",
+                description: "You must agree to the Terms & Conditions to submit an order.",
+                variant: "destructive",
+            });
+            return;
+        }
         
         if (!firestore) {
             toast({
@@ -86,6 +98,7 @@ const CustomOrder = () => {
             (event.target as HTMLFormElement).reset();
             setDomain('iot');
             setAddress('');
+            setAgreedToTerms(false);
         } catch (error) {
             console.error("Error submitting custom order:", error);
             errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -159,7 +172,7 @@ const CustomOrder = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Domain</label>
-                                <Select name="domain" value={domain} onValueChange={setDomain}>
+                                <Select name="domain" value={domain} onValueChange={(value) => setDomain(value as any)}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a domain" />
                                     </SelectTrigger>
@@ -181,8 +194,17 @@ const CustomOrder = () => {
                             <label className="block text-xs font-bold text-slate-700 uppercase mb-1" htmlFor="requirements">Detailed Requirements</label>
                             <Textarea id="requirements" name="requirements" placeholder="Describe the features, specific sensors (e.g. Piezo, Ultrasonic), and any software preferences..." className="h-24 resize-none" />
                         </div>
+                        <div className="flex items-center space-x-2 mb-6">
+                            <Checkbox id="custom-order-terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+                            <Label htmlFor="custom-order-terms" className="text-sm font-normal text-slate-600">
+                                I agree to the{' '}
+                                <Link href="/terms" target="_blank" className="underline text-primary hover:text-primary/80">
+                                Terms & Conditions
+                                </Link>
+                            </Label>
+                        </div>
                         <div className="flex justify-end">
-                             <Button type="submit" disabled={isSubmitting} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-800 transition-all">
+                             <Button type="submit" disabled={isSubmitting || !agreedToTerms} className="bg-slate-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-800 transition-all">
                                 {isSubmitting ? 'Submitting...' : 'Submit Custom Order'}
                             </Button>
                         </div>
