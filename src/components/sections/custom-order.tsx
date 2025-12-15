@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from '@/components/ui/textarea';
-import { MessageSquare, MapPin, Loader2 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useFirebase, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -20,7 +20,6 @@ const CustomOrder = () => {
     const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [domain, setDomain] = useState('iot');
-    const [isLocating, setIsLocating] = useState(false);
     const [address, setAddress] = useState('');
 
     const getMinDate = () => {
@@ -41,40 +40,6 @@ const CustomOrder = () => {
         const today = new Date();
         today.setDate(today.getDate() + minDays);
         return today.toISOString().split('T')[0];
-    };
-
-    const handleGetCurrentLocation = async () => {
-        if (!navigator.geolocation) {
-            toast({ title: "Geolocation Error", description: "Geolocation is not supported by your browser.", variant: "destructive" });
-            return;
-        }
-
-        setIsLocating(true);
-
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                try {
-                    // Using a free, public reverse geocoding service.
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const data = await response.json();
-                    if (data && data.display_name) {
-                        setAddress(data.display_name);
-                    } else {
-                        toast({ title: "Location Error", description: "Could not find address for your location.", variant: "destructive" });
-                    }
-                } catch (error) {
-                    console.error("Reverse geocoding error:", error);
-                    toast({ title: "Location Error", description: "Failed to fetch address from coordinates.", variant: "destructive" });
-                } finally {
-                    setIsLocating(false);
-                }
-            },
-            (error) => {
-                toast({ title: "Geolocation Error", description: error.message, variant: "destructive" });
-                setIsLocating(false);
-            }
-        );
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -188,13 +153,7 @@ const CustomOrder = () => {
                             </div>
                         </div>
                          <div className="mb-6 space-y-2">
-                            <div className="flex justify-between items-center">
-                                <label className="block text-xs font-bold text-slate-700 uppercase" htmlFor="address">Delivery Address</label>
-                                <Button type="button" variant="outline" size="sm" onClick={handleGetCurrentLocation} disabled={isLocating}>
-                                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
-                                    <span className="ml-2">{isLocating ? 'Locating...' : 'Use Current Location'}</span>
-                                </Button>
-                            </div>
+                            <label className="block text-xs font-bold text-slate-700 uppercase" htmlFor="address">Delivery Address</label>
                             <Textarea id="address" name="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full delivery address" required />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
