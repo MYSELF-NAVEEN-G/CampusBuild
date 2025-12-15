@@ -45,7 +45,7 @@ const Header = () => {
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center cursor-pointer group" onClick={scrollToTop}>
             <div className="relative w-10 h-10 flex items-center justify-center mr-3">
-              <Image src="https://image2url.com/images/1765187653532-73c5f0ac-c1ed-4b37-8f1d-587411f599df.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
+              <Image src="https://i.ibb.co/G92x1fT/logo.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
             </div>
              <div>
                 <span className="font-bold text-xl font-headline text-slate-800 leading-none">CampusBuild</span>

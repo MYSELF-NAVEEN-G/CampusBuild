@@ -76,7 +76,7 @@ export default function BillPage() {
                 <div>
                      <div className="flex items-center mb-4">
                         <div className="relative w-12 h-12 flex items-center justify-center mr-3">
-                        <Image src="https://image2url.com/images/1765187653532-73c5f0ac-c1ed-4b37-8f1d-587411f599df.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
+                        <Image src="https://i.ibb.co/G92x1fT/logo.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
                         </div>
                         <div>
                             <h1 className="font-bold text-3xl font-headline text-slate-800 leading-none">CampusBuild</h1>
