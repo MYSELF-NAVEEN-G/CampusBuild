@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Terminal, MapPin } from 'lucide-react';
+import { Terminal, Map } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 
 interface CheckoutFormProps {
@@ -43,7 +43,7 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
   };
 
   const openGoogleMaps = () => {
-    window.open('https://www.google.com/maps', '_blank');
+    window.open('https://www.google.com/maps', '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -67,14 +67,12 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
             <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Your Phone Number" required />
           </div>
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="address">Delivery Address</Label>
-              <Button type="button" variant="outline" size="sm" onClick={openGoogleMaps} className="gap-1">
-                <MapPin className="h-3 w-3" />
-                Find on Map
-              </Button>
-            </div>
-            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your full delivery address" required />
+            <Label htmlFor="address">Delivery Address</Label>
+            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Paste your full delivery address here..." required />
+             <Button type="button" variant="outline" size="sm" onClick={openGoogleMaps} className="w-full gap-2 mt-2">
+                <Map className="h-4 w-4" />
+                Set Delivery Address from Map
+            </Button>
           </div>
           <div className="space-y-2">
             <Label htmlFor="deadline">Requested Deadline</Label>
