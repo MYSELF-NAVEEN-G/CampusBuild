@@ -30,11 +30,12 @@ export default function BillPage({ params }: { params: { orderId: string } }) {
   const { firestore } = useFirebase();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const { orderId } = params;
 
   useEffect(() => {
-    if (firestore && params.orderId) {
+    if (firestore && orderId) {
       const getOrder = async () => {
-        const orderRef = doc(firestore, 'orders', params.orderId);
+        const orderRef = doc(firestore, 'orders', orderId);
         const orderSnap = await getDoc(orderRef);
         if (orderSnap.exists()) {
           setOrder({ id: orderSnap.id, ...orderSnap.data() } as Order);
@@ -45,7 +46,7 @@ export default function BillPage({ params }: { params: { orderId: string } }) {
     } else {
         setLoading(false);
     }
-  }, [firestore, params.orderId]);
+  }, [firestore, orderId]);
 
   const handlePrint = () => {
       window.print();
