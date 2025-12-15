@@ -293,7 +293,16 @@ export default function AdminOrderPage() {
                   )}
                 </TableCell>
                 <TableCell>
-                  {formatDate(order.deadline)}
+                  {isSuperAdmin ? (
+                    <Input
+                      type="date"
+                      defaultValue={order.deadline}
+                      onBlur={(e) => handleUpdateOrder(order.id, { deadline: e.target.value })}
+                      className="w-[150px]"
+                    />
+                  ) : (
+                     formatDate(order.deadline)
+                  )}
                 </TableCell>
                 <TableCell>
                   <Dialog>
