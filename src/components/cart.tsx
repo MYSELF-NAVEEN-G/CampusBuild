@@ -27,7 +27,7 @@ const Cart = () => {
 
     const getMinDeadline = () => {
         const hasHardwareOrIoT = cart.some(item => item.category === 'Hardware' || item.category === 'IoT');
-        const minDays = hasHardwareOrIoT ? 8 : 6;
+        const minDays = hasHardwareOrIoT ? 10 : 6;
         
         const today = new Date();
         today.setDate(today.getDate() + minDays);

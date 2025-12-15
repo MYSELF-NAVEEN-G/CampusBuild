@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from '@/components/ui/textarea';
-import { MessageSquare, Map } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { useAppContext } from '@/context/app-context';
 import { useFirebase, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -28,14 +28,14 @@ const CustomOrder = () => {
             case 'embedded':
             case 'iot':
             case 'power':
-                minDays = 8;
+                minDays = 10;
                 break;
             case 'software':
             case 'ai':
                 minDays = 6;
                 break;
             default:
-                minDays = 8;
+                minDays = 10;
         }
         const today = new Date();
         today.setDate(today.getDate() + minDays);
