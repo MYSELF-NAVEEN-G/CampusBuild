@@ -81,7 +81,10 @@ const CheckoutForm = ({ isOpen, onClose, onSubmit, isSubmitting, minDeadlineDate
          <Alert className="mt-4">
             <Terminal className="h-4 w-4" />
             <AlertDescription>
-                If you do not receive a confirmation message or call within 2 business days, it means the order was not properly saved. Please contact us.
+                <ul className="list-disc list-inside space-y-1">
+                    <li>If you do not receive a confirmation message or call within 2 business days, please contact us.</li>
+                    <li>Additional delivery charges may apply based on your location.</li>
+                </ul>
             </AlertDescription>
         </Alert>
       </DialogContent>
