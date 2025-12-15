@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "CampusBuild Solutions",
     images: [
       {
-        url: "https://i.ibb.co/G92x1fT/logo.png",
+        url: "https://image2url.com/images/1765804938869-938fa4f3-3c88-4c42-a898-35cc9e753605.jpg",
         width: 1200,
         height: 630,
       },
@@ -43,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="selection:bg-accent selection:text-white">
       <head>
-        <link rel="icon" href="https://i.ibb.co/G92x1fT/logo.png" sizes="any" />
+        <link rel="icon" href="https://image2url.com/images/1765804938869-938fa4f3-3c88-4c42-a898-35cc9e753605.jpg" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;800&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -53,7 +53,7 @@ export default function RootLayout({
   "@type": "Organization",
   "name": "CampusBuild Solutions",
   "url": "https://campus-build.vercel.app/",
-  "logo": "https://i.ibb.co/G92x1fT/logo.png",
+  "logo": "https://image2url.com/images/1765804938869-938fa4f3-3c88-4c42-a898-35cc9e753605.jpg",
   "description": "CampusBuild Solutions provides student project development services including AI/ML, IoT, hardware, software, and academic project consultation.",
   "sameAs": []
 }
