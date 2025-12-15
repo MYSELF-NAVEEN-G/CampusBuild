@@ -11,4 +11,5 @@ export interface Project {
     tags: string[];
     desc: string;
     bundleIncluded: string[];
+    isHidden?: boolean;
 }

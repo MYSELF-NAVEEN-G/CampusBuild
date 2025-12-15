@@ -16,6 +16,7 @@ type FirestoreProject = Omit<ProjectType, 'id' | 'image' | 'difficulty'> & {
   image: string;
   desc: string;
   bundleIncluded: string[];
+  isHidden?: boolean;
 };
 
 const ProjectCatalog = () => {
@@ -43,9 +44,10 @@ const ProjectCatalog = () => {
                     tags: data.tags || [],
                     desc: data.desc,
                     bundleIncluded: data.bundleIncluded || [],
+                    isHidden: data.isHidden || false,
                 } as ProjectType;
             });
-            setProjects(fetchedProjects);
+            setProjects(fetchedProjects.filter(p => !p.isHidden)); // Only show visible projects
             setLoading(false);
         }, (error) => {
             console.error('Error fetching projects:', error);

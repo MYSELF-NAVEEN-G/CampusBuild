@@ -49,6 +49,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "isHidden": {
+          "type": "boolean",
+          "description": "If true, the project is hidden from the public catalog."
         }
       },
       "required": [

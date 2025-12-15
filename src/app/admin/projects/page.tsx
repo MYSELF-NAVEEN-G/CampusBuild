@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Edit, Trash2, Crop, Upload } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Crop, Upload, Eye, EyeOff } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -55,13 +55,14 @@ import * as XLSX from 'xlsx';
 
 
 // This is the type we'll use in the component state, which includes the Firestore document ID.
-type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string; desc: string; bundleIncluded: string[] };
+type Project = Omit<ProjectType, 'id' | 'image'> & { docId: string; image: string; desc: string; bundleIncluded: string[]; isHidden?: boolean };
 
 // This is the type for the data stored in Firestore.
 type FirestoreProject = Omit<ProjectType, 'id' | 'image' > & {
   image: string; // Storing image as a data URL string
   desc: string;
   bundleIncluded: string[];
+  isHidden?: boolean;
 };
 
 export default function ProjectManagementPage() {
@@ -84,6 +85,7 @@ export default function ProjectManagementPage() {
     tags: [] as string[],
     desc: '',
     bundleIncluded: [] as string[],
+    isHidden: false,
   };
   const [formData, setFormData] = useState<typeof initialFormData>(initialFormData);
 
@@ -130,6 +132,7 @@ export default function ProjectManagementPage() {
           tags: data.tags || [],
           desc: data.desc,
           bundleIncluded: data.bundleIncluded || [],
+          isHidden: data.isHidden || false,
         } as Project;
       });
       setProjects(fetchedProjects);
@@ -154,6 +157,7 @@ export default function ProjectManagementPage() {
         tags: project.tags || [],
         desc: project.desc,
         bundleIncluded: project.bundleIncluded || [],
+        isHidden: project.isHidden || false,
       });
     } else {
       setEditingProject(null);
@@ -259,6 +263,7 @@ export default function ProjectManagementPage() {
       tags: formData.tags,
       desc: formData.desc,
       bundleIncluded: formData.bundleIncluded,
+      isHidden: formData.isHidden,
       updatedAt: serverTimestamp(),
     };
 
@@ -289,6 +294,22 @@ export default function ProjectManagementPage() {
           toast({title: 'Delete Error', description: 'Could not delete the project.', variant: 'destructive'});
       }
   }
+  
+  const handleToggleVisibility = async (project: Project) => {
+    if (!firestore || !canManageProjects) return;
+    const projectRef = doc(firestore, 'projects', project.docId);
+    try {
+      await updateDoc(projectRef, { isHidden: !project.isHidden });
+      toast({
+        title: 'Visibility Updated',
+        description: `"${project.title}" is now ${!project.isHidden ? 'hidden' : 'visible'}.`,
+      });
+    } catch (error) {
+      console.error('Error updating visibility:', error);
+      toast({ title: 'Update Error', description: 'Could not update project visibility.', variant: 'destructive' });
+    }
+  };
+
 
   const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -323,6 +344,7 @@ export default function ProjectManagementPage() {
                 tags: row.tags ? String(row.tags).split(',').map(t => t.trim()) : [],
                 bundleIncluded: row.bundleIncluded ? String(row.bundleIncluded).split('\n').map(t => t.trim()) : [],
                 image: row.image || `https://picsum.photos/seed/${Math.random()}/600/400`,
+                isHidden: row.isHidden === true || String(row.isHidden).toLowerCase() === 'true',
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
               };
@@ -375,18 +397,24 @@ export default function ProjectManagementPage() {
               <TableHead>Title</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {projects.map((project) => (
-              <TableRow key={project.docId}>
+              <TableRow key={project.docId} className={project.isHidden ? 'bg-slate-50 text-slate-500' : ''}>
                 <TableCell className="font-medium">{project.title}</TableCell>
                 <TableCell>{project.category}</TableCell>
                 <TableCell>₹{project.price.toFixed(2)}</TableCell>
+                <TableCell>{project.isHidden ? 'Hidden' : 'Visible'}</TableCell>
                 <TableCell className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => openForm(project)}>
                     <Edit className="mr-2 h-4 w-4" /> Edit
+                  </Button>
+                   <Button variant="outline" size="sm" onClick={() => handleToggleVisibility(project)}>
+                    {project.isHidden ? <Eye className="mr-2 h-4 w-4" /> : <EyeOff className="mr-2 h-4 w-4" />}
+                    {project.isHidden ? 'Show' : 'Hide'}
                   </Button>
                   <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -489,7 +517,7 @@ export default function ProjectManagementPage() {
           <DialogHeader>
             <DialogTitle>Upload Project Catalog</DialogTitle>
             <DialogDescription>
-              Select an Excel file (.xlsx) to bulk upload projects. Ensure your file has the following columns: <strong>title, category, price, description, tags, bundleIncluded, image</strong>.
+              Select an Excel file (.xlsx) to bulk upload projects. Ensure your file has the following columns: <strong>title, category, price, description, tags, bundleIncluded, image, isHidden</strong>.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
