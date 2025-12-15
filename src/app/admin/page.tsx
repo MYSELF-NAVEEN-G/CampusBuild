@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, Trash2 } from 'lucide-react';
+import { Eye, Trash2, Printer } from 'lucide-react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
+import Link from 'next/link';
 
 
 interface OrderItem {
@@ -368,33 +369,41 @@ export default function AdminOrderPage() {
                             )}
                         </div>
                       </div>
-                      <DialogFooter className="mt-6 pt-4 border-t sm:justify-between">
-                          <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                  <Button variant="destructive" disabled={!isSuperAdmin}>
-                                      <Trash2 className="mr-2 h-4 w-4" />
-                                      Delete Order
-                                  </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                      This action cannot be undone. This will permanently delete the
-                                      order and remove its data from our servers.
-                                  </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteOrder(order.id)}>
-                                      Continue
-                                  </AlertDialogAction>
-                                  </AlertDialogFooter>
-                              </AlertDialogContent>
-                          </AlertDialog>
-                          <DialogClose asChild>
-                              <Button variant="outline">Close</Button>
-                          </DialogClose>
+                      <DialogFooter className="mt-6 pt-4 border-t sm:justify-between items-center gap-2">
+                            <div className="flex gap-2">
+                                <Button asChild variant="secondary">
+                                    <Link href={`/bill/${order.id}`} target="_blank">
+                                        <Printer className="mr-2 h-4 w-4" />
+                                        Generate Bill
+                                    </Link>
+                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" disabled={!isSuperAdmin}>
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Delete
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the
+                                            order and remove its data from our servers.
+                                        </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDeleteOrder(order.id)}>
+                                            Continue
+                                        </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                            <DialogClose asChild>
+                                <Button variant="outline">Close</Button>
+                            </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -407,5 +416,3 @@ export default function AdminOrderPage() {
     </>
   );
 }
-
-    
