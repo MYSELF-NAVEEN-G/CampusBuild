@@ -44,7 +44,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center cursor-pointer group" onClick={scrollToTop}>
-            <div className="relative w-10 h-10 flex items-center justify-center mr-3">
+            <div className="relative w-10 h-10 flex items-center justify-center mr-3 bg-transparent">
               <Image src="https://image2url.com/images/1765805274483-f20c73c8-70c3-4417-bcd8-f5cc4667300e.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
             </div>
              <div>
@@ -106,5 +106,7 @@ const Header = () => {
 };
 
 export default Header;
+
+    
 
     

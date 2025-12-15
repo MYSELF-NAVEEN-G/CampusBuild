@@ -75,7 +75,7 @@ export default function BillPage() {
             <header className="flex justify-between items-start pb-8 border-b">
                 <div>
                      <div className="flex items-center mb-4">
-                        <div className="relative w-12 h-12 flex items-center justify-center mr-3">
+                        <div className="relative w-12 h-12 flex items-center justify-center mr-3 bg-transparent">
                         <Image src="https://image2url.com/images/1765805274483-f20c73c8-70c3-4417-bcd8-f5cc4667300e.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
                         </div>
                         <div>
@@ -149,5 +149,7 @@ export default function BillPage() {
     </div>
   );
 }
+
+    
 
     

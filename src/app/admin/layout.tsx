@@ -118,7 +118,7 @@ export default function AdminLayout({
       <aside className="w-64 bg-white border-r flex flex-col">
         <div className="flex items-center h-20 px-6 border-b">
           <div className="flex items-center cursor-pointer group" onClick={() => router.push('/')}>
-              <div className="relative w-10 h-10 flex items-center justify-center mr-3">
+              <div className="relative w-10 h-10 flex items-center justify-center mr-3 bg-transparent">
                 <Image src="https://image2url.com/images/1765805274483-f20c73c8-70c3-4417-bcd8-f5cc4667300e.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
               </div>
                <div>
@@ -173,6 +173,8 @@ export default function AdminLayout({
   );
 }
     
+    
+
     
 
     
