@@ -18,7 +18,7 @@ const Footer = () => {
         <div>
           <div className="flex items-center mb-4">
              <div className="relative w-10 h-10 flex items-center justify-center mr-3">
-                <Image src="https://image2url.com/images/1765804938869-938fa4f3-3c88-4c42-a898-35cc9e753605.jpg" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
+                <Image src="https://image2url.com/images/1765805274483-f20c73c8-70c3-4417-bcd8-f5cc4667300e.png" alt="CampusBuild Logo" layout="fill" objectFit="contain" />
               </div>
               <div>
                 <span className="font-bold text-xl font-headline text-white leading-none">CampusBuild</span>
@@ -46,3 +46,5 @@ const Footer = () => {
 };
 
 export default Footer;
+
+    
