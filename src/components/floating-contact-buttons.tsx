@@ -29,7 +29,7 @@ const socialLinks = [
   {
     name: 'LinkedIn',
     icon: Linkedin,
-    href: 'https://www.linkedin.com/in/campusbuild-solutions-undefined-8b4279394',
+    href: 'https://www.linkedin.com/in/campusbuild-solutions-8b4279394',
     bgColor: 'bg-sky-700',
   },
   {
